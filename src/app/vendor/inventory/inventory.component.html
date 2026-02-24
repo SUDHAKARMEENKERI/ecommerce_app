@@ -1,0 +1,125 @@
+<section class="inventory-page">
+  <div class="page-shell">
+    <header class="inventory-header">
+      <div class="title-block">
+        <p class="eyebrow">Inventory Workspace</p>
+        <div class="title-row">
+          <h1>{{ title$ | async }}</h1>
+          <span class="item-badge">{{ visibleItems.length }} Items</span>
+        </div>
+        <p class="header-note">Manage your medicine stock with the new Data Grid.</p>
+      </div>
+
+      <div class="header-actions">
+        <button type="button" class="btn btn-light-action">
+          <i class="bi bi-download"></i>
+          <span>Export</span>
+        </button>
+        <button type="button" class="btn btn-light-action">
+          <i class="bi bi-upload"></i>
+          <span>Import</span>
+        </button>
+        <button type="button" class="btn btn-dark-action" routerLink="/vendor/inventory/add">
+          <i class="bi bi-plus-lg"></i>
+          <span>Add Medicine</span>
+        </button>
+      </div>
+    </header>
+
+    <nav class="inventory-tabs" aria-label="Inventory filters">
+    <button
+      type="button"
+      class="tab"
+      *ngFor="let tab of tabs"
+      [class.active]="activeTab === tab.key"
+      (click)="selectTab(tab.key)">
+      {{ tab.label }}
+    </button>
+    </nav>
+
+    <div class="toolbar-row">
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Filter medicines..."
+      [value]="searchText"
+      (input)="onSearch(($any($event.target).value || '').toString())" />
+
+    <div class="columns-control">
+      <button type="button" class="btn btn-light-action columns-btn" (click)="toggleColumnsMenu()">Columns</button>
+
+      <div class="columns-menu" *ngIf="showColumnsMenu">
+        <label class="column-option" *ngFor="let column of columns; trackBy: trackByColumnKey">
+          <input
+            type="checkbox"
+            [checked]="column.visible"
+            [disabled]="column.visible && visibleColumns.length === 1"
+            (change)="toggleColumn(column.key)" />
+          <span>{{ column.label }}</span>
+        </label>
+      </div>
+    </div>
+    </div>
+
+    <div class="table-wrap" role="region" aria-label="Medicines table">
+    <div class="table-head" [style.gridTemplateColumns]="gridTemplateColumns">
+      <div class="th checkbox-col">
+        <input
+          type="checkbox"
+          aria-label="Select all"
+          [checked]="allVisibleSelected"
+          [indeterminate]="hasSomeVisibleSelected"
+          (change)="toggleSelectAll(($any($event.target).checked || false) === true)" />
+      </div>
+      <div
+        class="th"
+        *ngFor="let column of visibleColumns; trackBy: trackByColumnKey"
+        [class.sortable]="column.sortable"
+        [class.sorted]="sortColumn === column.key"
+        (click)="toggleSort(column.key)">
+        {{ column.label }}
+        <i *ngIf="column.sortable" class="bi" [class]="'bi ' + getSortIcon(column.key)"></i>
+      </div>
+    </div>
+
+    <ng-container *ngIf="visibleItems.length > 0; else noRows">
+      <div class="table-body">
+        <div class="table-row" *ngFor="let item of visibleItems; trackBy: trackByItemId" [style.gridTemplateColumns]="gridTemplateColumns">
+          <div class="td checkbox-col">
+            <input
+              type="checkbox"
+              [attr.aria-label]="'Select ' + item.name"
+              [checked]="isRowSelected(item.id)"
+              (change)="toggleRowSelection(item.id, ($any($event.target).checked || false) === true)" />
+          </div>
+
+          <div class="td" *ngFor="let column of visibleColumns; trackBy: trackByColumnKey">
+            <ng-container [ngSwitch]="column.key">
+              <span *ngSwitchCase="'expiry'">{{ item.expiry | date: 'dd MMM yyyy' }}</span>
+              <span *ngSwitchCase="'price'">₹{{ item.price }}</span>
+              <span *ngSwitchCase="'status'">
+                <span class="status-badge" [class]="'status-badge status-' + item.status.toLowerCase().replaceAll(' ', '-')">
+                  {{ item.status }}
+                </span>
+              </span>
+              <span *ngSwitchDefault>{{ getColumnValue(item, column.key) }}</span>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #noRows>
+      <div class="table-empty">No results.</div>
+    </ng-template>
+    </div>
+
+    <footer class="inventory-footer">
+      <p>{{ selectedCount }} of {{ visibleItems.length }} row(s) selected.</p>
+      <div class="pager">
+        <button type="button" class="btn btn-page" disabled>Previous</button>
+        <button type="button" class="btn btn-page" disabled>Next</button>
+      </div>
+    </footer>
+  </div>
+</section>

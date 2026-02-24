@@ -1,1 +1,107 @@
 /* You can add global styles to this file, and also import other style files */
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "bootstrap-icons/font/bootstrap-icons.css";
+
+/* Project global overrides */
+:root {
+	--app-bg: #f3f5fb;
+	--app-surface: #ffffff;
+	--app-surface-soft: #f8faff;
+	--app-border: #dce4f1;
+	--app-text: #122033;
+	--app-muted: #5d718a;
+	--app-primary: #2457d6;
+	--app-primary-soft: #eaf0ff;
+	--app-shadow: 0 12px 28px rgba(16, 31, 66, 0.08);
+	--app-radius: 14px;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+	background: radial-gradient(1200px 480px at -10% -10%, #eaf0ff 0%, transparent 62%),
+		radial-gradient(1200px 480px at 110% -20%, #eef3ff 0%, transparent 60%),
+		var(--app-bg);
+	color: var(--app-text);
+	font-family: "Segoe UI", Inter, system-ui, -apple-system, Roboto, Arial, sans-serif;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+.main-content > * {
+	max-width: 1320px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.inventory-page,
+.customers-page,
+.settings-page,
+.purchase-page,
+.invoices-page,
+.analytics-page,
+.add-medicine-page,
+.account-page,
+.staff-page,
+.license-page,
+.dashboard-container {
+	animation: pageFadeIn 0.25s ease;
+}
+
+.inventory-page :is(.card, .table-wrap, .columns-menu),
+.customers-page :is(.summary-card, .list-card, .customer-drawer, .drawer-stats article, .drawer-invoices li),
+.settings-page :is(.card),
+.purchase-page :is(.invoice-layout, .scan-box, .search-results, .cart-shell, .gst-card),
+.invoices-page :is(.stats-card, .table-shell),
+.analytics-page :is(.filter-card, .kpi-card, .panel),
+.add-medicine-page :is(.form-card, .notes-section),
+.account-page :is(.card),
+.staff-page :is(.summary-card, .table-card),
+.license-page :is(.card),
+.dashboard-container :is(.kpi-card, .sales-panel, .quick-card, .stock-panel) {
+	border-color: var(--app-border) !important;
+	box-shadow: var(--app-shadow);
+	border-radius: var(--app-radius);
+}
+
+.inventory-page :is(input, select, textarea, button),
+.customers-page :is(input, select, textarea, button),
+.settings-page :is(input, select, textarea, button),
+.purchase-page :is(input, select, textarea, button),
+.invoices-page :is(input, select, textarea, button),
+.analytics-page :is(input, select, textarea, button),
+.add-medicine-page :is(input, select, textarea, button),
+.account-page :is(input, select, textarea, button),
+.staff-page :is(input, select, textarea, button),
+.license-page :is(input, select, textarea, button),
+.dashboard-container :is(input, select, textarea, button) {
+	transition: all 0.16s ease;
+}
+
+.inventory-page h1,
+.customers-page h1,
+.settings-page h1,
+.purchase-page h1,
+.invoices-page h1,
+.analytics-page h1,
+.add-medicine-page h1,
+.account-page h1,
+.staff-page h1,
+.license-page h1,
+.dashboard-container h1 {
+	letter-spacing: -0.02em;
+}
+
+@keyframes pageFadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(4px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}

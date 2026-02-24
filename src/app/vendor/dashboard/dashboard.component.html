@@ -1,0 +1,89 @@
+<ng-container *ngIf="vm$ | async as vm">
+  <section class="dashboard-shell">
+    <header class="hero-panel">
+      <div class="hero-copy">
+        <p class="eyebrow">Operations Snapshot</p>
+        <h1>Pharmacy Command Center</h1>
+        <p>Track revenue, stock health, and expiry risk from one unified view.</p>
+      </div>
+
+      <div class="hero-actions">
+        <button class="month-btn" type="button">
+          <i class="bi bi-calendar3"></i>
+          <span>{{ currentMonthLabel }}</span>
+        </button>
+        <button class="create-btn" type="button">
+          <i class="bi bi-plus-lg"></i>
+          <span>Create Invoice</span>
+        </button>
+      </div>
+    </header>
+
+    <section class="metrics-ribbon">
+      <article class="metric-card revenue">
+        <small>Today's Revenue</small>
+        <h2>₹{{ vm.sales | number: '1.0-0' }}</h2>
+      </article>
+
+      <article class="metric-card out-stock">
+        <small>Out of Stock</small>
+        <h2>{{ vm.outOfStockCount }}</h2>
+      </article>
+
+      <article class="metric-card low-stock">
+        <small>Low Stock</small>
+        <h2>{{ vm.lowStockCount }}</h2>
+      </article>
+
+      <article class="metric-card expiry">
+        <small>Expiring Soon</small>
+        <h2>{{ vm.expiryWarnings.length }}</h2>
+      </article>
+    </section>
+
+    <section class="insight-grid">
+      <article class="panel sales-panel">
+        <div class="panel-head">
+          <div>
+            <h3>Recent Sales</h3>
+            <p>Latest billed items</p>
+          </div>
+          <button type="button" class="view-all-btn">View All</button>
+        </div>
+
+        <div class="sales-empty" *ngIf="vm.bills === 0; else hasSales">
+          <i class="bi bi-receipt"></i>
+          <span>No sales recorded yet.</span>
+        </div>
+
+        <ng-template #hasSales>
+          <ul class="sales-list">
+            <li *ngFor="let p of vm.expiryWarnings | slice:0:4; trackBy: trackByProductId">
+              <div>
+                <b>{{ p.name }}</b>
+                <small>Exp: {{ p.exp | date: 'shortDate' }}</small>
+              </div>
+              <i class="bi bi-arrow-up-right"></i>
+            </li>
+          </ul>
+        </ng-template>
+      </article>
+
+      <article class="panel alerts-panel">
+        <h3>Risk Flags</h3>
+        <div class="alert-line">
+          <span class="dot red"></span>
+          <p><b>{{ vm.outOfStockCount }}</b> products are out of stock.</p>
+        </div>
+        <div class="alert-line">
+          <span class="dot amber"></span>
+          <p><b>{{ vm.lowStockCount }}</b> products are running low.</p>
+        </div>
+        <div class="alert-line">
+          <span class="dot blue"></span>
+          <p><b>{{ vm.expiryWarnings.length }}</b> products are expiring in 30 days.</p>
+        </div>
+      </article>
+    </section>
+  </section>
+</ng-container>

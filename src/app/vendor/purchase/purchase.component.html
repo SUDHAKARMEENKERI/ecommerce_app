@@ -1,0 +1,169 @@
+<section class="purchase-page">
+  <div class="purchase-shell">
+    <section class="invoice-layout">
+      <div class="workspace-panel">
+        <header class="workspace-head">
+          <div class="head-copy">
+            <p class="eyebrow">Point of Sale</p>
+            <h1>Purchase Billing</h1>
+            <p>Search medicines, add quantities, and complete customer billing quickly.</p>
+          </div>
+
+          <div class="shortcut-bar">
+            <span class="shortcut-label">Shortcuts</span>
+            <span class="shortcut-item" *ngFor="let item of shortcuts">{{ item }}</span>
+          </div>
+        </header>
+
+        <div class="finder-panel">
+          <div class="scan-box">
+            <i class="bi bi-search"></i>
+            <input
+              type="text"
+              placeholder="Scan barcode or type medicine..."
+              [value]="medicineQuery"
+              (input)="onMedicineSearch(($any($event.target).value || '').toString())" />
+            <span class="scan-kbd">F2</span>
+          </div>
+        </div>
+
+        <div class="search-results" *ngIf="medicineQuery.trim().length > 0">
+          <button
+            type="button"
+            class="result-item"
+            *ngFor="let medicine of filteredMedicines; trackBy: trackByMedicineId"
+            (click)="addMedicineToCart(medicine)">
+            <div>
+              <strong>{{ medicine.name }}</strong>
+              <small>{{ medicine.brand }} • {{ medicine.batch }}</small>
+            </div>
+            <span>₹{{ medicine.price }}</span>
+          </button>
+
+          <div class="no-result" *ngIf="!hasSearchResults">No matching medicines found in inventory.</div>
+        </div>
+
+        <section class="cart-shell">
+          <div class="cart-head">
+            <span>#</span>
+            <span>MEDICINE</span>
+            <span>PRICE</span>
+            <span>QTY</span>
+            <span>TOTAL</span>
+          </div>
+
+          <ng-container *ngIf="cartItems.length > 0; else emptyCart">
+            <div class="cart-row" *ngFor="let cartItem of cartItems; let idx = index; trackBy: trackByCartMedicineId">
+              <span>{{ idx + 1 }}</span>
+              <span class="medicine-cell">
+                <b>{{ cartItem.medicine.name }}</b>
+                <small>{{ cartItem.medicine.brand }} • {{ cartItem.medicine.batch }}</small>
+              </span>
+              <span>₹{{ cartItem.medicine.price }}</span>
+              <span class="qty-cell">
+                <button type="button" (click)="decrementQty(cartItem)">-</button>
+                <b>{{ cartItem.qty }}</b>
+                <button type="button" (click)="incrementQty(cartItem)">+</button>
+              </span>
+              <span>₹{{ cartItem.medicine.price * cartItem.qty }}</span>
+            </div>
+          </ng-container>
+
+          <ng-template #emptyCart>
+            <div class="cart-empty">
+              <div class="empty-icon"><i class="bi bi-cart"></i></div>
+              <h3>Cart is empty</h3>
+              <p>Start scanning or typing to add items</p>
+            </div>
+          </ng-template>
+        </section>
+      </div>
+
+      <aside class="checkout-panel">
+        <section class="customer-card">
+          <h2>Customer Details (Optional)</h2>
+
+          <label class="field-label">Phone Number</label>
+          <div class="input-box">
+            <input type="text" placeholder="Search by phone..." [(ngModel)]="customerPhone" />
+            <i class="bi bi-search"></i>
+          </div>
+
+          <label class="field-label">Customer Name</label>
+          <div class="input-box">
+            <input type="text" placeholder="Search by name..." [(ngModel)]="customerName" />
+            <i class="bi bi-search"></i>
+          </div>
+
+          <label class="field-label">Gender</label>
+          <div class="input-box">
+            <select [(ngModel)]="patientGender">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <label class="field-label">Age</label>
+          <div class="input-box">
+            <input
+              type="number"
+              min="0"
+              max="120"
+              step="1"
+              inputmode="numeric"
+              placeholder="e.g. 54"
+              [(ngModel)]="patientAge"
+              (wheel)="disableNumberScroll($event)"
+              (input)="onPatientAgeInput(($any($event.target).value || '').toString())" />
+          </div>
+
+          <label class="field-label">Consulting Doctor</label>
+          <div class="input-box">
+            <input type="text" placeholder="Doctor name" [(ngModel)]="consultingDoctor" />
+          </div>
+
+          <label class="field-label">Referred By</label>
+          <div class="input-box">
+            <input type="text" placeholder="Direct / Referral" [(ngModel)]="referredBy" />
+          </div>
+        </section>
+
+        <section class="billing-card">
+          <h3>Billing Summary</h3>
+
+          <div class="summary-row subtotal">
+            <span>Subtotal</span>
+            <strong>₹{{ subtotal | number: '1.2-2' }}</strong>
+          </div>
+
+          <div class="summary-row discount">
+            <span>Discount</span>
+            <div class="discount-controls">
+              <button type="button">%</button>
+              <button type="button">₹</button>
+            </div>
+            <strong>0</strong>
+          </div>
+
+          <div class="payment-row">
+            <button type="button" class="pay-btn active">
+              Cash
+              <small>F4</small>
+            </button>
+            <button type="button" class="pay-btn">UPI / Card</button>
+          </div>
+
+          <button type="button" class="print-btn" [disabled]="!canGenerateInvoice" (click)="generateInvoice()">
+            <span>Complete Billing</span>
+            <b>F9</b>
+          </button>
+
+          <p class="invoice-message" [class.error]="invoiceMessageType === 'error'" *ngIf="invoiceMessage">
+            {{ invoiceMessage }}
+          </p>
+        </section>
+      </aside>
+    </section>
+  </div>
+</section>

@@ -1,0 +1,333 @@
+.license-page {
+  padding: 8px 0 18px;
+}
+
+.license-page,
+.license-page * {
+  box-sizing: border-box;
+}
+
+.page-head h1 {
+  margin: 4px 0 0;
+  font-size: 34px;
+  line-height: 1.05;
+  color: #10243d;
+}
+
+.page-head p {
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: #5f738f;
+}
+
+.page-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #2457d6;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+
+.head-chip {
+  min-height: 30px;
+  border-radius: 999px;
+  border: 1px solid #cfdfff;
+  background: #edf3ff;
+  color: #1f4fc4;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.top-grid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.card {
+  background: linear-gradient(180deg, #ffffff, #fbfdff);
+  border: 1px solid #d6e2f4;
+  border-radius: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.16s ease;
+}
+
+.card:hover {
+  border-color: #c6d5ee;
+}
+
+.subscription-card,
+.redeem-card {
+  padding: 14px;
+  min-height: 250px;
+}
+
+.subscription-card h2,
+.redeem-card h2,
+.upgrade-wrap h2 {
+  margin: 0;
+  font-size: 24px;
+  color: #10243d;
+}
+
+.redeem-card > p {
+  margin: 8px 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.plan-row {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px dashed #d8e4f6;
+  padding-bottom: 10px;
+}
+
+.plan-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #edf2ff;
+  color: #1d4ed8;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+}
+
+.plan-row h3 {
+  margin: 0;
+  font-size: 24px;
+  color: #0f172a;
+}
+
+.plan-row p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.metric-row {
+  min-height: 42px;
+  border-bottom: 1px dashed #e6edf8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #334155;
+}
+
+.metric-row:last-child {
+  border-bottom: 0;
+}
+
+.metric-row b {
+  color: #0f172a;
+}
+
+.redeem-row {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+
+.redeem-row input {
+  min-height: 34px;
+  border: 1px solid #d3deef;
+  border-radius: 10px;
+  padding: 0 12px;
+  font-size: 13px;
+  color: #0f172a;
+  outline: none;
+}
+
+.redeem-row input:focus-visible {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.14);
+}
+
+.redeem-row button {
+  min-height: 34px;
+  border: 0;
+  border-radius: 10px;
+  padding: 0 12px;
+  background: #274eb5;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.15s ease;
+}
+
+.redeem-row button:hover {
+  background: #1f449f;
+}
+
+.redeem-row button:active {
+  transform: translateY(1px);
+}
+
+.redeem-card small {
+  margin-top: 8px;
+  display: block;
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.status {
+  margin-top: 8px;
+  display: block;
+  color: #1d4ed8;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.upgrade-wrap {
+  margin-top: 16px;
+}
+
+.upgrade-sub {
+  margin: 4px 0 0;
+  color: #66809d;
+  font-size: 13px;
+}
+
+.plans-grid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.plan-card {
+  padding: 14px;
+  position: relative;
+  border-radius: 14px;
+}
+
+.plan-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+}
+
+.plan-card.active {
+  border-color: #1f4fc4;
+  box-shadow: 0 12px 24px rgba(31, 79, 196, 0.16);
+}
+
+.badge {
+  position: absolute;
+  top: -9px;
+  right: 14px;
+  background: #10b981;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  border-radius: 999px;
+  padding: 2px 7px;
+}
+
+.plan-card h3 {
+  margin: 0;
+  font-size: 22px;
+  color: #0f172a;
+}
+
+.plan-card header p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.plan-card > strong {
+  margin-top: 10px;
+  display: block;
+  font-size: 34px;
+  color: #10243d;
+}
+
+.plan-card ul {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+
+.plan-card li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #334155;
+}
+
+.plan-card li i {
+  color: #10b981;
+  font-size: 14px;
+}
+
+.plan-btn {
+  margin-top: 10px;
+  width: 100%;
+  min-height: 34px;
+  border: 1px solid #cddbf2;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.plan-btn:hover {
+  border-color: #b9c9e1;
+  background: #f1f5fb;
+}
+
+.plan-card.active .plan-btn {
+  background: #1f4fc4;
+  border-color: #1f4fc4;
+  color: #fff;
+}
+
+.plan-card.active .plan-btn:hover {
+  background: #0a227c;
+}
+
+.page-foot {
+  margin-top: 14px;
+  text-align: center;
+  color: #7b8fa9;
+  font-size: 12px;
+}
+
+@media (max-width: 1100px) {
+  .top-grid,
+  .plans-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-head {
+    flex-direction: column;
+  }
+
+  .subscription-card,
+  .redeem-card {
+    min-height: auto;
+  }
+}

@@ -1,0 +1,47 @@
+<section class="login-page">
+  <article class="login-card">
+    <header class="card-head">
+      <span class="brand-badge">P</span>
+      <div>
+        <h1>Welcome Back</h1>
+        <p>Sign in to continue to your pharmacy dashboard.</p>
+      </div>
+    </header>
+
+    <form (ngSubmit)="onSubmit()" class="login-form">
+      <label>
+        <span>Store ID or Mobile</span>
+        <div class="field-wrap">
+          <i class="bi bi-shop"></i>
+          <input type="text" placeholder="Enter store id or mobile" [(ngModel)]="storeId" name="storeId" />
+        </div>
+      </label>
+
+      <label>
+        <span>Password</span>
+        <div class="field-wrap">
+          <i class="bi bi-lock"></i>
+          <input type="password" placeholder="Enter password" [(ngModel)]="password" name="password" />
+        </div>
+      </label>
+
+      <label>
+        <span>Login As</span>
+        <div class="field-wrap">
+          <i class="bi bi-person-badge"></i>
+          <select [(ngModel)]="role" name="role">
+            <option value="owner">Owner</option>
+            <option value="staff">Staff</option>
+          </select>
+        </div>
+      </label>
+
+      <small class="error" *ngIf="errorMessage">{{ errorMessage }}</small>
+
+      <button type="submit" class="submit-btn">
+        <i class="bi bi-box-arrow-in-right"></i>
+        <span>Login</span>
+      </button>
+    </form>
+  </article>
+</section>

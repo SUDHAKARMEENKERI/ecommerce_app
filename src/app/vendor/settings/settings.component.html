@@ -1,0 +1,196 @@
+<section class="settings-page">
+  <section class="settings-shell">
+    <header class="settings-head">
+      <div class="head-title">
+        <span class="section-icon"><i class="bi bi-gear"></i></span>
+        <div>
+          <h1>Settings</h1>
+          <p>Manage your preferences</p>
+        </div>
+      </div>
+    </header>
+
+    <nav class="feature-tabs" aria-label="Settings features">
+      <button
+        type="button"
+        class="tab-btn"
+        [class.active]="activeTab === 'business'"
+        (click)="setActiveTab('business')">
+        <i class="bi bi-shop"></i>
+        <span>Business</span>
+      </button>
+
+      <button
+        type="button"
+        class="tab-btn"
+        [class.active]="activeTab === 'account'"
+        (click)="setActiveTab('account')">
+        <i class="bi bi-person"></i>
+        <span>Account</span>
+      </button>
+
+      <button
+        type="button"
+        class="tab-btn"
+        [class.active]="activeTab === 'notifications'"
+        (click)="setActiveTab('notifications')">
+        <i class="bi bi-bell"></i>
+        <span>Notifications</span>
+      </button>
+
+      <button
+        type="button"
+        class="tab-btn"
+        [class.active]="activeTab === 'billing'"
+        (click)="setActiveTab('billing')">
+        <i class="bi bi-credit-card"></i>
+        <span>Billing</span>
+      </button>
+    </nav>
+
+    <section class="settings-content" [ngSwitch]="activeTab">
+      <ng-container *ngSwitchCase="'business'">
+        <header class="content-header">
+          <span class="content-icon"><i class="bi bi-shop"></i></span>
+          <div>
+            <h2>Business Profile</h2>
+            <p>Manage pharmacy details &amp; tax info</p>
+          </div>
+        </header>
+
+        <section class="card form-card">
+          <div class="field-grid">
+            <label class="field">
+              <span>Pharmacy Name</span>
+              <input type="text" [(ngModel)]="businessForm.pharmacyName" [ngModelOptions]="{ standalone: true }" />
+            </label>
+
+            <label class="field">
+              <span>Phone Number</span>
+              <input type="text" [(ngModel)]="businessForm.phoneNumber" [ngModelOptions]="{ standalone: true }" />
+            </label>
+
+            <label class="field">
+              <span>GSTIN Number</span>
+              <input type="text" [(ngModel)]="businessForm.gstinNumber" [ngModelOptions]="{ standalone: true }" />
+            </label>
+
+            <label class="field">
+              <span>Pharmacy Code</span>
+              <input type="text" [value]="businessForm.pharmacyCode" disabled />
+              <small>Fixed ID for your branch</small>
+            </label>
+
+            <label class="field full">
+              <span>Address</span>
+              <input type="text" [(ngModel)]="businessForm.address" [ngModelOptions]="{ standalone: true }" />
+            </label>
+          </div>
+        </section>
+
+        <footer class="card save-row">
+          <span [class.saving]="isSavingBusiness" [class.saved]="!isSavingBusiness && businessSaveMessage === 'Saved successfully'">
+            {{ businessSaveMessage }}
+          </span>
+          <button type="button" class="save-btn" [disabled]="isSavingBusiness" (click)="saveBusiness()">
+            <i class="bi bi-floppy"></i>
+            <span>{{ isSavingBusiness ? 'Saving...' : 'Save Business' }}</span>
+          </button>
+        </footer>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'account'">
+        <header class="content-header">
+          <span class="content-icon"><i class="bi bi-person"></i></span>
+          <div>
+            <h2>Personal Account</h2>
+            <p>Manage login &amp; personal details</p>
+          </div>
+        </header>
+
+        <section class="card form-card">
+          <div class="profile-head">
+            <span class="avatar">{{ profile.name.charAt(0) | uppercase }}</span>
+            <div>
+              <h3>{{ profile.name }}</h3>
+              <p>{{ profile.email }}</p>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="field-grid two-col">
+            <label class="field">
+              <span>Full Name</span>
+              <input type="text" [(ngModel)]="accountForm.fullName" [ngModelOptions]="{ standalone: true }" />
+            </label>
+
+            <label class="field">
+              <span>Email Address</span>
+              <input type="email" [value]="accountForm.email" disabled />
+            </label>
+          </div>
+        </section>
+
+        <footer class="card save-row">
+          <span [class.saving]="isSavingAccount" [class.saved]="!isSavingAccount && accountSaveMessage === 'Saved successfully'">
+            {{ accountSaveMessage }}
+          </span>
+          <button type="button" class="save-btn" [disabled]="isSavingAccount" (click)="saveAccount()">
+            <i class="bi bi-floppy"></i>
+            <span>{{ isSavingAccount ? 'Saving...' : 'Save Account' }}</span>
+          </button>
+        </footer>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'notifications'">
+        <section class="card placeholder-card">
+          <i class="bi bi-bell"></i>
+          <h3>Notifications</h3>
+          <p>Notification settings coming soon.</p>
+        </section>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'billing'">
+        <header class="content-header">
+          <span class="content-icon"><i class="bi bi-credit-card"></i></span>
+          <div>
+            <h2>License &amp; Billing</h2>
+            <p>Manage your pharma license and payments</p>
+          </div>
+        </header>
+
+        <section class="card billing-card">
+          <article class="license-box">
+            <div>
+              <small>CURRENT LICENSE</small>
+              <h3>Pro Trial</h3>
+            </div>
+            <span class="pill">3D LEFT</span>
+          </article>
+
+          <article class="trial-box">
+            <span class="shield"><i class="bi bi-shield-check"></i></span>
+            <div>
+              <b>Trial Active</b>
+              <p>Ends in 3 days</p>
+            </div>
+          </article>
+
+          <div class="meta-grid">
+            <article class="meta-card">
+              <small>Valid Until</small>
+              <b>23/02/2026</b>
+            </article>
+            <article class="meta-card">
+              <small>Billing Cycle</small>
+              <b>Monthly</b>
+            </article>
+          </div>
+
+          <button type="button" class="manage-btn">Manage License</button>
+        </section>
+      </ng-container>
+    </section>
+  </section>
+</section>

@@ -1,0 +1,75 @@
+<section class="staff-page">
+  <header class="page-header">
+    <div>
+      <h1>Staff Management</h1>
+      <p>Manage staff roles, shifts, and status in one place.</p>
+    </div>
+    <button type="button" class="add-btn">
+      <i class="bi bi-person-plus"></i>
+      <span>Add Staff</span>
+    </button>
+  </header>
+
+  <section class="summary-grid">
+    <article class="summary-card">
+      <small>Total Staff</small>
+      <h2>{{ totalStaff }}</h2>
+    </article>
+    <article class="summary-card active">
+      <small>Active</small>
+      <h2>{{ activeStaff }}</h2>
+    </article>
+    <article class="summary-card leave">
+      <small>On Leave</small>
+      <h2>{{ onLeaveStaff }}</h2>
+    </article>
+  </section>
+
+  <section class="toolbar">
+    <div class="search-box">
+      <i class="bi bi-search"></i>
+      <input
+        type="text"
+        placeholder="Search by name, role, phone, or ID"
+        [(ngModel)]="searchText"
+        [ngModelOptions]="{ standalone: true }" />
+    </div>
+
+    <div class="filters">
+      <button type="button" [class.active]="selectedStatus === 'All'" (click)="setStatusFilter('All')">All</button>
+      <button type="button" [class.active]="selectedStatus === 'Active'" (click)="setStatusFilter('Active')">Active</button>
+      <button type="button" [class.active]="selectedStatus === 'On Leave'" (click)="setStatusFilter('On Leave')">On Leave</button>
+      <button type="button" [class.active]="selectedStatus === 'Inactive'" (click)="setStatusFilter('Inactive')">Inactive</button>
+    </div>
+  </section>
+
+  <section class="table-card" aria-label="Staff list">
+    <div class="table-head">
+      <span>Name</span>
+      <span>Role</span>
+      <span>Phone</span>
+      <span>Shift</span>
+      <span>Status</span>
+    </div>
+
+    <div class="table-row" *ngFor="let member of visibleStaff; trackBy: trackByStaffId">
+      <span class="name-cell">
+        <b>{{ member.name }}</b>
+        <small>{{ member.id }}</small>
+      </span>
+      <span>{{ member.role }}</span>
+      <span>{{ member.phone }}</span>
+      <span>{{ member.shift }}</span>
+      <span>
+        <i class="status-pill" [class.active]="member.status === 'Active'" [class.leave]="member.status === 'On Leave'" [class.inactive]="member.status === 'Inactive'">
+          {{ member.status }}
+        </i>
+      </span>
+    </div>
+
+    <div class="empty" *ngIf="visibleStaff.length === 0">
+      <i class="bi bi-people"></i>
+      <p>No staff found for current filters.</p>
+    </div>
+  </section>
+</section>

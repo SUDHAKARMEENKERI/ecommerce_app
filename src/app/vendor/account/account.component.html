@@ -1,0 +1,108 @@
+<section class="account-page">
+  <header class="page-header">
+    <h1>Account</h1>
+    <p>Manage your profile, security, and session preferences.</p>
+  </header>
+
+  <section class="account-grid">
+    <article class="card profile-card">
+      <div class="avatar">{{ initials }}</div>
+      <h2>{{ profile.name }}</h2>
+      <p>{{ profile.email }}</p>
+
+      <div class="profile-meta">
+        <div>
+          <span>Role</span>
+          <b>{{ profile.role }}</b>
+        </div>
+        <div>
+          <span>Pharmacy</span>
+          <b>{{ profile.pharmacy }}</b>
+        </div>
+      </div>
+
+      <button type="button" class="logout-btn" (click)="logout()">
+        <i class="bi bi-box-arrow-right"></i>
+        <span>Log out</span>
+      </button>
+    </article>
+
+    <div class="main-stack">
+      <article class="card form-card">
+        <header>
+          <h3>Personal Information</h3>
+          <p>{{ profileStatusMessage }}</p>
+        </header>
+
+        <div class="field-grid">
+          <label>
+            <span>Full Name</span>
+            <input type="text" [(ngModel)]="profile.name" [ngModelOptions]="{ standalone: true }" />
+          </label>
+
+          <label>
+            <span>Email Address</span>
+            <input type="email" [(ngModel)]="profile.email" [ngModelOptions]="{ standalone: true }" />
+          </label>
+
+          <label>
+            <span>Phone Number</span>
+            <input type="text" [(ngModel)]="profile.phone" [ngModelOptions]="{ standalone: true }" />
+          </label>
+
+          <label>
+            <span>Branch</span>
+            <input type="text" [(ngModel)]="profile.pharmacy" [ngModelOptions]="{ standalone: true }" />
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" [disabled]="savingProfile" (click)="saveProfile()">
+            {{ savingProfile ? 'Saving...' : 'Save Profile' }}
+          </button>
+        </div>
+      </article>
+
+      <article class="card form-card">
+        <header>
+          <h3>Security</h3>
+          <p>{{ securityStatusMessage }}</p>
+        </header>
+
+        <div class="field-grid single">
+          <label>
+            <span>Current Password</span>
+            <input type="password" [(ngModel)]="passwordForm.currentPassword" [ngModelOptions]="{ standalone: true }" />
+          </label>
+
+          <label>
+            <span>New Password</span>
+            <input type="password" [(ngModel)]="passwordForm.newPassword" [ngModelOptions]="{ standalone: true }" />
+          </label>
+
+          <label>
+            <span>Confirm New Password</span>
+            <input type="password" [(ngModel)]="passwordForm.confirmPassword" [ngModelOptions]="{ standalone: true }" />
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" [disabled]="savingSecurity" (click)="updatePassword()">
+            {{ savingSecurity ? 'Updating...' : 'Update Password' }}
+          </button>
+        </div>
+      </article>
+
+      <article class="card quick-card">
+        <a routerLink="/vendor/settings">
+          <i class="bi bi-gear"></i>
+          <span>Open Settings</span>
+        </a>
+        <a routerLink="/vendor/license">
+          <i class="bi bi-credit-card"></i>
+          <span>Open Billing &amp; License</span>
+        </a>
+      </article>
+    </div>
+  </section>
+</section>

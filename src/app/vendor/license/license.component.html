@@ -1,0 +1,106 @@
+<section class="license-page">
+  <header class="page-head">
+    <div>
+      <p class="eyebrow">Subscription Center</p>
+      <h1>My Plan</h1>
+      <p>Manage your pharmacy license and billing</p>
+    </div>
+    <div class="head-chip">Trial Mode</div>
+  </header>
+
+  <section class="top-grid">
+    <article class="card subscription-card">
+      <h2>Current Subscription</h2>
+
+      <div class="plan-row">
+        <span class="plan-icon"><i class="bi bi-lightning-charge"></i></span>
+        <div>
+          <h3>Pro Trial</h3>
+          <p>Valid until 23/02/2026</p>
+        </div>
+      </div>
+
+      <div class="metric-row">
+        <span>Medicines</span>
+        <b>0 / 2000</b>
+      </div>
+      <div class="metric-row">
+        <span>Invoices (Total)</span>
+        <b>0 / 20000</b>
+      </div>
+    </article>
+
+    <article class="card redeem-card">
+      <h2>Redeem License Key</h2>
+      <p>Have a manual activation key? Enter it below.</p>
+
+      <div class="redeem-row">
+        <input
+          type="text"
+          placeholder="XXXX-XXXX-XXXX-XXXX"
+          [(ngModel)]="licenseKey"
+          [ngModelOptions]="{ standalone: true }" />
+        <button type="button" (click)="redeemKey()">Redeem</button>
+      </div>
+
+      <small>License keys are case-insensitive. Ensure you copy the entire key.</small>
+      <span class="status" *ngIf="statusMessage">{{ statusMessage }}</span>
+    </article>
+  </section>
+
+  <section class="upgrade-wrap">
+    <h2>Upgrade your Pharmacy</h2>
+    <p class="upgrade-sub">Choose a pricing plan that fits your growth stage.</p>
+
+    <div class="plans-grid">
+      <article class="card plan-card" [class.active]="selectedPlan === 'monthly'">
+        <header>
+          <h3>Monthly</h3>
+          <p>Flexible monthly billing</p>
+        </header>
+        <strong>₹999</strong>
+        <ul>
+          <li><i class="bi bi-check2"></i>Unlimited Invoices</li>
+          <li><i class="bi bi-check2"></i>Inventory Management</li>
+          <li><i class="bi bi-check2"></i>GST Reports</li>
+          <li><i class="bi bi-check2"></i>WhatsApp Support</li>
+        </ul>
+        <button type="button" class="plan-btn" (click)="selectPlan('monthly')">Choose Plan</button>
+      </article>
+
+      <article class="card plan-card" [class.active]="selectedPlan === 'halfYearly'">
+        <span class="badge">SAVE 5%</span>
+        <header>
+          <h3>Half Yearly</h3>
+          <p>Save 5% with 6 months</p>
+        </header>
+        <strong>₹5,694</strong>
+        <ul>
+          <li><i class="bi bi-check2"></i>Unlimited Invoices</li>
+          <li><i class="bi bi-check2"></i>Inventory Management</li>
+          <li><i class="bi bi-check2"></i>GST Reports</li>
+          <li><i class="bi bi-check2"></i>WhatsApp Support</li>
+        </ul>
+        <button type="button" class="plan-btn" (click)="selectPlan('halfYearly')">Choose Plan</button>
+      </article>
+
+      <article class="card plan-card" [class.active]="selectedPlan === 'yearly'">
+        <span class="badge">SAVE 10%</span>
+        <header>
+          <h3>Yearly</h3>
+          <p>Best Value - Save 10%</p>
+        </header>
+        <strong>₹10,789</strong>
+        <ul>
+          <li><i class="bi bi-check2"></i>Unlimited Invoices</li>
+          <li><i class="bi bi-check2"></i>Inventory Management</li>
+          <li><i class="bi bi-check2"></i>GST Reports</li>
+          <li><i class="bi bi-check2"></i>WhatsApp Support</li>
+        </ul>
+        <button type="button" class="plan-btn" (click)="selectPlan('yearly')">Choose Plan</button>
+      </article>
+    </div>
+  </section>
+
+  <footer class="page-foot">Secure payments powered by Cashfree. Need help? Contact support.</footer>
+</section>

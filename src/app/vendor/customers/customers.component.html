@@ -1,0 +1,156 @@
+<section class="customers-page">
+  <header class="hero-head">
+    <div class="hero-copy">
+      <p class="eyebrow">Customer Relations</p>
+      <h1>Customers</h1>
+      <p>Track spending, visits, and loyalty from a single customer workspace.</p>
+    </div>
+
+    <button type="button" class="refresh-btn" [disabled]="isRefreshing" (click)="refreshCustomers()">
+      <i class="bi bi-arrow-clockwise" [class.spin]="isRefreshing"></i>
+      <span>Refresh Data</span>
+    </button>
+  </header>
+
+  <section class="summary-strip" aria-label="Customer summary">
+    <ng-container *ngIf="!isRefreshing; else summaryLoading">
+      <article class="summary-card">
+        <p>Customers</p>
+        <h2>{{ totalCustomers }}</h2>
+        <div class="mini-box"><i class="bi bi-people"></i></div>
+      </article>
+      <article class="summary-card">
+        <p>Revenue</p>
+        <h2>₹{{ totalRevenue | number: '1.0-0' }}</h2>
+        <div class="mini-box"><i class="bi bi-currency-rupee"></i></div>
+      </article>
+      <article class="summary-card">
+        <p>Avg Visits</p>
+        <h2>{{ averageVisits | number: '1.1-1' }}</h2>
+        <div class="mini-box"><i class="bi bi-arrow-repeat"></i></div>
+      </article>
+    </ng-container>
+
+    <ng-template #summaryLoading>
+      <article class="summary-card" *ngFor="let _ of [1,2,3]">
+        <div class="line lg"></div>
+        <div class="line sm"></div>
+        <div class="mini-box"></div>
+      </article>
+    </ng-template>
+  </section>
+
+  <section class="toolbar-panel">
+    <div class="search-box">
+      <i class="bi bi-search"></i>
+      <input
+        type="text"
+        placeholder="Search by name, phone, or invoice behavior"
+        [(ngModel)]="searchText"
+        [ngModelOptions]="{ standalone: true }"
+        (ngModelChange)="onSearchChange()" />
+    </div>
+
+    <div class="filters">
+      <button
+        type="button"
+        *ngFor="let tab of filterTabs"
+        [class.active]="activeFilter === tab"
+        (click)="setFilter(tab)">
+        {{ tab }}
+      </button>
+    </div>
+  </section>
+
+  <section class="list-card" aria-label="Customers list">
+    <header class="list-head">
+      <span>Name</span>
+      <span>Mobile</span>
+      <span>Spent</span>
+      <span>Visited</span>
+    </header>
+
+    <ng-container *ngIf="!isRefreshing; else listLoading">
+      <button type="button" class="list-row" *ngFor="let item of pagedCustomers; trackBy: trackByCustomerId" (click)="openCustomer(item)">
+        <div class="cell name">{{ item.name }}</div>
+        <div class="cell mobile">{{ item.phone }}</div>
+        <div class="cell spent">₹{{ item.totalSpent | number: '1.0-0' }}</div>
+        <div class="cell visited">
+          <b>{{ item.lastVisit | date: 'dd MMM yyyy' }}</b>
+          <small>{{ item.visits }} visits</small>
+        </div>
+      </button>
+    </ng-container>
+
+    <ng-template #listLoading>
+      <div class="list-row" *ngFor="let _ of [1,2,3,4,5]">
+        <div class="cell"><div class="line lg"></div></div>
+        <div class="cell"><div class="line md"></div></div>
+        <div class="cell"><div class="line md"></div></div>
+        <div class="cell visited loading-visited">
+          <div class="line md"></div>
+          <div class="line sm"></div>
+        </div>
+      </div>
+    </ng-template>
+
+    <div class="empty-list" *ngIf="!isRefreshing && visibleCustomers.length === 0">
+      <i class="bi bi-people"></i>
+      <span>No customers found</span>
+    </div>
+
+    <footer class="list-footer" *ngIf="!isRefreshing && visibleCustomers.length > 0">
+      <span>Showing {{ activePageCount }} of {{ visibleCustomers.length }} customers</span>
+      <div class="pager">
+        <button type="button" [disabled]="!canGoPrevious" (click)="goToPreviousPage()">Previous</button>
+        <span>Page {{ currentPage }} / {{ totalPages }}</span>
+        <button type="button" [disabled]="!canGoNext" (click)="goToNextPage()">Next</button>
+      </div>
+    </footer>
+  </section>
+
+  <div class="drawer-backdrop" *ngIf="selectedCustomer" (click)="closeCustomerDrawer()"></div>
+  <aside class="customer-drawer" *ngIf="selectedCustomer">
+    <header>
+      <h3>Customer Details</h3>
+      <button type="button" (click)="closeCustomerDrawer()"><i class="bi bi-x-lg"></i></button>
+    </header>
+
+    <div class="drawer-avatar">{{ selectedCustomer.name.charAt(0) }}</div>
+    <h4>{{ selectedCustomer.name }}</h4>
+    <p>{{ selectedCustomer.phone }}</p>
+
+    <div class="drawer-stats">
+      <article>
+        <span>Total Spent</span>
+        <b>₹{{ selectedCustomer.totalSpent | number: '1.0-0' }}</b>
+      </article>
+      <article>
+        <span>Visits</span>
+        <b>{{ selectedCustomer.visits }}</b>
+      </article>
+      <article>
+        <span>Last Visit</span>
+        <b>{{ selectedCustomer.lastVisit | date: 'dd MMM yyyy' }}</b>
+      </article>
+    </div>
+
+    <div class="drawer-invoices">
+      <h5>Recent Invoices</h5>
+
+      <div class="empty-invoices" *ngIf="selectedCustomerInvoices.length === 0">
+        No invoices yet
+      </div>
+
+      <ul *ngIf="selectedCustomerInvoices.length > 0">
+        <li *ngFor="let invoice of selectedCustomerInvoices">
+          <div>
+            <b>{{ invoice.id }}</b>
+            <small>{{ invoice.date | date: 'dd MMM yyyy, hh:mm a' }}</small>
+          </div>
+          <span>₹{{ invoice.amount | number: '1.0-0' }}</span>
+        </li>
+      </ul>
+    </div>
+  </aside>
+</section>

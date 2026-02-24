@@ -1,0 +1,111 @@
+<section class="analytics-page">
+  <header class="page-header">
+    <div>
+      <h1>Reports</h1>
+      <p>View your sales summary and export reports.</p>
+    </div>
+
+    <button type="button" class="export-btn">
+      <i class="bi bi-download"></i>
+      <span>Export PDF</span>
+    </button>
+  </header>
+
+  <section class="filter-card">
+    <div class="filter-title">
+      <i class="bi bi-funnel"></i>
+      <span>Filter by Date</span>
+    </div>
+
+    <div class="quick-ranges">
+      <button type="button" [class.active]="activeRange === 'today'" (click)="applyQuickRange('today')">Today</button>
+      <button type="button" [class.active]="activeRange === '7d'" (click)="applyQuickRange('7d')">Last 7 Days</button>
+      <button type="button" [class.active]="activeRange === '30d'" (click)="applyQuickRange('30d')">Last 30 Days</button>
+      <button type="button" [class.active]="activeRange === 'month'" (click)="applyQuickRange('month')">This Month</button>
+      <button type="button" class="clear-btn" (click)="clearFilters()">Clear Filters</button>
+    </div>
+
+    <div class="date-range">
+      <label>
+        <i class="bi bi-calendar3"></i>
+        <input
+          type="date"
+          placeholder="dd-mm-yyyy"
+          [(ngModel)]="fromDate"
+          [ngModelOptions]="{ standalone: true }"
+          (ngModelChange)="onDateFilterChange()" />
+      </label>
+      <span>to</span>
+      <label>
+        <i class="bi bi-calendar3"></i>
+        <input
+          type="date"
+          placeholder="dd-mm-yyyy"
+          [(ngModel)]="toDate"
+          [ngModelOptions]="{ standalone: true }"
+          (ngModelChange)="onDateFilterChange()" />
+      </label>
+    </div>
+  </section>
+
+  <section class="kpi-grid">
+    <article class="kpi-card blue">
+      <div>
+        <p class="kpi-title">Total Revenue</p>
+        <h2>₹{{ totalRevenue | number: '1.0-0' }}</h2>
+      </div>
+      <span class="kpi-icon"><i class="bi bi-graph-up-arrow"></i></span>
+    </article>
+
+    <article class="kpi-card violet">
+      <div>
+        <p class="kpi-title">Total Invoices</p>
+        <h2>{{ totalInvoices }}</h2>
+      </div>
+      <span class="kpi-icon"><i class="bi bi-file-earmark-text"></i></span>
+    </article>
+
+    <article class="kpi-card green">
+      <div>
+        <p class="kpi-title">Avg. Value</p>
+        <h2>₹{{ averageValue | number: '1.2-2' }}</h2>
+      </div>
+      <span class="kpi-icon"><i class="bi bi-currency-dollar"></i></span>
+    </article>
+  </section>
+
+  <section class="bottom-grid">
+    <article class="panel trend-panel">
+      <h3>Revenue Trend</h3>
+      <p>Daily sales in selected period</p>
+      <div class="trend-placeholder">
+        <span *ngFor="let h of trendBars" [style.height.%]="h"></span>
+      </div>
+    </article>
+
+    <article class="panel tx-panel">
+      <div class="panel-head">
+        <div>
+          <h3>Recent Transactions</h3>
+          <p>Latest invoices</p>
+        </div>
+        <button type="button">View All</button>
+      </div>
+
+      <div class="empty-state" *ngIf="transactions.length === 0">
+        <i class="bi bi-receipt"></i>
+        <span>No transactions found</span>
+      </div>
+
+      <ul class="tx-list" *ngIf="transactions.length > 0">
+        <li *ngFor="let tx of transactions">
+          <div>
+            <b>{{ tx.title }}</b>
+            <small>{{ tx.date | date: 'dd MMM yyyy, hh:mm a' }}</small>
+          </div>
+          <span>₹{{ tx.amount | number: '1.0-0' }}</span>
+        </li>
+      </ul>
+    </article>
+  </section>
+</section>

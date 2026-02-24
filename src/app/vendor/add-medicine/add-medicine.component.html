@@ -1,0 +1,234 @@
+<section class="add-medicine-page">
+  <div class="page-shell">
+    <header class="masthead">
+      <div class="title-group">
+        <a routerLink="/vendor/inventory" class="back-link" aria-label="Back to inventory">
+          <i class="bi bi-arrow-left"></i>
+        </a>
+
+        <div>
+          <h1>Add New Medicine</h1>
+          <p>Beautifully organized stock entry for faster pharmacy operations</p>
+        </div>
+      </div>
+
+      <div class="status-pill">
+        <span>Live Units</span>
+        <strong>{{ totalQuantity }}</strong>
+      </div>
+    </header>
+
+    <div class="success-banner" *ngIf="successMessage">{{ successMessage }}</div>
+
+    <section class="top-stats">
+      <article class="stat-card">
+        <span>Medicine Name</span>
+        <strong>{{ form.medicineName || 'Not set' }}</strong>
+      </article>
+      <article class="stat-card">
+        <span>Low Alert Level</span>
+        <strong>{{ form.lowAlert || 0 }}</strong>
+      </article>
+      <article class="stat-card">
+        <span>Strip Selling Price</span>
+        <strong>₹{{ form.sellPrice || 0 }}</strong>
+      </article>
+    </section>
+
+    <div class="layout-grid">
+      <main class="form-column">
+        <section class="glass-card">
+          <div class="section-head">
+            <span class="step-badge">01</span>
+            <div>
+              <h2>Product Details</h2>
+              <p>Set core medicine identity and classification</p>
+            </div>
+          </div>
+
+          <div class="input-grid one">
+            <label>
+              <span>Medicine Name <em>*</em></span>
+              <input type="text" [(ngModel)]="form.medicineName" [ngModelOptions]="{ standalone: true }" />
+            </label>
+            <label>
+              <span>Composition / Generic <em>*</em></span>
+              <input type="text" [(ngModel)]="form.composition" [ngModelOptions]="{ standalone: true }" />
+            </label>
+          </div>
+
+          <div class="input-grid two">
+            <label>
+              <span>Brand Name</span>
+              <input type="text" [(ngModel)]="form.brandName" [ngModelOptions]="{ standalone: true }" />
+            </label>
+            <label>
+              <span>Category</span>
+              <select [(ngModel)]="form.category" [ngModelOptions]="{ standalone: true }">
+                <option>Allopathic</option>
+                <option>Ayurvedic</option>
+                <option>OTC</option>
+              </select>
+            </label>
+            <label>
+              <span>Formulation</span>
+              <select [(ngModel)]="form.formulation" [ngModelOptions]="{ standalone: true }">
+                <option>Tablet</option>
+                <option>Syrup</option>
+                <option>Injection</option>
+              </select>
+            </label>
+            <label>
+              <span>Strength</span>
+              <input type="text" [(ngModel)]="form.strength" [ngModelOptions]="{ standalone: true }" />
+            </label>
+          </div>
+        </section>
+
+        <section class="glass-card">
+          <div class="section-head">
+            <span class="step-badge">02</span>
+            <div>
+              <h2>Stock & Inventory</h2>
+              <p>Track batch, timeline and available quantity</p>
+            </div>
+          </div>
+
+          <div class="input-grid three">
+            <label>
+              <span>Batch No <em>*</em></span>
+              <input type="text" [(ngModel)]="form.batchNo" [ngModelOptions]="{ standalone: true }" />
+            </label>
+            <label>
+              <span>Mfg Date <em>*</em></span>
+              <input type="date" [(ngModel)]="form.mfgDate" [ngModelOptions]="{ standalone: true }" />
+            </label>
+            <label>
+              <span>Expiry Date <em>*</em></span>
+              <input type="date" [(ngModel)]="form.expiryDate" [ngModelOptions]="{ standalone: true }" />
+            </label>
+          </div>
+
+          <div class="splitter"></div>
+
+          <div class="input-grid three">
+            <label>
+              <span>Pack Size (Strips/Box) <em>*</em></span>
+              <input type="number" min="0" placeholder="e.g. 10" [(ngModel)]="form.packSize" [ngModelOptions]="{ standalone: true }" />
+              <small>How many strips in one box</small>
+            </label>
+            <label>
+              <span>Box Quantity <em>*</em></span>
+              <input type="number" min="0" placeholder="Enter boxes" [(ngModel)]="form.boxQuantity" [ngModelOptions]="{ standalone: true }" />
+              <small>Auto calculates total strips</small>
+            </label>
+            <label>
+              <span>Total Quantity (Strips)</span>
+              <input type="number" [value]="totalQuantity" readonly />
+            </label>
+            <label>
+              <span>Low Alerts</span>
+              <input type="number" [(ngModel)]="form.lowAlert" [ngModelOptions]="{ standalone: true }" />
+            </label>
+            <label>
+              <span>Rack / Shelf</span>
+              <input type="text" [(ngModel)]="form.rackShelf" [ngModelOptions]="{ standalone: true }" />
+            </label>
+          </div>
+        </section>
+
+        <section class="glass-card">
+          <div class="section-head">
+            <span class="step-badge">03</span>
+            <div>
+              <h2>Pricing Setup</h2>
+              <p>Configure strip and box-level rates</p>
+            </div>
+          </div>
+
+          <div class="price-grid">
+            <div class="price-box">
+              <h3>Strip Pricing</h3>
+              <div class="input-grid two">
+                <label>
+                  <span>Buy Price <em>*</em></span>
+                  <input type="number" [(ngModel)]="form.buyPrice" [ngModelOptions]="{ standalone: true }" />
+                </label>
+                <label>
+                  <span>Sell Price <em>*</em></span>
+                  <input type="number" [(ngModel)]="form.sellPrice" [ngModelOptions]="{ standalone: true }" />
+                </label>
+              </div>
+            </div>
+
+            <div class="price-box emphasis">
+              <h3>Box Pricing</h3>
+              <div class="input-grid two">
+                <label>
+                  <span>Box Buy Price</span>
+                  <input type="number" [(ngModel)]="form.boxBuyPrice" [ngModelOptions]="{ standalone: true }" />
+                </label>
+                <label>
+                  <span>Box Sell Price</span>
+                  <input type="number" [(ngModel)]="form.boxSellPrice" [ngModelOptions]="{ standalone: true }" />
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="input-grid one compact-space">
+            <label>
+              <span>GST %</span>
+              <input type="number" [(ngModel)]="form.gst" [ngModelOptions]="{ standalone: true }" />
+            </label>
+          </div>
+        </section>
+
+        <section class="glass-card">
+          <div class="section-head">
+            <span class="step-badge">04</span>
+            <div>
+              <h2>Notes</h2>
+              <p>Optional comments for this product entry</p>
+            </div>
+          </div>
+
+          <label>
+            <span>Notes (Optional)</span>
+            <textarea rows="3" placeholder="Specific details..." [(ngModel)]="form.notes" [ngModelOptions]="{ standalone: true }"></textarea>
+          </label>
+        </section>
+      </main>
+
+      <aside class="insight-rail">
+        <h3>Live Preview</h3>
+
+        <div class="preview-item">
+          <span>Medicine</span>
+          <strong>{{ form.medicineName || '—' }}</strong>
+        </div>
+        <div class="preview-item">
+          <span>Batch</span>
+          <strong>{{ form.batchNo || '—' }}</strong>
+        </div>
+        <div class="preview-item">
+          <span>Total Strips</span>
+          <strong>{{ totalQuantity }}</strong>
+        </div>
+        <div class="preview-item">
+          <span>Box Price</span>
+          <strong>₹{{ form.boxSellPrice || 0 }}</strong>
+        </div>
+
+        <div class="tip-box">
+          <p>Tip: Add a low alert value to get earlier refill signals.</p>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="actions-footer">
+      <button type="button" class="btn-cancel" routerLink="/vendor/inventory">Cancel</button>
+      <button type="button" class="btn-submit" [disabled]="isSubmitting" (click)="submitMedicine()">Add Medicine</button>
+    </footer>
+  </div>
+</section>

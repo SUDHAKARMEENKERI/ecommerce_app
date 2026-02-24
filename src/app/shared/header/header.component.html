@@ -1,0 +1,21 @@
+<header class="header">
+  <div class="header-left">
+    <h1 class="app-title">Vendor Portal</h1>
+  </div>
+  <div class="header-right">
+    <button type="button" class="icon-btn" aria-label="Notifications" title="Notifications">
+      <i class="bi bi-bell"></i>
+    </button>
+    <button type="button" class="auth-btn" (click)="onAuthClick()">
+      <i class="bi" [class.bi-box-arrow-right]="isLoggedIn" [class.bi-box-arrow-in-right]="!isLoggedIn"></i>
+      <span>{{ isLoggedIn ? 'Logout' : 'Login' }}</span>
+    </button>
+    <div class="profile" title="{{ profile.email }}">
+      <span class="avatar">{{ initials }}</span>
+      <span class="info">
+        <b>{{ profile.fullName }}</b>
+        <small>{{ profile.email }}</small>
+      </span>
+    </div>
+  </div>
+</header>
