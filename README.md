@@ -57,3 +57,45 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+## Deploy to GitHub Pages
+
+This repository is configured for GitHub Pages deployment.
+
+### One-time setup
+
+Install dependencies (includes the deploy tool):
+
+```bash
+npm install
+```
+
+### Deploy
+
+Build and publish to the `gh-pages` branch:
+
+```bash
+npm run deploy
+```
+
+The deploy command runs a production build with this base href:
+
+`/ecommerce_app/`
+
+It also publishes explicitly to:
+
+- repo: `https://github.com/SUDHAKARMEENKERI/ecommerce_app.git`
+- branch: `gh-pages`
+
+### GitHub Pages settings
+
+In your GitHub repository:
+
+1. Open **Settings → Pages**
+2. Under **Build and deployment**, choose **Deploy from a branch**
+3. Select branch **gh-pages** and folder **/(root)**
+4. Save
+
+Your app URL will be:
+
+`https://sudhakarmeenkeri.github.io/ecommerce_app/`
