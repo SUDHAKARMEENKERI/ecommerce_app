@@ -1,129 +1,127 @@
 <section class="invoices-page">
   <div class="billing-shell">
-    <header class="top-banner">
-      <div class="banner-copy">
-        <p class="eyebrow">Billing Workspace</p>
-        <h1>Invoice Studio</h1>
-        <p>Create and manage customer invoices, track payments, and monitor revenue flow.</p>
+    <!-- 1. Billing Workspace Card -->
+    <section class="card billing-workspace-card modern-card">
+      <div class="card-header">
+        <div>
+          <p class="eyebrow">Billing Workspace</p>
+          <h1>Invoice Studio</h1>
+          <p class="subtitle">Create and manage customer invoices, track payments, and monitor revenue flow.</p>
+        </div>
+        <button type="button" class="create-btn">
+          <i class="bi bi-plus-lg"></i>
+          <span>New Invoice</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Vertical stacking: each card full width, one after another -->
+    <!-- 2. Today Snapshot Card -->
+    <section class="card today-snapshot-card modern-card medium-snapshot">
+      <div class="card-header" style="margin-bottom: 0.8rem;">
+        <h3 style="font-size: 1.18rem; font-weight: 600; margin: 0;">Today Snapshot</h3>
+      </div>
+      <div class="snapshot-stats-row modern-stats-row medium-stats-row">
+        <div class="stat-tile revenue medium-tile">
+          <div class="stat-label">Revenue</div>
+          <div class="stat-value">₹{{ totalRevenue | number: '1.0-0' }}</div>
+          <div class="icon blue"><i class="bi bi-graph-up-arrow"></i></div>
+        </div>
+        <div class="stat-tile invoices medium-tile">
+          <div class="stat-label">Invoices</div>
+          <div class="stat-value">{{ invoiceCount }}</div>
+          <div class="icon violet"><i class="bi bi-receipt"></i></div>
+        </div>
+        <div class="stat-tile avg-value medium-tile">
+          <div class="stat-label">Avg. Value</div>
+          <div class="stat-value">₹{{ averageInvoiceValue | number: '1.2-2' }}</div>
+          <div class="icon green"><i class="bi bi-check-circle"></i></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Invoice Register Card -->
+    <section class="card invoice-register-card modern-card">
+      <div class="card-header">
+        <div>
+          <h2>Invoice Register</h2>
+          <p class="subtitle">Use filters to find records and generate new bills quickly.</p>
+        </div>
       </div>
 
-      <button type="button" class="create-btn">
-        <i class="bi bi-plus-lg"></i>
-        <span>New Invoice</span>
-      </button>
-    </header>
+      <section class="filters-row modern-filters-row" aria-label="Invoice filters">
+        <div class="search-box">
+          <i class="bi bi-search"></i>
+          <input
+            type="text"
+            placeholder="Search invoice no, customer, or amount..."
+            [(ngModel)]="searchText"
+            [ngModelOptions]="{ standalone: true }" />
+        </div>
 
-    <div class="board-grid">
-      <aside class="insight-panel" aria-label="Invoice stats">
-        <h2>Today Snapshot</h2>
+        <div class="date-range">
+          <label>
+            <input type="text" placeholder="dd-mm-yyyy" />
+            <i class="bi bi-calendar3"></i>
+          </label>
+          <span>to</span>
+          <label>
+            <input type="text" placeholder="dd-mm-yyyy" />
+            <i class="bi bi-calendar3"></i>
+          </label>
+        </div>
+      </section>
 
-        <article class="stat-tile revenue">
-          <div>
-            <p class="label">Revenue</p>
-            <h3>₹{{ totalRevenue | number: '1.0-0' }}</h3>
-          </div>
-          <div class="icon blue"><i class="bi bi-graph-up-arrow"></i></div>
-        </article>
+      <section class="result-pane" aria-label="Invoices list">
+        <div class="invoice-table" *ngIf="invoiceCount > 0; else emptyState">
+          <header class="invoice-head">
+            <span>Invoice</span>
+            <span>Customer</span>
+            <span>Phone</span>
+            <span>Amount</span>
+            <span>Date</span>
+            <span>Details</span>
+            <span>Print</span>
+          </header>
 
-        <article class="stat-tile invoices">
-          <div>
-            <p class="label">Invoices</p>
-            <h3>{{ invoiceCount }}</h3>
-          </div>
-          <div class="icon violet"><i class="bi bi-receipt"></i></div>
-        </article>
-
-        <article class="stat-tile avg-value">
-          <div>
-            <p class="label">Avg. Value</p>
-            <h3 class="success">₹{{ averageInvoiceValue | number: '1.2-2' }}</h3>
-          </div>
-          <div class="icon green"><i class="bi bi-check-circle"></i></div>
-        </article>
-      </aside>
-
-      <section class="workboard">
-        <div class="workboard-head">
-          <div>
-            <h2>Invoice Register</h2>
-            <p>Use filters to find records and generate new bills quickly.</p>
+          <div class="invoice-row" *ngFor="let invoice of filteredInvoices; trackBy: trackByInvoiceId">
+            <span>{{ invoice.invoiceNumber }}</span>
+            <span>{{ invoice.customerName }}</span>
+            <span>{{ invoice.customerPhone }}</span>
+            <span>₹{{ invoice.amount | number: '1.0-0' }}</span>
+            <span>{{ invoice.date | date: 'dd MMM yyyy, hh:mm a' }}</span>
+            <button type="button" class="details-btn" (click)="openInvoiceDetails(invoice)">
+              <i class="bi bi-eye"></i>
+              <span>View</span>
+            </button>
+            <button type="button" class="print-btn" (click)="printInvoice(invoice)">
+              <i class="bi bi-printer"></i>
+              <span>Print</span>
+            </button>
           </div>
         </div>
 
-        <section class="filters-row" aria-label="Invoice filters">
-          <div class="search-box">
-            <i class="bi bi-search"></i>
-            <input
-              type="text"
-              placeholder="Search invoice no, customer, or amount..."
-              [(ngModel)]="searchText"
-              [ngModelOptions]="{ standalone: true }" />
+        <ng-template #emptyState>
+        <div class="empty-box">
+          <div class="empty-icon"><i class="bi bi-file-earmark-text"></i></div>
+          <h3>No invoices found</h3>
+          <p>Complete billing in Purchase page to view records here.</p>
+          <button type="button" class="empty-action">
+            <i class="bi bi-plus-lg"></i>
+            <span>Add from Purchase</span>
+          </button>
+        </div>
+        </ng-template>
+
+        <footer class="table-footer" *ngIf="invoiceCount > 0">
+          <span>Total {{ invoiceCount }} invoices</span>
+          <div class="pager">
+            <button type="button" disabled>Previous</button>
+            <button type="button" class="next" disabled>Next</button>
           </div>
-
-          <div class="date-range">
-            <label>
-              <input type="text" placeholder="dd-mm-yyyy" />
-              <i class="bi bi-calendar3"></i>
-            </label>
-            <span>to</span>
-            <label>
-              <input type="text" placeholder="dd-mm-yyyy" />
-              <i class="bi bi-calendar3"></i>
-            </label>
-          </div>
-        </section>
-
-        <section class="result-pane" aria-label="Invoices list">
-          <div class="invoice-table" *ngIf="invoiceCount > 0; else emptyState">
-            <header class="invoice-head">
-              <span>Invoice</span>
-              <span>Customer</span>
-              <span>Phone</span>
-              <span>Amount</span>
-              <span>Date</span>
-              <span>Details</span>
-              <span>Print</span>
-            </header>
-
-            <div class="invoice-row" *ngFor="let invoice of filteredInvoices; trackBy: trackByInvoiceId">
-              <span>{{ invoice.id }}</span>
-              <span>{{ invoice.customerName }}</span>
-              <span>{{ invoice.customerPhone }}</span>
-              <span>₹{{ invoice.amount | number: '1.0-0' }}</span>
-              <span>{{ invoice.date | date: 'dd MMM yyyy, hh:mm a' }}</span>
-              <button type="button" class="details-btn" (click)="openInvoiceDetails(invoice)">
-                <i class="bi bi-eye"></i>
-                <span>View</span>
-              </button>
-              <button type="button" class="print-btn" (click)="printInvoice(invoice)">
-                <i class="bi bi-printer"></i>
-                <span>Print</span>
-              </button>
-            </div>
-          </div>
-
-          <ng-template #emptyState>
-          <div class="empty-box">
-            <div class="empty-icon"><i class="bi bi-file-earmark-text"></i></div>
-            <h3>No invoices found</h3>
-            <p>Complete billing in Purchase page to view records here.</p>
-            <button type="button" class="empty-action">
-              <i class="bi bi-plus-lg"></i>
-              <span>Add from Purchase</span>
-            </button>
-          </div>
-          </ng-template>
-
-          <footer class="table-footer" *ngIf="invoiceCount > 0">
-            <span>Total {{ invoiceCount }} invoices</span>
-            <div class="pager">
-              <button type="button" disabled>Previous</button>
-              <button type="button" class="next" disabled>Next</button>
-            </div>
-          </footer>
-        </section>
+        </footer>
       </section>
-    </div>
+    </section>
   </div>
 
   <div class="details-modal-backdrop" *ngIf="selectedInvoice" (click)="closeInvoiceDetails()">

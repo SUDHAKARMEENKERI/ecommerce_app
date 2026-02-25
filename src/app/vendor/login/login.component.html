@@ -9,6 +9,8 @@
     </header>
 
     <form (ngSubmit)="onSubmit()" class="login-form">
+      <small class="success" *ngIf="successMessage">{{ successMessage }}</small>
+
       <label>
         <span>Store ID or Mobile</span>
         <div class="field-wrap">
@@ -36,12 +38,22 @@
         </div>
       </label>
 
-      <small class="error" *ngIf="errorMessage">{{ errorMessage }}</small>
-
-      <button type="submit" class="submit-btn">
+      <button type="submit" class="submit-btn" [disabled]="isSubmitting">
         <i class="bi bi-box-arrow-in-right"></i>
-        <span>Login</span>
+        <span>{{ isSubmitting ? 'Logging in...' : 'Login' }}</span>
       </button>
     </form>
+
+    <p class="signup-link">
+      New medical store owner?
+      <a routerLink="/vendor/signup">Create account</a>
+    </p>
   </article>
 </section>
+
+<app-common-modal
+  [isOpen]="isErrorModalOpen"
+  title="Login Failed"
+  [message]="modalMessage"
+  (closed)="closeErrorModal()">
+</app-common-modal>

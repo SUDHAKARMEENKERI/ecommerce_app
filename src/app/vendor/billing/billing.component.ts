@@ -29,6 +29,10 @@ export class VendorBillingComponent {
   selectedInvoice: InvoiceItem | null = null;
 
   constructor(private invoiceService: InvoiceService) {
+    this.invoiceService
+      .loadInvoicesFromApi()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe();
     this.invoiceService.invoices$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((invoices) => {

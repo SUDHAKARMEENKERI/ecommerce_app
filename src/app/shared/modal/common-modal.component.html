@@ -1,0 +1,18 @@
+<section class="modal-backdrop" *ngIf="isOpen" (click)="onBackdropClick($event)">
+  <article class="modal-card" role="dialog" aria-modal="true" [attr.aria-label]="title">
+    <header class="modal-head">
+      <h2>{{ title }}</h2>
+      <button type="button" class="close-btn" (click)="onClose()" aria-label="Close dialog">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </header>
+
+    <div class="modal-body">
+      <p>{{ message }}</p>
+    </div>
+
+    <footer class="modal-foot">
+      <button type="button" class="ok-btn" (click)="onClose()">OK</button>
+    </footer>
+  </article>
+</section>

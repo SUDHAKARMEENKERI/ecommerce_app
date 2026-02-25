@@ -2,6 +2,7 @@
 
 import { Routes } from '@angular/router';
 import { VendorLoginComponent } from './vendor/login/login.component';
+import { VendorSignupComponent } from './vendor/signup/signup.component';
 import { VendorDashboardComponent } from './vendor/dashboard/dashboard.component';
 import { VendorLayoutComponent } from './vendor/layout.component';
 import { VendorInventoryComponent } from './vendor/inventory/inventory.component';
@@ -15,15 +16,25 @@ import { VendorSettingsComponent } from './vendor/settings/settings.component';
 import { VendorAddMedicineComponent } from './vendor/add-medicine/add-medicine.component';
 import { VendorLicenseComponent } from './vendor/license/license.component';
 import { VendorAccountComponent } from './vendor/account/account.component';
+import { authChildGuard, authGuard } from './shared/guards/auth.guard';
+import { publicOnlyGuard } from './shared/guards/public-only.guard';
 
 export const routes: Routes = [
 	{
 		path: 'vendor/login',
-		component: VendorLoginComponent
+		component: VendorLoginComponent,
+		canActivate: [publicOnlyGuard]
+	},
+	{
+		path: 'vendor/signup',
+		component: VendorSignupComponent,
+		canActivate: [publicOnlyGuard]
 	},
 	{
 		path: 'vendor',
 		component: VendorLayoutComponent,
+		canActivate: [authGuard],
+		canActivateChild: [authChildGuard],
 		children: [
 			{
 				path: '',

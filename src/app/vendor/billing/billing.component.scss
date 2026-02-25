@@ -1,3 +1,33 @@
+
+// Medium size for Today Snapshot
+.medium-snapshot {
+  padding: 1.1rem 1.1rem !important;
+  margin-bottom: 1.1rem !important;
+  box-shadow: 0 1px 6px 0 rgba(60,60,60,0.04) !important;
+  background: #fff !important;
+}
+.medium-snapshot .medium-stats-row {
+  gap: 1.2rem !important;
+}
+.medium-snapshot .medium-tile {
+  padding: 0.8rem 1.1rem !important;
+  min-width: 120px !important;
+  background: #f7f9fa !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}
+.medium-snapshot .stat-label {
+  font-size: 1rem !important;
+  margin-bottom: 0.13rem !important;
+}
+.medium-snapshot .stat-value {
+  font-size: 1.22rem !important;
+  margin-bottom: 0.18rem !important;
+}
+.medium-snapshot .icon {
+  font-size: 1.13rem !important;
+  margin-top: 0.25rem !important;
+}
 .invoices-page {
   padding: 8px 0 24px;
 }
@@ -82,38 +112,48 @@
 
 .create-btn {
   height: 40px;
-  border: 1px solid #2563eb;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #0f172a 0%, #2563eb 100%);
-  color: #fff;
-  padding: 0 14px;
-  font-size: 13px;
+  border: 1.5px solid #2563eb;
+  border-radius: 10px;
+  background: #f4f8ff;
+  color: #2563eb;
+  padding: 0 18px;
+  font-size: 15px;
   font-weight: 700;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.24);
-  transition: transform 0.2s ease, filter 0.2s ease;
+  box-shadow: none;
+  transition: background 0.18s, color 0.18s, border 0.18s;
 }
-
-.create-btn:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.02);
+.create-btn:hover, .create-btn:focus {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
 }
-
-.board-grid {
-  margin-top: 12px;
-  display: grid;
-  grid-template-columns: 290px minmax(0, 1fr);
-  gap: 14px;
+  // Compact Today Snapshot Card
+.today-snapshot-card.modern-card {
+  padding: 1.1rem 1.2rem;
+  margin-bottom: 1.2rem;
 }
-
-.insight-panel {
-  border: 1px solid #d5def1;
-  border-radius: 16px;
-  background: #ffffff;
-  padding: 14px;
-  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+.today-snapshot-card .card-header {
+  margin-bottom: 0.7rem;
+}
+.today-snapshot-card .snapshot-stats-row,
+.today-snapshot-card .modern-stats-row {
+  gap: 1.1rem;
+}
+.today-snapshot-card .stat-tile {
+  padding: 0.7rem 1rem;
+  min-width: 110px;
+  box-shadow: none;
+}
+.today-snapshot-card .stat-label {
+  font-size: 0.97rem;
+  margin-bottom: 0.1rem;
+}
+.today-snapshot-card .stat-value {
+  font-size: 1.18rem;
+  margin-bottom: 0.2rem;
 }
 
 .insight-panel h2 {
@@ -691,3 +731,89 @@
     width: 84px;
   }
 }
+
+// --- Modern Card Layout for Billing Page ---
+.card, .modern-card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 16px 0 rgba(60,60,60,0.08);
+  margin-bottom: 2rem;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.card-header h1, .card-header h2 {
+  margin: 0;
+  font-weight: 600;
+}
+
+.subtitle {
+  color: #888;
+  font-size: 1rem;
+  margin-top: 0.25rem;
+}
+
+.snapshot-stats-row, .modern-stats-row {
+  display: flex;
+  gap: 2.5rem;
+  justify-content: flex-start;
+}
+
+.stat-tile {
+  background: #f7f9fa;
+  border-radius: 10px;
+  padding: 1.2rem 1.5rem;
+  min-width: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  box-shadow: 0 1px 4px 0 rgba(60,60,60,0.04);
+}
+
+.stat-label {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 0.3rem;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 0.5rem;
+}
+
+.icon {
+  margin-top: 0.5rem;
+  font-size: 1.3rem;
+}
+
+.icon.blue { color: #2a7be4; }
+.icon.violet { color: #7c3aed; }
+.icon.green { color: #22c55e; }
+
+.invoice-register-card .filters-row {
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .card, .modern-card {
+    padding: 1.2rem 0.7rem;
+  }
+  .snapshot-stats-row, .modern-stats-row {
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+  .stat-tile {
+    min-width: 0;
+    width: 100%;
+    align-items: stretch;
+  }
+}
+
+// --- End Modern Card Layout ---

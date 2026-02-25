@@ -1,12 +1,12 @@
-.login-page {
+.signup-page {
   min-height: calc(100vh - 180px);
   display: grid;
   place-items: center;
   padding: 24px;
 }
 
-.login-card {
-  width: min(430px, 100%);
+.signup-card {
+  width: min(720px, 100%);
   background: #fff;
   border: 1px solid #e2e8f0;
   border-radius: 16px;
@@ -45,20 +45,26 @@
   font-size: 13px;
 }
 
-.login-form {
+.signup-form {
   display: grid;
   gap: 10px;
 }
 
-.login-form label {
+.signup-form label {
   display: grid;
   gap: 5px;
 }
 
-.login-form label > span {
+.signup-form label > span {
   font-size: 12px;
   font-weight: 700;
   color: #334155;
+}
+
+.grid-two {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .field-wrap {
@@ -83,8 +89,7 @@
   font-size: 14px;
 }
 
-.field-wrap input,
-.field-wrap select {
+.field-wrap input {
   width: 100%;
   border: 0;
   outline: none;
@@ -93,8 +98,24 @@
   background: transparent;
 }
 
-.submit-btn {
+.agree {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
   margin-top: 4px;
+}
+
+.agree input {
+  accent-color: #1d4ed8;
+}
+
+.agree span {
+  font-size: 12px;
+  color: #475569;
+}
+
+.submit-btn {
+  margin-top: 6px;
   min-height: 40px;
   border: 0;
   border-radius: 10px;
@@ -130,18 +151,24 @@
   font-size: 12px;
 }
 
-.signup-link {
+.login-link {
   margin: 12px 0 0;
   font-size: 13px;
   color: #475569;
 }
 
-.signup-link a {
+.login-link a {
   color: #1d4ed8;
   text-decoration: none;
   font-weight: 700;
 }
 
-.signup-link a:hover {
+.login-link a:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .grid-two {
+    grid-template-columns: 1fr;
+  }
 }

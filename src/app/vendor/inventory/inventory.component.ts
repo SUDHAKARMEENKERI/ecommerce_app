@@ -48,6 +48,11 @@ export class VendorInventoryComponent {
       .subscribe((medicines) => {
         this.items = medicines;
       });
+
+    this.medicineService
+      .loadMedicinesFromApi()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe();
   }
 
   title$ = this.route.data.pipe(map((data) => (data['title'] as string) ?? 'Inventory'));

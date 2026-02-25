@@ -39,7 +39,7 @@ export class VendorAccountComponent {
     email: 'sudhakarmeenkari@gmail.com',
     phone: '876543210',
     role: 'Owner',
-    pharmacy: 'PharmaDesk Main Branch'
+    pharmacy: 'Test Pharmacy'
   };
 
   passwordForm = {

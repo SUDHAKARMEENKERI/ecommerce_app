@@ -1,0 +1,132 @@
+<section class="signup-page">
+  <article class="signup-card">
+    <header class="card-head">
+      <span class="brand-badge">P</span>
+      <div>
+        <h1>Create Owner Account</h1>
+        <p>Register your medical store to get started.</p>
+      </div>
+    </header>
+
+    <form (ngSubmit)="onSubmit()" class="signup-form">
+      <label>
+        <span>Owner Name *</span>
+        <div class="field-wrap">
+          <i class="bi bi-person"></i>
+          <input type="text" placeholder="Enter owner full name" [(ngModel)]="ownerName" name="ownerName" />
+        </div>
+      </label>
+
+      <label>
+        <span>Store Name *</span>
+        <div class="field-wrap">
+          <i class="bi bi-shop"></i>
+          <input type="text" placeholder="Enter medical store name" [(ngModel)]="storeName" name="storeName" />
+        </div>
+      </label>
+
+      <label>
+        <span>Role *</span>
+        <div class="field-wrap">
+          <i class="bi bi-person-badge"></i>
+          <input type="text" [(ngModel)]="role" name="role" readonly />
+        </div>
+      </label>
+
+      <div class="grid-two">   
+        <label>
+          <span>Mobile *</span>
+          <div class="field-wrap">
+            <i class="bi bi-telephone"></i>
+            <input type="tel" placeholder="Enter mobile number" [(ngModel)]="storeMobile" name="storeMobile" />
+          </div>
+        </label>
+
+        <label>
+          <span>Email</span>
+          <div class="field-wrap">
+            <i class="bi bi-envelope"></i>
+            <input type="email" placeholder="Enter email" [(ngModel)]="email" name="email" />
+          </div>
+        </label>
+      </div>
+
+      <label>
+        <span>Drug License Number *</span>
+        <div class="field-wrap">
+          <i class="bi bi-patch-check"></i>
+          <input type="text" placeholder="Enter license number" [(ngModel)]="licenseNo" name="licenseNo" />
+        </div>
+      </label>
+
+      <div class="grid-two">
+        <label>
+          <span>GSTIN Number *</span>
+          <div class="field-wrap">
+            <i class="bi bi-receipt"></i>
+            <input type="text" placeholder="Enter GSTIN number" [(ngModel)]="gstinNumber" name="gstinNumber" />
+          </div>
+        </label>
+
+        <label>
+          <span>Pharmacy Code *</span>
+          <div class="field-wrap">
+            <i class="bi bi-upc-scan"></i>
+            <input type="text" placeholder="Enter pharmacy code" [(ngModel)]="pharmacyCode" name="pharmacyCode" />
+          </div>
+        </label>
+      </div>
+
+      <label>
+        <span>Address *</span>
+        <div class="field-wrap">
+          <i class="bi bi-geo-alt"></i>
+          <input type="text" placeholder="Enter address" [(ngModel)]="address" name="address" />
+        </div>
+      </label>
+
+      <div class="grid-two">
+        <label>
+          <span>Password *</span>
+          <div class="field-wrap">
+            <i class="bi bi-lock"></i>
+            <input type="password" placeholder="Create password" [(ngModel)]="password" name="password" />
+          </div>
+        </label>
+
+        <label>
+          <span>Confirm Password *</span>
+          <div class="field-wrap">
+            <i class="bi bi-shield-lock"></i>
+            <input type="password" placeholder="Re-enter password" [(ngModel)]="confirmPassword" name="confirmPassword" />
+          </div>
+        </label>
+      </div>
+
+      <label class="agree">
+        <input type="checkbox" [(ngModel)]="agreeTerms" name="agreeTerms" />
+        <span>I confirm that provided details are valid.</span>
+      </label>
+
+      <small class="error" *ngIf="errorMessage">{{ errorMessage }}</small>
+      <small class="success" *ngIf="successMessage">{{ successMessage }}</small>
+
+      <button type="submit" class="submit-btn" [disabled]="isSubmitting">
+        <i class="bi bi-person-plus"></i>
+        <span>{{ isSubmitting ? 'Creating Account...' : 'Create Account' }}</span>
+      </button>
+    </form>
+
+    <p class="login-link">
+      Already have an account?
+      <a routerLink="/vendor/login">Login here</a>
+    </p>
+  </article>
+</section>
+
+<app-common-modal
+  [isOpen]="isErrorModalOpen"
+  title="Signup Failed"
+  [message]="modalMessage"
+  (closed)="closeErrorModal()">
+</app-common-modal>

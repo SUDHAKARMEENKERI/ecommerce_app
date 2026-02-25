@@ -3,8 +3,9 @@ import { Component, DestroyRef, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MedicineItem, MedicineService } from '../services/medicine.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CustomerService } from '../services/customer.service';
+import { CustomerItem, CustomerService } from '../services/customer.service';
 import { InvoiceService } from '../services/invoice.service';
+import { AuthService } from '../../shared/services/auth.service';
 
 type CartItem = {
   medicine: MedicineItem;
@@ -24,25 +25,35 @@ export class VendorPurchaseComponent {
   constructor(
     private medicineService: MedicineService,
     private customerService: CustomerService,
-    private invoiceService: InvoiceService
+    private invoiceService: InvoiceService,
+    private authService: AuthService
   ) {
     this.medicineService.medicines$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((medicines) => {
         this.medicines = medicines;
       });
+
+    this.medicineService
+      .loadMedicinesFromApi()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe();
+
+    this.customerService.customers$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((customers) => {
+        this.customers = customers;
+      });
   }
 
   shortcuts = ['F2 Search', 'F4 Payment', 'F9 Billing'];
   medicineQuery = '';
   medicines: MedicineItem[] = [];
+  customers: CustomerItem[] = [];
   cartItems: CartItem[] = [];
   customerPhone = '';
   customerName = '';
-  patientGender = 'Male';
-  patientAge = '';
-  consultingDoctor = 'Dr. MALLIKARJUN PANSHETTY (INTENSIVIST & PAIN MGT)';
-  referredBy = 'Direct';
+  matchedCustomer: CustomerItem | null = null;
   invoiceMessage = '';
   invoiceMessageType: 'success' | 'error' = 'success';
 
@@ -74,20 +85,14 @@ export class VendorPurchaseComponent {
     this.medicineQuery = value;
   }
 
-  onPatientAgeInput(value: string) {
-    const digits = value.replace(/\D/g, '');
-    if (!digits) {
-      this.patientAge = '';
-      return;
-    }
-
-    this.patientAge = String(Math.min(120, Number(digits)));
+  onCustomerPhoneChange(value: string) {
+    this.customerPhone = value.replace(/\D/g, '').slice(0, 10);
+    this.tryResolveCustomerProfile('phone');
   }
 
-  disableNumberScroll(event: WheelEvent) {
-    event.preventDefault();
-    const target = event.target as HTMLInputElement | null;
-    target?.blur();
+  onCustomerNameChange(value: string) {
+    this.customerName = value;
+    this.tryResolveCustomerProfile('name');
   }
 
   addMedicineToCart(medicine: MedicineItem) {
@@ -134,11 +139,11 @@ export class VendorPurchaseComponent {
 
     const customerName = this.customerName.trim() || 'Walk-in Customer';
     const customerPhone = this.customerPhone.trim() || 'NA';
-    const patientGender = this.patientGender.trim() || 'Male';
-    const ageDigits = this.patientAge.replace(/\D/g, '');
-    const patientAge = ageDigits ? `${ageDigits} Years` : 'NA';
-    const doctorName = this.consultingDoctor.trim() || 'NA';
-    const referredBy = this.referredBy.trim() || 'Direct';
+    const profile = this.resolveCustomerByInputs();
+    const patientGender = profile?.gender || 'NA';
+    const patientAge = profile?.age || 'NA';
+    const doctorName = profile?.doctorName || 'NA';
+    const referredBy = profile?.referredBy || 'Direct';
 
     const itemCount = this.cartItems.reduce((sum, item) => sum + item.qty, 0);
     const lineItems = this.cartItems.map((item) => ({
@@ -150,7 +155,8 @@ export class VendorPurchaseComponent {
       unitPrice: item.medicine.price,
       total: item.medicine.price * item.qty
     }));
-    const invoice = this.invoiceService.createInvoice({
+
+    const invoicePayload = {
       customerName,
       customerPhone,
       patientGender,
@@ -159,24 +165,171 @@ export class VendorPurchaseComponent {
       referredBy,
       amount: this.subtotal,
       itemCount,
-      lineItems
-    });
+      lineItems,
+      date: new Date().toISOString()
+    };
+    this.invoiceService.createInvoiceViaApi(invoicePayload)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (invoice) => {
+          const billedAmount = this.subtotal;
+          this.syncCustomerPurchaseDetails(profile?.id ?? '', customerName, customerPhone, billedAmount, invoice.date);
+          this.cartItems = [];
+          this.medicineQuery = '';
+          this.customerName = '';
+          this.customerPhone = '';
+          this.matchedCustomer = null;
+          this.showInvoiceMessage(`${invoice.id} generated and synced.`, 'success');
+        },
+        error: () => {
+          this.showInvoiceMessage('Failed to create invoice.', 'error');
+        }
+      });
+  }
 
-    this.customerService.recordPurchase({
-      name: customerName,
-      phone: customerPhone,
-      amount: this.subtotal,
-      date: invoice.date
-    });
+  private syncCustomerPurchaseDetails(
+    customerId: string,
+    customerName: string,
+    customerPhone: string,
+    billedAmount: number,
+    visitedAt: string
+  ) {
+    if (!customerPhone || customerPhone === 'NA') {
+      return;
+    }
 
-    this.cartItems = [];
-    this.medicineQuery = '';
-    this.customerName = '';
-    this.customerPhone = '';
-    this.patientGender = 'Male';
-    this.patientAge = '';
-    this.referredBy = 'Direct';
-    this.showInvoiceMessage(`${invoice.id} generated and synced.`, 'success');
+    if (!customerId.trim()) {
+      this.customerService.recordPurchase({
+        name: customerName,
+        phone: customerPhone,
+        amount: billedAmount,
+        date: visitedAt
+      });
+      return;
+    }
+
+    const storeDetails = this.getMedicalStoreDetails();
+    if (!storeDetails.email || !storeDetails.storeMobile || !storeDetails.storeId) {
+      this.customerService.recordPurchase({
+        name: customerName,
+        phone: customerPhone,
+        amount: billedAmount,
+        date: visitedAt
+      });
+      return;
+    }
+
+    this.customerService
+      .updateCustomerPurchaseDetails({
+        customerId,
+        name: customerName,
+        phone: customerPhone,
+        spent: billedAmount,
+        visited: visitedAt,
+        ...storeDetails
+      })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        error: () => {
+          this.customerService.recordPurchase({
+            name: customerName,
+            phone: customerPhone,
+            amount: billedAmount,
+            date: visitedAt
+          });
+        }
+      });
+  }
+
+  private getMedicalStoreDetails(): {
+    storeMobile: string;
+    email: string;
+    storeId: string;
+  } {
+    const response = this.authService.loginResponse;
+    const source = this.extractSource(response);
+
+    return {
+      storeMobile: this.pickValue(source, ['storeMobile', 'mobile', 'phone', 'mobileNo']),
+      email: this.pickValue(source, ['email', 'mailId', 'storeEmail']),
+      storeId: this.pickValue(source, ['storeId'])
+    };
+  }
+
+  private extractSource(payload: unknown): Record<string, unknown> {
+    if (!payload) {
+      return {};
+    }
+
+    if (typeof payload === 'string') {
+      try {
+        return this.extractSource(JSON.parse(payload));
+      } catch {
+        return {};
+      }
+    }
+
+    if (typeof payload !== 'object') {
+      return {};
+    }
+
+    const record = payload as Record<string, unknown>;
+    const nestedData = record['data'];
+
+    if (nestedData && typeof nestedData === 'object') {
+      return nestedData as Record<string, unknown>;
+    }
+
+    return record;
+  }
+
+  private pickValue(source: Record<string, unknown>, keys: string[]): string {
+    for (const key of keys) {
+      const value = source[key];
+      if (typeof value === 'string' && value.trim()) {
+        return value.trim();
+      }
+
+      if (typeof value === 'number' && Number.isFinite(value)) {
+        return String(value);
+      }
+    }
+
+    return '';
+  }
+
+  private tryResolveCustomerProfile(source: 'phone' | 'name') {
+    const resolved = this.resolveCustomerByInputs();
+    this.matchedCustomer = resolved;
+
+    if (!resolved) {
+      return;
+    }
+
+    if (source === 'phone' && !this.customerName.trim()) {
+      this.customerName = resolved.name;
+    }
+
+    if (source === 'name' && !this.customerPhone.trim()) {
+      this.customerPhone = resolved.phone;
+    }
+  }
+
+  private resolveCustomerByInputs(): CustomerItem | null {
+    const phone = this.customerPhone.trim();
+    if (phone) {
+      const byPhone = this.customerService.findByPhone(phone);
+      if (byPhone) {
+        return byPhone;
+      }
+    }
+
+    const name = this.customerName.trim();
+    if (!name) {
+      return null;
+    }
+
+    return this.customerService.findByName(name);
   }
 
   private showInvoiceMessage(message: string, type: 'success' | 'error') {

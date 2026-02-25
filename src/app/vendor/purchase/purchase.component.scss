@@ -350,6 +350,20 @@
   color: #94a3b8;
 }
 
+.customer-found {
+  margin-top: 10px;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .summary-row {
   margin-top: 14px;
   padding: 10px 0;

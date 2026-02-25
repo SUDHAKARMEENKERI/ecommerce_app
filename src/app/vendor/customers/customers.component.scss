@@ -1,5 +1,6 @@
 .customers-page {
   padding: 8px 0 20px;
+  min-width: 0;
 }
 
 .hero-head {
@@ -41,6 +42,26 @@
   border-radius: 10px;
   background: #edf3ff;
   color: #1e4dc3;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.hero-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.add-btn {
+  min-height: 36px;
+  border: 1px solid #1d4ed8;
+  border-radius: 10px;
+  background: #1d4ed8;
+  color: #fff;
   padding: 0 12px;
   display: inline-flex;
   align-items: center;
@@ -184,6 +205,7 @@
 }
 
 .list-card {
+  --customers-grid-columns: minmax(130px, 1.2fr) 110px 70px 60px minmax(130px, 1fr) minmax(150px, 1.2fr) 100px 95px 110px;
   margin-top: 12px;
   border: 1px solid #d8e2f3;
   border-radius: 14px;
@@ -197,7 +219,8 @@
   border-bottom: 1px solid #e6edf8;
   background: linear-gradient(180deg, #f4f8ff, #eef4ff);
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr 0.7fr;
+  grid-template-columns: var(--customers-grid-columns);
+  gap: 14px;
   align-items: center;
   padding: 0 14px;
   font-size: 11px;
@@ -212,7 +235,7 @@
   border-bottom: 1px solid #edf2f8;
   padding: 0 14px;
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr 0.7fr;
+  grid-template-columns: var(--customers-grid-columns);
   align-items: center;
   gap: 14px;
   width: 100%;
@@ -276,11 +299,12 @@
   color: #64748b;
 }
 
-.list-head span:nth-child(3),
-.list-head span:nth-child(4),
+.list-head span:nth-child(8),
+.list-head span:nth-child(9),
 .list-row .cell.spent,
 .list-row .cell.visited {
   justify-self: end;
+  text-align: right;
 }
 
 .loading-visited {
@@ -400,6 +424,130 @@
   font-size: 14px;
 }
 
+.drawer-profile {
+  margin-top: 4px;
+  border: 1px solid #dce6f5;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  color: #334155;
+}
+
+.customer-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.38);
+  display: grid;
+  place-items: center;
+  z-index: 50;
+  padding: 16px;
+}
+
+.customer-modal {
+  width: min(620px, 100%);
+  border: 1px solid #d8e2f3;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.2);
+  padding: 14px;
+}
+
+.customer-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.customer-modal-head h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 18px;
+}
+
+.customer-modal-head button {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #d4ddec;
+  border-radius: 8px;
+  background: #fff;
+  color: #475569;
+}
+
+.customer-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.customer-form-grid label {
+  display: grid;
+  gap: 6px;
+}
+
+.customer-form-grid label.full-width {
+  grid-column: span 2;
+}
+
+.customer-form-grid label span {
+  font-size: 12px;
+  color: #475569;
+  font-weight: 600;
+}
+
+.customer-form-grid input,
+.customer-form-grid select {
+  height: 36px;
+  border: 1px solid #d6e1f2;
+  border-radius: 10px;
+  background: #fff;
+  padding: 0 10px;
+  font-size: 13px;
+  color: #334155;
+  outline: none;
+}
+
+.customer-form-message {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.customer-form-message.error {
+  color: #dc2626;
+}
+
+.customer-modal-footer {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.customer-modal-footer button {
+  min-height: 34px;
+  border-radius: 9px;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.customer-modal-footer button.secondary {
+  border: 1px solid #d6e1f2;
+  background: #fff;
+  color: #334155;
+}
+
+.customer-modal-footer button.primary {
+  border: 1px solid #1d4ed8;
+  background: #1d4ed8;
+  color: #fff;
+}
+
 .drawer-stats {
   margin-top: 4px;
   display: grid;
@@ -497,6 +645,19 @@
     align-items: stretch;
   }
 
+  .hero-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .customer-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .customer-form-grid label.full-width {
+    grid-column: auto;
+  }
+
   .list-footer {
     flex-direction: column;
     align-items: flex-start;
@@ -505,7 +666,7 @@
 
   .list-head,
   .list-row {
-    grid-template-columns: 1.2fr 1fr 0.9fr 0.7fr;
+    grid-template-columns: var(--customers-grid-columns);
     gap: 10px;
   }
 }
