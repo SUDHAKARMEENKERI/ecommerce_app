@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://sudhakarmeenkeri.github.io/ecommerce_app'
+  apiBaseUrl: 'https://medicalapp-production-3081.up.railway.app'
 };
