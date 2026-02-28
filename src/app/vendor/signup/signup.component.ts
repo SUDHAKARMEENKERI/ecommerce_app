@@ -86,19 +86,18 @@ export class VendorSignupComponent {
 
     this.authService.registerMedicalStore(payload).subscribe({
       next: (response) => {
+        this.isSubmitting = false;
         if(response) {
-            this.isSubmitting = false;
             this.router.navigate(['/vendor/login']);
         }
       },
       error: (error: HttpErrorResponse) => {
+        this.isSubmitting = false;
         if (error.status === 200) {
-            this.isSubmitting = false;
             this.router.navigate(['/vendor/login'], { queryParams: { created: '1' } });
             return;
         }
 
-        this.isSubmitting = false;
         this.errorMessage = '';
         this.modalMessage = error?.error?.message || 'Signup failed. Please try again.';
         this.isErrorModalOpen = true;

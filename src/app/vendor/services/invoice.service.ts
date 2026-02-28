@@ -91,7 +91,14 @@ export class InvoiceService {
     if (email) params.email = email;
 
     return this.http.get<unknown>(`${this.billingApiBaseUrl}`, { params }).pipe(
-      map((response: any) => this.mapInvoiceList(response)),
+      tap((response: any) => {
+        console.log('Billing API raw response:', response);
+      }),
+      map((response: any) => {
+        const mapped = this.mapInvoiceList(response);
+        console.log('Mapped invoices:', mapped);
+        return mapped;
+      }),
       tap((invoices) => this.invoicesSubject.next(invoices))
     );
   }
@@ -120,7 +127,22 @@ export class InvoiceService {
   }
 
   private mapInvoiceList(response: any): InvoiceItem[] {
-    if (!response || !Array.isArray(response)) return [];
-    return response.map((item: any) => this.mapInvoiceResponse(item));
+    let arr: any[] = [];
+    if (Array.isArray(response)) {
+      arr = response;
+    } else if (response && Array.isArray(response.data)) {
+      arr = response.data;
+    } else if (response && Array.isArray(response.invoices)) {
+      arr = response.invoices;
+    } else {
+      // Try to find the first array property in the response
+      for (const key in response) {
+        if (Array.isArray(response[key])) {
+          arr = response[key];
+          break;
+        }
+      }
+    }
+    return arr.map((item: any) => this.mapInvoiceResponse(item));
   }
 }

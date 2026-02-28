@@ -66,18 +66,21 @@
       <article class="card form-card">
         <header>
           <h3>Security</h3>
-          <p>{{ securityStatusMessage }}</p>
+          <p [ngClass]="{
+            'error-message': securityStatusMessage === 'New password and confirm password do not match.',
+            'success-message': securityStatusMessage === 'Password updated successfully.'
+          }">{{ securityStatusMessage }}</p>
         </header>
 
         <div class="field-grid single">
-          <label>
+          <!-- <label>
             <span>Current Password</span>
             <input type="password" [(ngModel)]="passwordForm.currentPassword" [ngModelOptions]="{ standalone: true }" />
-          </label>
+          </label> -->
 
           <label>
             <span>New Password</span>
-            <input type="password" [(ngModel)]="passwordForm.newPassword" [ngModelOptions]="{ standalone: true }" />
+            <input type="password" [(ngModel)]="passwordForm.password" [ngModelOptions]="{ standalone: true }" />
           </label>
 
           <label>
@@ -98,10 +101,10 @@
           <i class="bi bi-gear"></i>
           <span>Open Settings</span>
         </a>
-        <a routerLink="/vendor/license">
+        <!-- <a routerLink="/vendor/license">
           <i class="bi bi-credit-card"></i>
           <span>Open Billing &amp; License</span>
-        </a>
+        </a> -->
       </article>
     </div>
   </section>

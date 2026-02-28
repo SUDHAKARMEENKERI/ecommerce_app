@@ -1,15 +1,20 @@
+ 
+
 import { Component } from '@angular/core';
 import { CommonModule, AsyncPipe } from '@angular/common';
 import { Observable, combineLatest, map, startWith } from 'rxjs';
-import { DashboardService, Product } from '../services/dashboard.service';
+import { DashboardService, Product, InvoiceItem } from '../services/dashboard.service';
+import { HeaderComponent } from '../../shared/header/header.component';
 
 type DashboardVM = {
-  sales: number;
-  bills: number;
-  lowStock: Product[];
-  expiryWarnings: Product[];
-  outOfStockCount: number;
-  lowStockCount: number;
+  totalSales: number;
+  totalBills: number;
+  outOfStock: number;
+  lowStock: number;
+  expiringSoon: number;
+  totalMedicines: number;
+  lowStockItems: Product[];
+  recentInvoices: InvoiceItem[];
 };
 
 @Component({
@@ -19,32 +24,41 @@ type DashboardVM = {
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-
 export class VendorDashboardComponent {
   vm$!: Observable<DashboardVM>;
-  currentMonthLabel = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
 
   constructor(private dashboard: DashboardService) {
     this.vm$ = combineLatest({
-      sales: this.dashboard.getTodaysSales$().pipe(startWith(0)),
-      bills: this.dashboard.getTotalBills$().pipe(startWith(0)),
-      lowStock: this.dashboard.getLowStockAlerts$(5).pipe(startWith([] as Product[])),
-      expiryWarnings: this.dashboard.getExpiryWarnings$(30).pipe(startWith([] as Product[]))
+      totalSales: this.dashboard.getTotalSales$().pipe(startWith(0)),
+      totalBills: this.dashboard.getTotalBills$().pipe(startWith(0)),
+      stock: this.dashboard.getStockMetrics$().pipe(startWith({ outOfStock: 0, lowStock: 0, expiringSoon: 0 })),
+      allMedicines: this.dashboard.getAllMedicines$().pipe(startWith([] as Product[])),
+      lowStockItems: this.dashboard.getAllMedicines$().pipe(
+        map(meds => meds.filter(m => m.qty > 0 && m.qty <= 5)),
+        startWith([] as Product[])
+      ),
+      recentInvoices: this.dashboard.getRecentInvoices$().pipe(startWith([] as InvoiceItem[]))
     }).pipe(
-      map((vm) => {
-        const outOfStockCount = vm.lowStock.filter((item) => item.qty === 0).length;
-        const lowStockCount = vm.lowStock.filter((item) => item.qty > 0).length;
-
-        return {
-          ...vm,
-          outOfStockCount,
-          lowStockCount
-        };
-      })
+      map(({ totalSales, totalBills, stock, allMedicines, lowStockItems, recentInvoices }) => ({
+        totalSales,
+        totalBills,
+        outOfStock: stock.outOfStock,
+        lowStock: stock.lowStock,
+        expiringSoon: stock.expiringSoon,
+        totalMedicines: allMedicines.length,
+        lowStockItems,
+        recentInvoices
+      }))
     );
   }
 
   trackByProductId(_index: number, item: Product) {
     return item.id;
   }
+
+  trackByInvoiceId(_index: number, item: InvoiceItem) {
+    return item.id;
+  }
+  
 }

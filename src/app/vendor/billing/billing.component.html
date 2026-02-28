@@ -8,7 +8,7 @@
           <h1>Invoice Studio</h1>
           <p class="subtitle">Create and manage customer invoices, track payments, and monitor revenue flow.</p>
         </div>
-        <button type="button" class="create-btn">
+        <button type="button" class="create-btn" (click)="onCreateInvoice()">
           <i class="bi bi-plus-lg"></i>
           <span>New Invoice</span>
         </button>
@@ -17,22 +17,22 @@
 
     <!-- Vertical stacking: each card full width, one after another -->
     <!-- 2. Today Snapshot Card -->
-    <section class="card today-snapshot-card modern-card medium-snapshot">
+    <section class="card today-snapshot-card modern-card medium-snapshot" style="width: 100%;">
       <div class="card-header" style="margin-bottom: 0.8rem;">
         <h3 style="font-size: 1.18rem; font-weight: 600; margin: 0;">Today Snapshot</h3>
       </div>
-      <div class="snapshot-stats-row modern-stats-row medium-stats-row">
-        <div class="stat-tile revenue medium-tile">
+      <div class="snapshot-stats-row modern-stats-row medium-stats-row" style="display: flex; width: 100%; gap: 18px;">
+        <div class="stat-tile revenue medium-tile" style="flex: 1 1 0; min-width: 0;">
           <div class="stat-label">Revenue</div>
           <div class="stat-value">₹{{ totalRevenue | number: '1.0-0' }}</div>
           <div class="icon blue"><i class="bi bi-graph-up-arrow"></i></div>
         </div>
-        <div class="stat-tile invoices medium-tile">
+        <div class="stat-tile invoices medium-tile" style="flex: 1 1 0; min-width: 0;">
           <div class="stat-label">Invoices</div>
           <div class="stat-value">{{ invoiceCount }}</div>
           <div class="icon violet"><i class="bi bi-receipt"></i></div>
         </div>
-        <div class="stat-tile avg-value medium-tile">
+        <div class="stat-tile avg-value medium-tile" style="flex: 1 1 0; min-width: 0;">
           <div class="stat-label">Avg. Value</div>
           <div class="stat-value">₹{{ averageInvoiceValue | number: '1.2-2' }}</div>
           <div class="icon green"><i class="bi bi-check-circle"></i></div>
@@ -61,13 +61,11 @@
 
         <div class="date-range">
           <label>
-            <input type="text" placeholder="dd-mm-yyyy" />
-            <i class="bi bi-calendar3"></i>
+            <input type="date" />
           </label>
           <span>to</span>
           <label>
-            <input type="text" placeholder="dd-mm-yyyy" />
-            <i class="bi bi-calendar3"></i>
+            <input type="date" />
           </label>
         </div>
       </section>
@@ -106,7 +104,7 @@
           <div class="empty-icon"><i class="bi bi-file-earmark-text"></i></div>
           <h3>No invoices found</h3>
           <p>Complete billing in Purchase page to view records here.</p>
-          <button type="button" class="empty-action">
+          <button type="button" class="empty-action" (click)="navigateToPurchase()">
             <i class="bi bi-plus-lg"></i>
             <span>Add from Purchase</span>
           </button>

@@ -1,3 +1,33 @@
+// Inventory table styling moved from HTML
+.inventory-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  th, td {
+    padding: 14px 18px;
+    font-size: 14px;
+    border-bottom: 1px solid #d1d5db;
+    background: #fff;
+    text-align: left;
+  }
+  th {
+    background: #f8f9fa;
+    font-weight: 600;
+    border-right: 1px solid #d1d5db;
+    &:last-child {
+      border-right: none;
+    }
+  }
+  td {
+    border-right: 1px solid #d1d5db;
+    &:last-child {
+      border-right: none;
+    }
+  }
+  tr:last-child td {
+    border-bottom: none;
+  }
+}
 .inventory-page {
   padding: 8px 0 24px;
 }
@@ -130,8 +160,8 @@
 
 .tab.active {
   border-color: #7c3aed;
-  background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%);
-  color: #fff;
+  // background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%);
+  // color: #fff;
   box-shadow: 0 8px 16px rgba(124, 58, 237, 0.24);
 }
 

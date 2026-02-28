@@ -5,33 +5,7 @@ import { Component } from '@angular/core';
   selector: 'app-vendor-reports',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <section class="page-card">
-      <h1>Reports</h1>
-      <p>This section is ready for implementation.</p>
-    </section>
-  `,
-  styles: [
-    `
-      .page-card {
-        background: #fff;
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 24px;
-      }
-
-      .page-card h1 {
-        margin: 0;
-        font-size: 28px;
-        color: #111827;
-      }
-
-      .page-card p {
-        margin-top: 10px;
-        font-size: 16px;
-        color: #6b7280;
-      }
-    `
-  ]
+  templateUrl: './reports.component.html',
+  styleUrls: ['./reports.component.scss']
 })
 export class VendorReportsComponent {}

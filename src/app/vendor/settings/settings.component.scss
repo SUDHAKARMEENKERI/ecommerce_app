@@ -230,7 +230,6 @@
 }
 
 .save-row span {
-  color: #64748b;
   font-size: 12px;
   line-height: 1.2;
   transition: color 0.2s ease;
@@ -246,10 +245,9 @@
 
 .save-btn {
   min-height: 36px;
-  border: 1px solid #1f4fc4;
   border-radius: 10px;
   background: #1f4fc4;
-  color: #fff;
+  color: white;
   padding: 0 12px;
   display: inline-flex;
   align-items: center;

@@ -1,5 +1,8 @@
+
 import { Injectable } from '@angular/core';
-import { interval, map, Observable, of } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export type Product = {
   id: string;
@@ -8,49 +11,128 @@ export type Product = {
   exp: string; // ISO date
 };
 
+export type InvoiceItem = {
+  id: string;
+  customerName: string;
+  customerPhone: string;
+  amount: number;
+  itemCount: number;
+  lineItems?: any[];
+  date: string;
+  invoiceNumber?: string;
+};
+
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
-  // sample product data to simulate inventory
-  private products: Product[] = [
-    { id: 'p1', name: 'Paracetamol 500mg', qty: 12, exp: new Date(Date.now() + 1000 * 60 * 60 * 24 * 60).toISOString() },
-    { id: 'p2', name: 'Amoxicillin 250mg', qty: 3, exp: new Date(Date.now() + 1000 * 60 * 60 * 24 * 10).toISOString() },
-    { id: 'p3', name: 'Cough Syrup', qty: 0, exp: new Date(Date.now() + 1000 * 60 * 60 * 24 * 400).toISOString() },
-    { id: 'p4', name: 'Insulin', qty: 5, exp: new Date(Date.now() + 1000 * 60 * 60 * 24 * 5).toISOString() }
-  ];
+  private readonly apiBase = environment.apiBaseUrl;
+  constructor(private http: HttpClient) {}
 
-  // Simulate today's sales as a stream that updates every 5 seconds
-  getTodaysSales$(): Observable<number> {
-    return interval(5000).pipe(
-      map((tick) => {
-        // simple deterministic growth for demo
-        return 2500 + tick * 10 + this.products.reduce((s, p) => s + (p.qty === 0 ? 0 : 0), 0);
+  // Fetch all medicines from backend with params
+  getAllMedicines$(): Observable<Product[]> {
+    const params = this.getBillingApiParams();
+    return this.http.get<any>(`${this.apiBase}/api/medicine/all`, { params }).pipe(
+      map((response: any) => {
+        let arr: any[] = [];
+        if (Array.isArray(response)) arr = response;
+        else if (response && Array.isArray(response.data)) arr = response.data;
+        else if (response && Array.isArray(response.medicines)) arr = response.medicines;
+        else for (const key in response) if (Array.isArray(response[key])) { arr = response[key]; break; }
+        return arr.map((item: any) => ({
+          id: item.id || item._id || '',
+          name: item.name || '',
+          qty: item.quantity ?? item.qty ?? 0,
+          exp: item.expiry || item.exp || ''
+        }));
       })
     );
   }
 
-  // Simulate total bills count updating every 7 seconds
+  // Stock metrics: out of stock, low stock, expiring soon
+  getStockMetrics$(): Observable<{ outOfStock: number; lowStock: number; expiringSoon: number; }> {
+    return this.getAllMedicines$().pipe(
+      map((medicines) => {
+        const now = new Date();
+        const in30Days = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+        let outOfStock = 0, lowStock = 0, expiringSoon = 0;
+        for (const m of medicines) {
+          if (m.qty === 0) outOfStock++;
+          else if (m.qty > 0 && m.qty <= 5) lowStock++;
+          if (m.exp && new Date(m.exp) <= in30Days) expiringSoon++;
+        }
+        return { outOfStock, lowStock, expiringSoon };
+      })
+    );
+  }
+
+  // Helper to get billing API params from localStorage
+  private getBillingApiParams(): any {
+    let storeId = '';
+    let storeMobile = '';
+    let email = '';
+    const loginDataRaw = localStorage.getItem('vendor_login_response');
+    if (loginDataRaw) {
+      try {
+        const loginData = JSON.parse(loginDataRaw);
+        storeId = loginData.storeId || '';
+        storeMobile = loginData.storeMobile || '';
+        email = loginData.email || '';
+      } catch (e) {
+        console.warn('Failed to parse loginData from localStorage:', e);
+      }
+    }
+    if (!storeId) storeId = localStorage.getItem('storeId') || '';
+    if (!storeMobile) storeMobile = localStorage.getItem('storeMobile') || '';
+    if (!email) email = localStorage.getItem('email') || '';
+    const params: any = {};
+    if (storeId) params.storeId = storeId;
+    if (storeMobile) params.storeMobile = storeMobile;
+    if (email) params.email = email;
+    return params;
+  }
+
+  // Fetch all invoices (sales) from billing API with params
+  getAllInvoices$(): Observable<InvoiceItem[]> {
+    const params = this.getBillingApiParams();
+    return this.http.get<any>(`${this.apiBase}/api/billing`, { params }).pipe(
+      map((response: any) => {
+        let arr: any[] = [];
+        if (Array.isArray(response)) arr = response;
+        else if (response && Array.isArray(response.data)) arr = response.data;
+        else if (response && Array.isArray(response.invoices)) arr = response.invoices;
+        else for (const key in response) if (Array.isArray(response[key])) { arr = response[key]; break; }
+        const mapped = arr.map((item: any) => ({
+          id: item.id || item._id || '',
+          customerName: item.customerName || '',
+          customerPhone: item.customerPhone || '',
+          amount: item.amount || 0,
+          itemCount: item.itemCount || 0,
+          lineItems: item.lineItems || [],
+          date: item.date || '',
+          invoiceNumber: item.invoiceNumber || ''
+        }));
+        return mapped;
+      })
+    );
+  }
+
+  // Recent sales (latest N invoices)
+  getRecentInvoices$(count = 4): Observable<InvoiceItem[]> {
+    return this.getAllInvoices$().pipe(
+      map(invoices => invoices.slice(0, count))
+    );
+  }
+
+  // Total sales amount
+  getTotalSales$(): Observable<number> {
+    return this.getAllInvoices$().pipe(
+      map(invoices => invoices.reduce((sum, inv) => sum + (inv.amount || 0), 0))
+    );
+  }
+
+  // Total number of sales (bills)
   getTotalBills$(): Observable<number> {
-    return interval(7000).pipe(
-      map((tick) => 120 + tick)
-    );
-  }
-
-  // Low stock alerts (qty <= threshold)
-  getLowStockAlerts$(threshold = 5): Observable<Product[]> {
-    // evaluate every 6 seconds
-    return interval(6000).pipe(
-      map(() => this.products.filter((p) => p.qty <= threshold))
-    );
-  }
-
-  // Expiry warnings (expiring within days)
-  getExpiryWarnings$(days = 30): Observable<Product[]> {
-    const ms = days * 24 * 60 * 60 * 1000;
-    return interval(8000).pipe(
-      map(() => {
-        const now = Date.now();
-        return this.products.filter((p) => new Date(p.exp).getTime() - now <= ms);
-      })
+    return this.getAllInvoices$().pipe(
+      map(invoices => invoices.length)
     );
   }
 }

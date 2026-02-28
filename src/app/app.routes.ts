@@ -16,20 +16,27 @@ import { VendorSettingsComponent } from './vendor/settings/settings.component';
 import { VendorAddMedicineComponent } from './vendor/add-medicine/add-medicine.component';
 import { VendorLicenseComponent } from './vendor/license/license.component';
 import { VendorAccountComponent } from './vendor/account/account.component';
+import { VendorReportsComponent } from './vendor/reports/reports.component';
+import { ForgotPasswordComponent } from './vendor/forgot/forgot.component';
 import { authChildGuard, authGuard } from './shared/guards/auth.guard';
 import { publicOnlyGuard } from './shared/guards/public-only.guard';
 
 export const routes: Routes = [
-	{
-		path: 'vendor/login',
-		component: VendorLoginComponent,
-		canActivate: [publicOnlyGuard]
-	},
-	{
-		path: 'vendor/signup',
-		component: VendorSignupComponent,
-		canActivate: [publicOnlyGuard]
-	},
+   {
+	   path: 'vendor/login',
+	   component: VendorLoginComponent,
+	   canActivate: [publicOnlyGuard]
+   },
+   {
+	   path: 'vendor/forgot',
+	   component: ForgotPasswordComponent,
+	   canActivate: [publicOnlyGuard]
+   },
+   {
+	   path: 'vendor/signup',
+	   component: VendorSignupComponent,
+	   canActivate: [publicOnlyGuard]
+   },
 	{
 		path: 'vendor',
 		component: VendorLayoutComponent,
@@ -52,7 +59,7 @@ export const routes: Routes = [
 			{ path: 'customer', component: VendorCustomersComponent, data: { title: 'Customers' } },
 			{ path: 'purchase', component: VendorPurchaseComponent, data: { title: 'Purchases' } },
 			{ path: 'analytics', component: VendorAnalyticsComponent, data: { title: 'Analytics' } },
-			{ path: 'reports', component: VendorAnalyticsComponent, data: { title: 'Reports' } },
+			{ path: 'reports', component: VendorReportsComponent, data: { title: 'Reports' } },
 			{ path: 'staff', component: VendorStaffComponent, data: { title: 'Staff' } },
 			{ path: 'account', component: VendorAccountComponent, data: { title: 'Account' } },
 			{ path: 'settings', component: VendorSettingsComponent, data: { title: 'Settings' } },

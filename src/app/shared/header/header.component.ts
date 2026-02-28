@@ -31,7 +31,7 @@ export class HeaderComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((user) => {
         this.profile = {
-          fullName: user.fullName,
+          fullName: user.ownerName,
           email: user.email
         };
       });
@@ -52,13 +52,18 @@ export class HeaderComponent {
     return parts.slice(0, 2).map((part) => part.charAt(0).toUpperCase()).join('');
   }
 
-  onAuthClick() {
-    if (this.isLoggedIn) {
-      this.authService.logout();
-      this.router.navigate(['/vendor/login']);
-      return;
-    }
-
-    this.router.navigate(['/vendor/login']);
+  ngOnInit() {
+    // Replace with actual auth check if available
+    this.isLoggedIn = this.authService.isLoggedIn ?? false;
   }
+
+  onLoginLogout() {
+    if (this.isLoggedIn) {
+      this.authService.logout?.();
+      this.router.navigate(['/vendor/login']);
+    } else {
+      this.router.navigate(['/vendor/login']);
+    }
+  }
+
 }

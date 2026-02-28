@@ -34,6 +34,13 @@ export type CreateMedicineInput = {
 
 @Injectable({ providedIn: 'root' })
 export class MedicineService {
+    /**
+     * Replace the current medicines list with a new array.
+     * Used for import functionality.
+     */
+    setMedicines(items: MedicineItem[]): void {
+      this.medicinesSubject.next(items);
+    }
   private readonly medicineApiBaseUrl = `${environment.apiBaseUrl}/api/medicine`;
   private readonly medicinesSubject = new BehaviorSubject<MedicineItem[]>([]);
 
@@ -405,5 +412,11 @@ export class MedicineService {
     }
 
     return 'In Stock';
+  }
+
+  bulkUploadExcel(file: File): Observable<{ success: boolean; count: number }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<{ success: boolean; count: number }>(`${this.medicineApiBaseUrl}/bulkUploadExcel`, formData);
   }
 }

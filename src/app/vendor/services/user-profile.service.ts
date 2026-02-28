@@ -3,7 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { AuthService } from '../../shared/services/auth.service';
 
 export type VendorUserProfile = {
-  fullName: string;
+  ownerName: string;
   email: string;
   phone: string;
   role: string;
@@ -42,9 +42,9 @@ export class UserProfileService {
     const source = this.extractPayload(loginResponse);
 
     return {
-      fullName: this.readString(source, ['fullName', 'ownerName', 'name', 'userName']),
+      ownerName: this.readString(source, ['ownerName', 'fullName', 'name', 'userName']),
       email: this.readString(source, ['email', 'mailId']),
-      phone: this.readString(source, ['phone', 'mobile', 'mobileNo', 'mobileOrStoreId']),
+      phone: this.readString(source, ['phone', 'mobile', 'mobileNo', 'mobileOrStoreId','storeMobile']),
       role: this.readString(source, ['role', 'loginAs']) || 'Owner',
       pharmacyName: this.readString(source, ['pharmacyName', 'storeName', 'medicalStoreName']),
       gstinNumber: this.readString(source, ['gstinNumber', 'gstin']),

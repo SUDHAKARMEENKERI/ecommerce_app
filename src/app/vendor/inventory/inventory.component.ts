@@ -38,6 +38,52 @@ type InventoryColumn = {
   styleUrls: ['./inventory.component.scss']
 })
 export class VendorInventoryComponent {
+    // Pagination state
+    currentPage = 1;
+    pageSize = 10;
+    get totalPages(): number {
+      return Math.ceil(this.sortedItems.length / this.pageSize) || 1;
+    }
+
+    get pagedItems(): InventoryItem[] {
+      const start = (this.currentPage - 1) * this.pageSize;
+      return this.sortedItems.slice(start, start + this.pageSize);
+    }
+
+    // Sorting logic for enhanced table
+    onSort(colKey: InventoryColumnKey) {
+      if (this.sortColumn === colKey) {
+        this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+      } else {
+        this.sortColumn = colKey;
+        this.sortDirection = 'asc';
+      }
+      this.currentPage = 1;
+    }
+
+    get sortedItems(): InventoryItem[] {
+      const items = [...this.visibleItems];
+      const col = this.sortColumn;
+      const dir = this.sortDirection;
+      return items.sort((a, b) => {
+        let valA = a[col];
+        let valB = b[col];
+        if (col === 'expiry') {
+          valA = new Date(valA).getTime();
+          valB = new Date(valB).getTime();
+        }
+        if (typeof valA === 'string') valA = valA.toLowerCase();
+        if (typeof valB === 'string') valB = valB.toLowerCase();
+        if (valA < valB) return dir === 'asc' ? -1 : 1;
+        if (valA > valB) return dir === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+
+    goToPage(page: number) {
+      if (page < 1 || page > this.totalPages) return;
+      this.currentPage = page;
+    }
   private route = inject(ActivatedRoute);
   private medicineService = inject(MedicineService);
   private destroyRef = inject(DestroyRef);
@@ -85,6 +131,55 @@ export class VendorInventoryComponent {
   ];
 
   items: InventoryItem[] = this.medicineService.getMedicines();
+    // Export inventory to CSV
+    exportInventory() {
+      const headers = ['Name', 'Brand', 'Composition', 'Category', 'Batch', 'Expiry', 'Quantity', 'Price', 'Status'];
+      const rows = this.visibleItems.map(item => [
+        item.name,
+        item.brand,
+        item.composition,
+        item.category,
+        item.batch,
+        item.expiry,
+        item.quantity,
+        item.price,
+        item.status
+      ]);
+      const csv = [headers, ...rows].map(row => row.map(val => '"' + String(val).replace(/"/g, '""') + '"').join(',')).join('\r\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'inventory.csv';
+      a.click();
+      window.URL.revokeObjectURL(url);
+    }
+
+    // Import inventory from CSV
+    importInventory(event: Event) {
+      const input = event.target as HTMLInputElement;
+      if (!input.files || input.files.length === 0) return;
+      const file = input.files[0];
+      this.medicineService.bulkUploadExcel(file)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (result) => {
+            if (result.success) {
+              window.alert(`Bulk upload successful. ${result.count} items uploaded.`);
+              this.medicineService.loadMedicinesFromApi().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
+            } else {
+              window.alert('Bulk upload failed.');
+            }
+          },
+          error: () => {
+            window.alert('Bulk upload failed.');
+          }
+        });
+      input.value = '';
+    }
+    getStatusClass(status: string): string {
+      return 'status-badge status-' + (status ? status.toLowerCase().split(' ').join('-') : '');
+    }
 
   get visibleItems(): InventoryItem[] {
     const query = this.searchText.trim().toLowerCase();
@@ -130,6 +225,7 @@ export class VendorInventoryComponent {
 
   onSearch(value: string) {
     this.searchText = value;
+    this.currentPage = 1;
   }
 
   toggleColumnsMenu() {

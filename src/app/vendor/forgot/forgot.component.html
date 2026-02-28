@@ -1,0 +1,66 @@
+<div class="login-split">
+  <div class="login-brand-panel">
+    <div class="brand-logo-row">
+      <span class="brand-logo">MediCare POS</span>
+    </div>
+    <div class="brand-welcome">
+      <h2>Forgot your password?</h2>
+      <p>Reset access to your pharmacy dashboard securely.</p>
+    </div>
+    <div class="brand-security">
+      <div class="security-icon"></div>
+      <div>
+        <div class="security-title">Enterprise-Grade Security</div>
+        <div class="security-desc">HIPAA Compliant & highly secure cloud infrastructure.</div>
+      </div>
+    </div>
+  </div>
+  <div class="login-form-panel">
+    <form (ngSubmit)="onSubmit()" class="login-form-modern" style="position: relative;">
+      <app-loader [show]="isSubmitting"></app-loader>
+      <h1>Forgot Password?</h1>
+      <p class="login-form-desc">Enter your registered email or mobile number and we'll send you instructions to reset your password.</p>
+      <div class="form-row">
+        <label>
+          <span>Email</span>
+          <div class="field-wrap">
+            <i class="bi bi-envelope"></i>
+            <input type="email" placeholder="Enter email" [(ngModel)]="email" name="email" required />
+          </div>
+        </label>
+        <label>
+          <span>Store Mobile Number</span>
+          <div class="field-wrap">
+            <i class="bi bi-phone"></i>
+            <input type="tel" placeholder="Enter store mobile number" [(ngModel)]="storeMobile" name="storeMobile" required />
+          </div>
+        </label>
+      </div>
+      <div class="form-row">
+        <label>
+          <span>Password</span>
+          <div class="field-wrap">
+            <i class="bi bi-lock"></i>
+            <input type="password" placeholder="Enter new password" [(ngModel)]="password" name="password" required />
+          </div>
+        </label>
+        <label>
+          <span>Confirm Password</span>
+          <div class="field-wrap">
+            <i class="bi bi-lock"></i>
+            <input type="password" placeholder="Confirm new password" [(ngModel)]="confirmPassword" name="confirmPassword" required />
+          </div>
+        </label>
+      </div>
+      <button type="submit" class="btn-primary" [disabled]="isSubmitting">
+        Submit
+      </button>
+      <small class="success" *ngIf="successMessage">{{ successMessage }}</small>
+      <small class="error" *ngIf="errorMessage">{{ errorMessage }}</small>
+    <!-- end form -->
+    </form>
+    <div class="login-signup-row">
+      <a (click)="onBackToLogin()">Back to Login</a>
+    </div>
+  </div>
+</div>

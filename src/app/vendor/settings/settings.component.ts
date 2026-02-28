@@ -3,6 +3,8 @@ import { Component, DestroyRef, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UserProfileService } from '../services/user-profile.service';
+import { MedicalStoreService } from '../services/medical-store.service';
+import { AuthService } from '../../shared/services/auth.service';
 
 type SettingsTab = 'business' | 'account' | 'notifications' | 'billing';
 
@@ -23,15 +25,17 @@ export class VendorSettingsComponent {
   accountSaveMessage = 'All changes saved';
 
   businessForm = {
-    pharmacyName: '',
-    phoneNumber: '',
+    ownerName: '',
+    storeName: '',
+    storeMobile: '',
     gstinNumber: '',
     pharmacyCode: '',
-    address: ''
+    address: '',
+    phoneNumber: ''
   };
 
   accountForm = {
-    fullName: '',
+    ownerName: '',
     email: ''
   };
 
@@ -40,25 +44,31 @@ export class VendorSettingsComponent {
     email: ''
   };
 
-  constructor(private userProfileService: UserProfileService) {
+  constructor(
+    private userProfileService: UserProfileService,
+    private medicalStoreService: MedicalStoreService,
+    private authService: AuthService
+  ) {
     this.userProfileService.profile$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((user) => {
         this.businessForm = {
-          pharmacyName: user.pharmacyName,
-          phoneNumber: user.phone,
+          ownerName: user.ownerName,
+          storeName: user.pharmacyName,
+          storeMobile: user.phone,
           gstinNumber: user.gstinNumber,
           pharmacyCode: user.pharmacyCode,
-          address: user.address
+          address: user.address,
+          phoneNumber:  user.phone
         };
 
         this.accountForm = {
-          fullName: user.fullName,
+          ownerName: user.ownerName,
           email: user.email
         };
 
         this.profile = {
-          name: user.fullName,
+          name: user.ownerName,
           email: user.email
         };
       });
@@ -76,17 +86,65 @@ export class VendorSettingsComponent {
     this.isSavingBusiness = true;
     this.businessSaveMessage = 'Saving...';
 
-    setTimeout(() => {
-      this.userProfileService.updateProfile({
-        pharmacyName: this.businessForm.pharmacyName,
-        phone: this.businessForm.phoneNumber,
-        gstinNumber: this.businessForm.gstinNumber,
-        address: this.businessForm.address
-      });
-
+    // Get storeId from authService
+    let storeId = '';
+    const loginResponse = this.authService.loginResponse as any;
+    if (loginResponse) {
+      storeId = loginResponse.storeId || loginResponse.medicalStoreId || '';
+    }
+    if (!storeId) {
       this.isSavingBusiness = false;
-      this.businessSaveMessage = 'Saved successfully';
-    }, 700);
+      this.businessSaveMessage = 'Store ID not found';
+      return;
+    }
+
+    const payload = {
+      ownerName: this.businessForm.ownerName,
+      storeName: this.businessForm.storeName,
+      storeMobile: this.businessForm.storeMobile,
+      gstinNumber: this.businessForm.gstinNumber,
+      pharmacyCode: this.businessForm.pharmacyCode,
+      address: this.businessForm.address,
+      phoneNumber: this.businessForm.phoneNumber
+    };
+
+    this.medicalStoreService.patchStore(storeId, payload).subscribe({
+      next: () => {
+        this.userProfileService.updateProfile(payload);
+        // Update localStorage login response if present
+        const loginResponseKey = 'vendor_login_response';
+        const raw = localStorage.getItem(loginResponseKey);
+        if (raw) {
+          let parsed: any;
+          try {
+            parsed = JSON.parse(raw);
+          } catch {
+            parsed = raw;
+          }
+          if (typeof parsed === 'object' && parsed) {
+            parsed.ownerName = payload.ownerName;
+            parsed.fullName = payload.ownerName;
+            // Only update email if it exists in payload
+            if ('email' in payload) {
+              parsed.email = payload.email || parsed.email;
+            }
+            parsed.phone = payload.storeMobile || payload.phoneNumber || parsed.phone;
+            parsed.storeMobile = payload.storeMobile || parsed.storeMobile;
+            parsed.pharmacyName = payload.storeName || parsed.pharmacyName;
+            parsed.gstinNumber = payload.gstinNumber || parsed.gstinNumber;
+            parsed.pharmacyCode = payload.pharmacyCode || parsed.pharmacyCode;
+            parsed.address = payload.address || parsed.address;
+            localStorage.setItem(loginResponseKey, JSON.stringify(parsed));
+          }
+        }
+        this.isSavingBusiness = false;
+        this.businessSaveMessage = 'Saved successfully';
+      },
+      error: (err) => {
+        this.isSavingBusiness = false;
+        this.businessSaveMessage = 'Failed to save';
+      }
+    });
   }
 
   saveAccount() {
@@ -97,14 +155,50 @@ export class VendorSettingsComponent {
     this.isSavingAccount = true;
     this.accountSaveMessage = 'Saving...';
 
-    setTimeout(() => {
-      this.userProfileService.updateProfile({
-        fullName: this.accountForm.fullName,
-        email: this.accountForm.email
-      });
-
+    // Get storeId from authService
+    let storeId = '';
+    const loginResponse = this.authService.loginResponse as any;
+    if (loginResponse) {
+      storeId = loginResponse.storeId || loginResponse.medicalStoreId || '';
+    }
+    if (!storeId) {
       this.isSavingAccount = false;
-      this.accountSaveMessage = 'Saved successfully';
-    }, 700);
+      this.accountSaveMessage = 'Store ID not found';
+      return;
+    }
+
+    const payload = {
+      ownerName: this.accountForm.ownerName,
+      email: this.accountForm.email
+    };
+
+    this.medicalStoreService.patchStore(storeId, payload).subscribe({
+      next: () => {
+        this.userProfileService.updateProfile(payload);
+        // Update localStorage login response if present
+        const loginResponseKey = 'vendor_login_response';
+        const raw = localStorage.getItem(loginResponseKey);
+        if (raw) {
+          let parsed: any;
+          try {
+            parsed = JSON.parse(raw);
+          } catch {
+            parsed = raw;
+          }
+          if (typeof parsed === 'object' && parsed) {
+            parsed.ownerName = payload.ownerName;
+            parsed.fullName = payload.ownerName;
+            parsed.email = payload.email || parsed.email;
+            localStorage.setItem(loginResponseKey, JSON.stringify(parsed));
+          }
+        }
+        this.isSavingAccount = false;
+        this.accountSaveMessage = 'Saved successfully';
+      },
+      error: (err) => {
+        this.isSavingAccount = false;
+        this.accountSaveMessage = 'Failed to save';
+      }
+    });
   }
 }

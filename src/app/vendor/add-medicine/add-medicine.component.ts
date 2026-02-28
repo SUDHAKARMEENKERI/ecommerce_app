@@ -19,6 +19,7 @@ export class VendorAddMedicineComponent {
 
   successMessage = '';
   isSubmitting = false;
+  excelUploadMessage = '';
 
   form = {
     medicineName: '',
@@ -39,6 +40,9 @@ export class VendorAddMedicineComponent {
     boxBuyPrice: 0,
     boxSellPrice: 0,
     gst: 0,
+    manufacturer: '',
+    supplier: '',
+    batchSize: 0
   };
 
   constructor(
@@ -115,6 +119,9 @@ export class VendorAddMedicineComponent {
       boxBuyPrice: 0,
       boxSellPrice: 0,
       gst: 0,
+      manufacturer: '',
+      supplier: '',
+      batchSize: 0
     };
   }
 
@@ -173,5 +180,29 @@ export class VendorAddMedicineComponent {
     }
 
     return '';
+  }
+
+  async onExcelUpload(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) {
+      this.excelUploadMessage = 'No file selected.';
+      return;
+    }
+    const file = input.files[0];
+    this.excelUploadMessage = 'Uploading...';
+    this.medicineService.bulkUploadExcel(file)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          if (result) {
+            this.excelUploadMessage = `Uploaded successfully.`;
+          } else {
+            this.excelUploadMessage = 'Upload failed.';
+          }
+        },
+        error: () => {
+          this.excelUploadMessage = 'Upload failed.';
+        }
+      });
   }
 }

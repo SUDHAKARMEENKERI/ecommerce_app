@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UserProfileService } from '../services/user-profile.service';
 import { AuthService } from '../../shared/services/auth.service';
+import { MedicalStoreService } from '../services/medical-store.service';
 
 @Component({
   selector: 'app-vendor-account',
@@ -19,13 +20,14 @@ export class VendorAccountComponent {
   constructor(
     private router: Router,
     private userProfileService: UserProfileService,
-    private authService: AuthService
+    private authService: AuthService,
+    private medicalStoreService: MedicalStoreService
   ) {
     this.userProfileService.profile$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((user) => {
         this.profile = {
-          name: user.fullName,
+          name: user.ownerName,
           email: user.email,
           phone: user.phone,
           role: user.role,
@@ -43,8 +45,8 @@ export class VendorAccountComponent {
   };
 
   passwordForm = {
-    currentPassword: '',
-    newPassword: '',
+    // currentPassword: '',
+    password: '',
     confirmPassword: ''
   };
 
@@ -73,17 +75,55 @@ export class VendorAccountComponent {
     this.savingProfile = true;
     this.profileStatusMessage = 'Saving profile...';
 
-    setTimeout(() => {
-      this.userProfileService.updateProfile({
-        fullName: this.profile.name,
-        email: this.profile.email,
-        phone: this.profile.phone,
-        pharmacyName: this.profile.pharmacy
-      });
-
+    // Get storeId from authService
+    let storeId = '';
+    const loginResponse = this.authService.loginResponse as any;
+    if (loginResponse) {
+      storeId = loginResponse.storeId || loginResponse.medicalStoreId || '';
+    }
+    if (!storeId) {
       this.savingProfile = false;
-      this.profileStatusMessage = 'Profile updated successfully.';
-    }, 700);
+      this.profileStatusMessage = 'Store ID not found.';
+      return;
+    }
+
+    const updatedProfile = {
+      ownerName: this.profile.name,
+      email: this.profile.email,
+      phone: this.profile.phone,
+      pharmacyName: this.profile.pharmacy
+    };
+
+    this.medicalStoreService.patchStore(storeId, updatedProfile).subscribe({
+      next: () => {
+        this.userProfileService.updateProfile(updatedProfile);
+        // Update localStorage login response if present
+        const loginResponseKey = 'vendor_login_response';
+        const raw = localStorage.getItem(loginResponseKey);
+        if (raw) {
+          let parsed: any;
+          try {
+            parsed = JSON.parse(raw);
+          } catch {
+            parsed = raw;
+          }
+          if (typeof parsed === 'object' && parsed) {
+            parsed.ownerName = updatedProfile.ownerName;
+            parsed.fullName = updatedProfile.ownerName;
+            parsed.email = updatedProfile.email;
+            parsed.phone = updatedProfile.phone;
+            parsed.pharmacyName = updatedProfile.pharmacyName;
+            localStorage.setItem(loginResponseKey, JSON.stringify(parsed));
+          }
+        }
+        this.savingProfile = false;
+        this.profileStatusMessage = 'Profile updated successfully.';
+      },
+      error: () => {
+        this.savingProfile = false;
+        this.profileStatusMessage = 'Failed to update profile.';
+      }
+    });
   }
 
   updatePassword() {
@@ -91,12 +131,12 @@ export class VendorAccountComponent {
       return;
     }
 
-    if (!this.passwordForm.currentPassword || !this.passwordForm.newPassword || !this.passwordForm.confirmPassword) {
+    if (!this.passwordForm.password || !this.passwordForm.confirmPassword) {
       this.securityStatusMessage = 'Please fill all password fields.';
       return;
     }
 
-    if (this.passwordForm.newPassword !== this.passwordForm.confirmPassword) {
+    if (this.passwordForm.password !== this.passwordForm.confirmPassword) {
       this.securityStatusMessage = 'New password and confirm password do not match.';
       return;
     }
@@ -104,15 +144,38 @@ export class VendorAccountComponent {
     this.savingSecurity = true;
     this.securityStatusMessage = 'Updating password...';
 
-    setTimeout(() => {
+    // Get storeId from authService
+    let storeId = '';
+    const loginResponse = this.authService.loginResponse as any;
+    if (loginResponse) {
+      storeId = loginResponse.storeId || loginResponse.medicalStoreId || '';
+    }
+    if (!storeId) {
       this.savingSecurity = false;
-      this.securityStatusMessage = 'Password updated successfully.';
-      this.passwordForm = {
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
-      };
-    }, 700);
+      this.securityStatusMessage = 'Store ID not found.';
+      return;
+    }
+
+    const payload = {
+      // currentPassword: this.passwordForm.currentPassword,
+      password: this.passwordForm.password
+    };
+
+    this.medicalStoreService.patchStore(storeId, payload).subscribe({
+      next: () => {
+        this.savingSecurity = false;
+        this.securityStatusMessage = 'Password updated successfully.';
+        this.passwordForm = {
+          // currentPassword: '',//
+          password: '',
+          confirmPassword: ''
+        };
+      },
+      error: (err) => {
+        this.savingSecurity = false;
+        this.securityStatusMessage = 'Failed to update password.';
+      }
+    });
   }
 
   logout() {

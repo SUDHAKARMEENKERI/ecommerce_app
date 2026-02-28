@@ -56,8 +56,8 @@ export class VendorLoginComponent {
     this.successMessage = '';
     this.isErrorModalOpen = false;
     this.modalMessage = '';
-    this.isSubmitting = true;
 
+    this.isSubmitting = true;
     this.authService.loginMedicalStore(payload).subscribe({
       next: (response) => {
         this.isSubmitting = false;

@@ -1,14 +1,26 @@
-<section class="signup-page">
-  <article class="signup-card">
-    <header class="card-head">
-      <span class="brand-badge">P</span>
-      <div>
-        <h1>Create Owner Account</h1>
-        <p>Register your medical store to get started.</p>
-      </div>
-    </header>
 
-    <form (ngSubmit)="onSubmit()" class="signup-form">
+<div class="login-split">
+  <div class="login-brand-panel">
+    <div class="brand-logo-row">
+      <span class="brand-logo">MediCare POS</span>
+    </div>
+    <div class="brand-welcome">
+      <h2>Welcome to your workspace.</h2>
+      <p>The all-in-one point of sale, inventory tracking, and analytics platform designed specifically for modern medical stores.</p>
+    </div>
+    <div class="brand-security">
+      <div class="security-icon"></div>
+      <div>
+        <div class="security-title">Enterprise-Grade Security</div>
+        <div class="security-desc">HIPAA Compliant & highly secure cloud infrastructure.</div>
+      </div>
+    </div>
+  </div>
+  <div class="login-form-panel">
+    <form (ngSubmit)="onSubmit()" class="login-form-modern">
+      <h1>Create Owner Account</h1>
+      <p class="login-form-desc">Register your medical store to get started.</p>
+
       <label>
         <span>Owner Name *</span>
         <div class="field-wrap">
@@ -111,18 +123,23 @@
       <small class="error" *ngIf="errorMessage">{{ errorMessage }}</small>
       <small class="success" *ngIf="successMessage">{{ successMessage }}</small>
 
-      <button type="submit" class="submit-btn" [disabled]="isSubmitting">
-        <i class="bi bi-person-plus"></i>
-        <span>{{ isSubmitting ? 'Creating Account...' : 'Create Account' }}</span>
+      <button type="submit" class="btn-primary" [disabled]="isSubmitting">
+        Create Account
+        <span class="arrow">→</span>
       </button>
     </form>
+    <div class="login-signup-row">
+      Already have an account? <a routerLink="/vendor/login">Login here</a>
+    </div>
+  </div>
+</div>
 
-    <p class="login-link">
-      Already have an account?
-      <a routerLink="/vendor/login">Login here</a>
-    </p>
-  </article>
-</section>
+<app-common-modal
+  [isOpen]="isErrorModalOpen"
+  title="Signup Failed"
+  [message]="modalMessage"
+  (closed)="closeErrorModal()">
+</app-common-modal>
 
 <app-common-modal
   [isOpen]="isErrorModalOpen"

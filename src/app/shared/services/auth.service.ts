@@ -51,6 +51,12 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
+  resetPassword(payload: { email?: string; storeMobile?: string; password: string; confirmPassword: string }): Observable<any> {
+    // Adjust the endpoint as per your backend API
+    const url = `${environment.apiBaseUrl}/api/medical-store/reset-password`;
+    return this.http.post(url, payload);
+  }
+
   registerMedicalStore(payload: MedicalStoreSignupPayload): Observable<AuthRegisterResponse> {
     return this.http.post(this.medicalStoreRegisterUrl, payload, {
       responseType: 'text'

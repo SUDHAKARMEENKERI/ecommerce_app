@@ -4,9 +4,10 @@
   <div class="content">
     <aside class="sidebar" [class.collapsed]="sidebarCollapsed">
       <div class="sidebar-header">
-        <button class="sidebar-toggle" (click)="toggleSidebar()" [attr.aria-expanded]="!sidebarCollapsed" title="Toggle menu">
-          <i *ngIf="sidebarCollapsed" class="bi bi-list" aria-hidden="true"></i>
-          <i *ngIf="!sidebarCollapsed" class="bi bi-x-lg" aria-hidden="true"></i>
+        <button class="sidebar-toggle attractive-toggle" (click)="toggleSidebar()" [attr.aria-expanded]="!sidebarCollapsed" title="Toggle menu">
+          <span class="toggle-bar"></span>
+          <span class="toggle-bar"></span>
+          <span class="toggle-bar"></span>
         </button>
       </div>
       <nav>
@@ -23,13 +24,13 @@
         <span class="label">Inventory</span>
       </a>
       <a routerLink="/vendor/inventory/add" routerLinkActive="active" class="sub-link">
-        <i class="bi bi-dot icon" aria-hidden="true"></i>
-        <span class="label">Add Medicine</span>
+        <i class="bi bi-plus-square icon" aria-hidden="true"></i>
+        <span class="label sub-label">Add Medicine</span>
       </a>
-      <a routerLink="/vendor/prescription" routerLinkActive="active">
+      <!-- <a routerLink="/vendor/prescription" routerLinkActive="active">
         <i class="bi bi-file-medical icon" aria-hidden="true"></i>
         <span class="label">Prescriptions</span>
-      </a>
+      </a> -->
       <a routerLink="/vendor/customer" routerLinkActive="active">
         <i class="bi bi-people icon" aria-hidden="true"></i>
         <span class="label">Customers</span>
@@ -42,10 +43,10 @@
         <i class="bi bi-bar-chart-line icon" aria-hidden="true"></i>
         <span class="label">Analytics</span>
       </a>
-      <a routerLink="/vendor/staff" routerLinkActive="active">
+      <!-- <a routerLink="/vendor/staff" routerLinkActive="active">
         <i class="bi bi-person-badge icon" aria-hidden="true"></i>
         <span class="label">Staff</span>
-      </a>
+      </a> -->
       <a routerLink="/vendor/account" routerLinkActive="active">
         <i class="bi bi-person-circle icon" aria-hidden="true"></i>
         <span class="label">Account</span>
@@ -58,9 +59,13 @@
         <i class="bi bi-credit-card icon" aria-hidden="true"></i>
         <span class="label">License</span>
       </a> -->
+        <a routerLink="/vendor/reports" routerLinkActive="active">
+          <i class="bi bi-file-earmark-text icon" aria-hidden="true"></i>
+          <span class="label">Reports</span>
+        </a>
     </nav>
       </aside>
-    <main class="main-content" [class.collapsed-main]="sidebarCollapsed">
+    <main class="main-content layout-scrollable" [class.collapsed-main]="sidebarCollapsed">
       <router-outlet></router-outlet>
     </main>
   </div>

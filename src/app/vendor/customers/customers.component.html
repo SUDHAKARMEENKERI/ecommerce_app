@@ -69,7 +69,7 @@
     </div>
   </section>
 
-  <section class="list-card" aria-label="Customers list">
+  <section class="list-card customer-table-bordered" aria-label="Customers list">
     <header class="list-head">
       <span>Name</span>
       <span>Mobile</span>
@@ -83,7 +83,7 @@
     </header>
 
     <ng-container *ngIf="!isRefreshing; else listLoading">
-      <button type="button" class="list-row" *ngFor="let item of pagedCustomers; trackBy: trackByCustomerId" (click)="openCustomer(item)">
+      <div class="list-row" *ngFor="let item of pagedCustomers; trackBy: trackByCustomerId">
         <div class="cell name">{{ item.name }}</div>
         <div class="cell mobile">{{ item.phone }}</div>
         <div class="cell">{{ item.gender || '-' }}</div>
@@ -96,7 +96,7 @@
           <b>{{ item.lastVisit | date: 'dd MMM yyyy' }}</b>
           <!-- <small>{{ item.visits }} visits</small> -->
         </div>
-      </button>
+      </div>
     </ng-container>
 
     <ng-template #listLoading>
@@ -183,21 +183,27 @@
     </div>
   </aside>
 
-  <div class="customer-modal-backdrop" *ngIf="isAddModalOpen" (click)="closeAddCustomerModal()">
-    <section class="customer-modal" role="dialog" aria-modal="true" aria-label="Add customer profile" (click)="$event.stopPropagation()">
+  <div class="customer-modal-backdrop" *ngIf="isAddModalOpen">
+    <section class="customer-modal add-contact-modal" role="dialog" aria-modal="true" aria-label="Add New Contact">
       <header class="customer-modal-head">
-        <h3>Add Customer Details</h3>
-        <button type="button" (click)="closeAddCustomerModal()" aria-label="Close">
+        <div class="modal-title-row">
+          <div class="modal-icon"><i class="bi bi-person-plus"></i></div>
+          <div>
+            <h3>Add New Contact</h3>
+          </div>
+        </div>
+        <button type="button" class="modal-close-btn" (click)="closeAddCustomerModal()" aria-label="Close">
           <i class="bi bi-x-lg"></i>
         </button>
       </header>
 
-      <div class="customer-form-grid">
+    
+
+      <div class="customer-form-grid add-contact-form-grid">
         <label>
           <span>Name</span>
           <input type="text" [(ngModel)]="addForm.name" placeholder="Customer full name" />
         </label>
-
         <label>
           <span>Mobile Number</span>
           <input
@@ -208,7 +214,6 @@
             (ngModelChange)="onAddCustomerPhoneInput(($event || '').toString())"
             placeholder="10-digit mobile" />
         </label>
-
         <label>
           <span>Gender</span>
           <select [(ngModel)]="addForm.gender">
@@ -217,7 +222,6 @@
             <option value="Other">Other</option>
           </select>
         </label>
-
         <label>
           <span>Age</span>
           <input
@@ -228,12 +232,10 @@
             (ngModelChange)="onAddCustomerAgeInput(($event || '').toString())"
             placeholder="Age" />
         </label>
-
         <label class="full-width">
           <span>Consulting Doctor</span>
           <input type="text" [(ngModel)]="addForm.doctorName" placeholder="Doctor name" />
         </label>
-
         <label class="full-width">
           <span>Referred By</span>
           <input type="text" [(ngModel)]="addForm.referredBy" placeholder="Direct / Referral" />
@@ -244,10 +246,10 @@
         {{ addCustomerMessage }}
       </p>
 
-      <footer class="customer-modal-footer">
+      <footer class="customer-modal-footer add-contact-footer">
         <button type="button" class="secondary" (click)="closeAddCustomerModal()">Cancel</button>
-        <button type="button" class="primary" [disabled]="isSavingCustomer" (click)="saveCustomerProfile()">
-          {{ isSavingCustomer ? 'Saving...' : 'Save Customer' }}
+        <button type="button" class="btn-primary" [disabled]="isSavingCustomer" (click)="saveCustomerProfile()">
+          <i class="bi bi-save"></i> {{ isSavingCustomer ? 'Saving...' : 'Save Contact' }}
         </button>
       </footer>
     </section>

@@ -1,21 +1,19 @@
-<header class="header">
-  <div class="header-left">
-    <h1 class="app-title">Vendor Portal</h1>
+<header class="app-header">
+  <div class="app-header-left">
+    <span class="app-logo">MediCare POS</span>
   </div>
-  <div class="header-right">
-    <button type="button" class="icon-btn" aria-label="Notifications" title="Notifications">
-      <i class="bi bi-bell"></i>
+  <div class="app-header-center">
+    <input class="app-header-search" type="text" placeholder="Search medicines, batches, or invoices..." />
+  </div>
+  <div class="app-header-right">
+    <button class="app-header-bell" aria-label="Notifications">
+      <span class="app-header-bell-icon"></span>
     </button>
-    <button type="button" class="auth-btn" (click)="onAuthClick()">
-      <i class="bi" [class.bi-box-arrow-right]="isLoggedIn" [class.bi-box-arrow-in-right]="!isLoggedIn"></i>
-      <span>{{ isLoggedIn ? 'Logout' : 'Login' }}</span>
-    </button>
-    <div class="profile" title="{{ profile.email }}">
-      <span class="avatar">{{ initials }}</span>
-      <span class="info">
-        <b>{{ profile.fullName }}</b>
-        <small>{{ profile.email }}</small>
-      </span>
+    <div class="app-header-avatar" [title]="profile.fullName">
+      {{ initials }}
     </div>
+    <button class="app-header-auth-btn" (click)="onLoginLogout()">
+      {{ isLoggedIn ? 'Logout' : 'Login' }}
+    </button>
   </div>
 </header>

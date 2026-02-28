@@ -1,3 +1,36 @@
+.attractive-toggle {
+  background: #14b8a6;
+  border: none;
+  border-radius: 8px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(20,184,166,0.10);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.attractive-toggle:hover {
+  background: #0d9488;
+  box-shadow: 0 4px 16px rgba(20,184,166,0.18);
+}
+.toggle-bar {
+  display: block;
+  width: 24px;
+  height: 3px;
+  background: #fff;
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+.layout-scrollable {
+  overflow-y: auto;
+  max-height: calc(100vh - 64px);
+  /* Adjust 64px if your header/footer height is different */
+  padding-bottom: 1.5rem;
+}
 .layout {
   display: flex;
   flex-direction: column;
@@ -40,13 +73,55 @@
   padding: 8px 0;
 }
 .sidebar .sidebar-toggle {
-  background: transparent;
-  color: #fff;
-  border: none;
-  font-size: 20px;
-  padding: 6px 8px;
+  background: #f5f6fa;
+  color: #172f53;
+  border: 1.5px solid #e0e6f1;
+  font-size: 22px;
+  padding: 7px 9px;
   cursor: pointer;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(23,47,83,0.07);
+  transition: background 0.18s, color 0.18s, border 0.18s, box-shadow 0.18s;
+  position: relative;
+  z-index: 10;
 }
+
+// Modern style for X icon (close)
+.sidebar .sidebar-toggle .bi-x-lg {
+  color: #bd938e;
+  background: transparent;
+  border-radius: 50%;
+  font-size: 22px;
+  padding: 0;
+  box-shadow: none;
+  transition: color 0.18s;
+}
+.sidebar .sidebar-toggle:hover {
+  background: #ffeaea;
+  border-color: #e6bdbd;
+  box-shadow: 0 4px 16px rgba(231,76,60,0.10);
+}
+.sidebar .sidebar-toggle:hover .bi-x-lg {
+  color: #fff;
+  background: #e5e759;
+}
+
+
+// Special style for X icon (close)
+.sidebar .sidebar-toggle .bi-x-lg {
+  color: #ff4d4f;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(255,77,79,0.12);
+  padding: 2px;
+  font-size: 22px;
+  transition: background 0.2s, color 0.2s;
+}
+.sidebar .sidebar-toggle:hover .bi-x-lg {
+  background: #ff4d4f;
+  color: #fff;
+}
+
 .sidebar .sidebar-toggle:focus {
   outline: none;
 }
@@ -120,6 +195,10 @@
   margin-right: 6px;
   width: 10px;
 }
+
+.sub-label{
+  margin-left: 10px;
+}
 .main-content {
   flex: 1;
   min-width: 0;
@@ -130,9 +209,6 @@
   padding: 20px;
   min-height: 100%;
   transition: margin-left 250ms ease;
-}
-.main-content.collapsed-main {
-  /* no extra margin needed; layout flex handles width */
 }
 
 .footer {

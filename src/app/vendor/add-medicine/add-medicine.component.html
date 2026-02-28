@@ -10,6 +10,15 @@
           <h1>Add New Medicine</h1>
           <p>Beautifully organized stock entry for faster pharmacy operations</p>
         </div>
+
+        <div class="bulk-upload-row">
+         
+          <label style="margin: 0;">
+            <button type="button" class="upload-btn" (click)="bulkFileInput.click()">Upload Excel Sheet</button>
+            <input #bulkFileInput type="file" accept=".xlsx,.xls" (change)="onExcelUpload($event)" style="display: none;" />
+          </label>
+          <div class="upload-status" *ngIf="excelUploadMessage">{{ excelUploadMessage }}</div>
+        </div>
       </div>
 
       <div class="status-pill">
@@ -114,12 +123,14 @@
           <div class="input-grid three">
             <label>
               <span>Pack Size (Strips/Box) <em>*</em></span>
-              <input type="number" min="0" placeholder="e.g. 10" [(ngModel)]="form.packSize" [ngModelOptions]="{ standalone: true }" />
+              <input type="number" min="0" placeholder="e.g. 10" [(ngModel)]="form.packSize"
+                [ngModelOptions]="{ standalone: true }" />
               <small>How many strips in one box</small>
             </label>
             <label>
               <span>Box Quantity <em>*</em></span>
-              <input type="number" min="0" placeholder="Enter boxes" [(ngModel)]="form.boxQuantity" [ngModelOptions]="{ standalone: true }" />
+              <input type="number" min="0" placeholder="Enter boxes" [(ngModel)]="form.boxQuantity"
+                [ngModelOptions]="{ standalone: true }" />
               <small>Auto calculates total strips</small>
             </label>
             <label>
@@ -213,7 +224,8 @@
 
     <footer class="actions-footer">
       <button type="button" class="btn-cancel" routerLink="/vendor/inventory">Cancel</button>
-      <button type="button" class="btn-submit" [disabled]="isSubmitting" (click)="submitMedicine()">Add Medicine</button>
+      <button type="button" class="btn-submit" [disabled]="isSubmitting" (click)="submitMedicine()">Add
+        Medicine</button>
     </footer>
   </div>
 </section>

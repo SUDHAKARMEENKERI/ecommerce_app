@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { InvoiceItem, InvoiceService } from '../services/invoice.service';
@@ -12,6 +13,7 @@ import { InvoiceItem, InvoiceService } from '../services/invoice.service';
   styleUrls: ['./billing.component.scss']
 })
 export class VendorBillingComponent {
+
   private destroyRef = inject(DestroyRef);
   private readonly receiptMeta = {
     hospitalName: 'AAROGYA HOSPITAL',
@@ -28,7 +30,7 @@ export class VendorBillingComponent {
   invoices: InvoiceItem[] = [];
   selectedInvoice: InvoiceItem | null = null;
 
-  constructor(private invoiceService: InvoiceService) {
+  constructor(private invoiceService: InvoiceService, private router: Router) {
     this.invoiceService
       .loadInvoicesFromApi()
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -550,5 +552,15 @@ export class VendorBillingComponent {
     }
 
     return `Rupees ${parts.join(' ')}`.replace(/\s+/g, ' ').trim();
+  }
+
+  onCreateInvoice() {
+    this.router.navigate(['/vendor/purchase']);
+  }
+
+  navigateToPurchase() {
+    (window as any).ng && (window as any).ng.core && (window as any).ng.core.injector ?
+      (window as any).ng.core.injector.get('Router').navigate(['/vendor/purchase']) :
+      (this.router && this.router.navigate(['/vendor/purchase']));
   }
 }

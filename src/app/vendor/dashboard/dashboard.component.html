@@ -1,89 +1,148 @@
-<ng-container *ngIf="vm$ | async as vm">
-  <section class="dashboard-shell">
-    <header class="hero-panel">
-      <div class="hero-copy">
-        <p class="eyebrow">Operations Snapshot</p>
-        <h1>Pharmacy Command Center</h1>
-        <p>Track revenue, stock health, and expiry risk from one unified view.</p>
+<ng-container *ngIf="vm$ | async as vm; else loadingOrError">
+  <div class="dashboard-main">
+
+    <!-- Overview -->
+    <div class="dashboard-overview">
+      <div>
+        <h1>Overview</h1>
+        <p>Welcome back! Here's what's happening in your store today.</p>
       </div>
+        <button class="btn-primary">+ New POS Billing</button>
+    </div>
 
-      <div class="hero-actions">
-        <button class="month-btn" type="button">
-          <i class="bi bi-calendar3"></i>
-          <span>{{ currentMonthLabel }}</span>
-        </button>
-        <button class="create-btn" type="button">
-          <i class="bi bi-plus-lg"></i>
-          <span>Create Invoice</span>
-        </button>
+    <!-- Stats Grid -->
+    <div class="dashboard-stats-grid">
+      <div class="dashboard-stat">
+        <div class="dashboard-stat-label">Today's Sales</div>
+        <div class="dashboard-stat-value">₹{{ vm.totalSales | number: '1.0-0' }}</div>
+        <div class="dashboard-stat-trend up">+12.5% <span>vs last week</span></div>
       </div>
-    </header>
+      <div class="dashboard-stat">
+        <div class="dashboard-stat-label">Invoices Generated</div>
+        <div class="dashboard-stat-value">{{ vm.totalBills }}</div>
+        <div class="dashboard-stat-trend up">+5.2% <span>vs last week</span></div>
+      </div>
+      <div class="dashboard-stat">
+        <div class="dashboard-stat-label">Low Stock Alerts</div>
+        <div class="dashboard-stat-value">{{ vm.lowStock }}</div>
+        <div class="dashboard-stat-trend down">-2 <span>vs last week</span></div>
+      </div>
+      <div class="dashboard-stat">
+        <div class="dashboard-stat-label">Total Medicines</div>
+        <div class="dashboard-stat-value">{{ vm.totalMedicines }}</div>
+        <div class="dashboard-stat-trend up">+12 <span>vs last week</span></div>
+      </div>
+    </div>
 
-    <section class="metrics-ribbon">
-      <article class="metric-card revenue">
-        <small>Today's Revenue</small>
-        <h2>₹{{ vm.sales | number: '1.0-0' }}</h2>
-      </article>
+    <!-- Revenue Chart Placeholder -->
+    <div class="dashboard-chart-panel">
+      <div class="dashboard-chart-header">
+        <span>Revenue Overview (This Week)</span>
+        <div class="dashboard-chart-dropdown">
+          <select>
+            <option>Last 7 Days</option>
+            <option>This Month</option>
+          </select>
+          <span class="dashboard-chart-dropdown-icon"></span>
+        </div>
+      </div>
+      <div class="dashboard-chart-placeholder">
+        <!-- Chart goes here -->
+        <div class="dashboard-chart-xlabels">
+          <span *ngFor="let day of ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']">{{day}}</span>
+        </div>
+      </div>
+    </div>
 
-      <article class="metric-card out-stock">
-        <small>Out of Stock</small>
-        <h2>{{ vm.outOfStockCount }}</h2>
-      </article>
-
-      <article class="metric-card low-stock">
-        <small>Low Stock</small>
-        <h2>{{ vm.lowStockCount }}</h2>
-      </article>
-
-      <article class="metric-card expiry">
-        <small>Expiring Soon</small>
-        <h2>{{ vm.expiryWarnings.length }}</h2>
-      </article>
-    </section>
-
-    <section class="insight-grid">
-      <article class="panel sales-panel">
-        <div class="panel-head">
-          <div>
-            <h3>Recent Sales</h3>
-            <p>Latest billed items</p>
+    <!-- Stock Alerts -->
+    <div class="dashboard-stock-alerts">
+      <div class="dashboard-stock-header">
+        <span>Stock Alerts</span>
+        <button class="dashboard-link">View All</button>
+      </div>
+      <div class="dashboard-stock-list">
+        <ng-container *ngIf="vm.lowStockItems.length; else demoStockAlerts">
+          <div *ngFor="let item of vm.lowStockItems; trackBy: trackByProductId" class="dashboard-stock-item">
+            <div>
+              <div class="dashboard-stock-name">{{ item.name }}</div>
+              <div class="dashboard-stock-category"></div>
+            </div>
+            <div class="dashboard-stock-right">
+              <span class="dashboard-stock-qty">{{ item.qty }} left</span>
+              <span class="dashboard-stock-min">Min: 5</span>
+            </div>
           </div>
-          <button type="button" class="view-all-btn">View All</button>
-        </div>
-
-        <div class="sales-empty" *ngIf="vm.bills === 0; else hasSales">
-          <i class="bi bi-receipt"></i>
-          <span>No sales recorded yet.</span>
-        </div>
-
-        <ng-template #hasSales>
-          <ul class="sales-list">
-            <li *ngFor="let p of vm.expiryWarnings | slice:0:4; trackBy: trackByProductId">
-              <div>
-                <b>{{ p.name }}</b>
-                <small>Exp: {{ p.exp | date: 'shortDate' }}</small>
-              </div>
-              <i class="bi bi-arrow-up-right"></i>
-            </li>
-          </ul>
+        </ng-container>
+        <ng-template #demoStockAlerts>
+          <div class="dashboard-stock-item">
+            <div>
+              <div class="dashboard-stock-name">Paracetamol 500mg</div>
+              <div class="dashboard-stock-category">Tablet</div>
+            </div>
+            <div class="dashboard-stock-right">
+              <span class="dashboard-stock-qty">12 left</span>
+              <span class="dashboard-stock-min">Min: 50</span>
+            </div>
+          </div>
+          <div class="dashboard-stock-item">
+            <div>
+              <div class="dashboard-stock-name">Azithromycin 250mg</div>
+              <div class="dashboard-stock-category">Tablet</div>
+            </div>
+            <div class="dashboard-stock-right">
+              <span class="dashboard-stock-qty">8 left</span>
+              <span class="dashboard-stock-min">Min: 30</span>
+            </div>
+          </div>
+          <div class="dashboard-stock-item">
+            <div>
+              <div class="dashboard-stock-name">Cough Syrup (Adulsa)</div>
+              <div class="dashboard-stock-category">Syrup</div>
+            </div>
+            <div class="dashboard-stock-right">
+              <span class="dashboard-stock-qty">5 left</span>
+              <span class="dashboard-stock-min">Min: 15</span>
+            </div>
+          </div>
         </ng-template>
-      </article>
+      </div>
+      <button class="dashboard-btn-outline">Create Purchase Order</button>
+    </div>
 
-      <article class="panel alerts-panel">
-        <h3>Risk Flags</h3>
-        <div class="alert-line">
-          <span class="dot red"></span>
-          <p><b>{{ vm.outOfStockCount }}</b> products are out of stock.</p>
-        </div>
-        <div class="alert-line">
-          <span class="dot amber"></span>
-          <p><b>{{ vm.lowStockCount }}</b> products are running low.</p>
-        </div>
-        <div class="alert-line">
-          <span class="dot blue"></span>
-          <p><b>{{ vm.expiryWarnings.length }}</b> products are expiring in 30 days.</p>
-        </div>
-      </article>
-    </section>
-  </section>
+    <!-- Recent Transactions Table -->
+    <div class="dashboard-table-panel">
+      <div class="dashboard-table-header">
+        <span>Recent POS Transactions</span>
+        <button class="dashboard-table-menu">...</button>
+      </div>
+      <div class="dashboard-table-scroll">
+        <table class="dashboard-table">
+          <thead>
+            <tr>
+              <th>INVOICE ID</th>
+              <th>TIME</th>
+              <th>CUSTOMER</th>
+              <th>ITEMS</th>
+              <th>TOTAL AMOUNT</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let tx of vm.recentInvoices; trackBy: trackByInvoiceId">
+              <td class="dashboard-table-invoice">{{ tx.invoiceNumber || tx.id }}</td>
+              <td>{{ tx.date | date: 'shortTime' }}</td>
+              <td>{{ tx.customerName }}</td>
+              <td>{{ tx.itemCount }}</td>
+              <td>₹{{ tx.amount | number: '1.0-0' }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div *ngIf="!vm.recentInvoices.length" class="dashboard-table-empty">No sales recorded yet.</div>
+      </div>
+    </div>
+  </div>
 </ng-container>
+<ng-template #loadingOrError>
+  <div class="dashboard-main">
+    <div class="loading">Loading dashboard data...</div>
+  </div>
+</ng-template>

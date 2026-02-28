@@ -1,3 +1,12 @@
+.success-message {
+  color: #388e3c;
+  font-weight: 600;
+}
+// Highlight error message for password mismatch
+.error-message {
+  color: #d32f2f !important;
+  font-weight: 600;
+}
 .account-page {
   padding: 8px 0 24px;
   display: grid;

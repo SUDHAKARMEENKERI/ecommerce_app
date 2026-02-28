@@ -61,13 +61,18 @@
         <section class="card form-card">
           <div class="field-grid">
             <label class="field">
+              <span>Owner Name</span>
+              <input type="text" [(ngModel)]="businessForm.ownerName" [ngModelOptions]="{ standalone: true }" />
+            </label>
+
+            <label class="field">
               <span>Pharmacy Name</span>
-              <input type="text" [(ngModel)]="businessForm.pharmacyName" [ngModelOptions]="{ standalone: true }" />
+              <input type="text" [(ngModel)]="businessForm.storeName" [ngModelOptions]="{ standalone: true }" />
             </label>
 
             <label class="field">
               <span>Phone Number</span>
-              <input type="text" [(ngModel)]="businessForm.phoneNumber" [ngModelOptions]="{ standalone: true }" />
+              <input type="text" [(ngModel)]="businessForm.storeMobile" [ngModelOptions]="{ standalone: true }" />
             </label>
 
             <label class="field">
@@ -122,7 +127,7 @@
           <div class="field-grid two-col">
             <label class="field">
               <span>Full Name</span>
-              <input type="text" [(ngModel)]="accountForm.fullName" [ngModelOptions]="{ standalone: true }" />
+              <input type="text" [(ngModel)]="accountForm.ownerName" [ngModelOptions]="{ standalone: true }" />
             </label>
 
             <label class="field">
@@ -188,7 +193,7 @@
             </article>
           </div>
 
-          <button type="button" class="manage-btn">Manage License</button>
+          <!-- <button type="button" class="manage-btn">Manage License</button> -->
         </section>
       </ng-container>
     </section>

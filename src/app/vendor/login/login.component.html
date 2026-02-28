@@ -1,55 +1,55 @@
-<section class="login-page">
-  <article class="login-card">
-    <header class="card-head">
-      <span class="brand-badge">P</span>
-      <div>
-        <h1>Welcome Back</h1>
-        <p>Sign in to continue to your pharmacy dashboard.</p>
-      </div>
-    </header>
 
-    <form (ngSubmit)="onSubmit()" class="login-form">
-      <small class="success" *ngIf="successMessage">{{ successMessage }}</small>
+<div class="login-split">
+  <div class="login-brand-panel">
+    <div class="brand-logo-row">
+      <span class="brand-logo">MediCare POS</span>
+    </div>
+    <div class="brand-welcome">
+      <h2>Welcome back to your workspace.</h2>
+      <p>The all-in-one point of sale, inventory tracking, and analytics platform designed specifically for modern medical stores.</p>
+    </div>
+    <div class="brand-security">
+      <div class="security-icon"></div>
+      <div>
+        <div class="security-title">Enterprise-Grade Security</div>
+        <div class="security-desc">HIPAA Compliant & highly secure cloud infrastructure.</div>
+      </div>
+    </div>
+  </div>
+  <div class="login-form-panel">
+    <form (ngSubmit)="onSubmit()" class="login-form-modern">
+      <h1>Sign In</h1>
+      <p class="login-form-desc">Enter your credentials to access your dashboard.</p>
 
       <label>
-        <span>Store ID or Mobile</span>
+        <span>MOBILE</span>
         <div class="field-wrap">
-          <i class="bi bi-shop"></i>
-          <input type="text" placeholder="Enter store id or mobile" [(ngModel)]="storeId" name="storeId" />
+          <i class="bi bi-envelope"></i>
+          <input type="email" placeholder="admin@medicare.com" [(ngModel)]="storeId" name="storeId" />
         </div>
       </label>
 
       <label>
-        <span>Password</span>
+        <div class="password-label-row">
+          <span>PASSWORD</span>
+          <a class="forgot-link" routerLink="/vendor/forgot">Forgot Password?</a>
+        </div>
         <div class="field-wrap">
           <i class="bi bi-lock"></i>
-          <input type="password" placeholder="Enter password" [(ngModel)]="password" name="password" />
+          <input type="password" placeholder="********" [(ngModel)]="password" name="password" />
         </div>
       </label>
 
-      <label>
-        <span>Login As</span>
-        <div class="field-wrap">
-          <i class="bi bi-person-badge"></i>
-          <select [(ngModel)]="role" name="role">
-            <option value="owner">Owner</option>
-            <option value="staff">Staff</option>
-          </select>
-        </div>
-      </label>
-
-      <button type="submit" class="submit-btn" [disabled]="isSubmitting">
-        <i class="bi bi-box-arrow-in-right"></i>
-        <span>{{ isSubmitting ? 'Logging in...' : 'Login' }}</span>
+      <button type="submit" class="btn-primary" [disabled]="isSubmitting">
+        Access Dashboard
+        <span class="arrow">→</span>
       </button>
     </form>
-
-    <p class="signup-link">
-      New medical store owner?
-      <a routerLink="/vendor/signup">Create account</a>
-    </p>
-  </article>
-</section>
+    <div class="login-signup-row">
+      Don't have an account? <a routerLink="/vendor/signup">Register your store</a>
+    </div>
+  </div>
+</div>
 
 <app-common-modal
   [isOpen]="isErrorModalOpen"
