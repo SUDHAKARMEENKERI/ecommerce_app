@@ -175,3 +175,137 @@
 .login-signup-row a:hover {
   text-decoration: underline;
 }
+
+@media (max-width: 1024px) {
+  .login-split {
+    min-height: auto;
+    flex-direction: column;
+  }
+
+  .login-brand-panel,
+  .login-form-panel {
+    padding: 2rem 1.5rem;
+  }
+
+  .login-brand-panel {
+    flex: none;
+    min-height: 240px;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .brand-logo-row,
+  .brand-welcome {
+    text-align: left;
+  }
+
+  .login-form-panel {
+    flex: none;
+  }
+
+  .login-form-modern {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-brand-panel {
+    padding: 1.5rem 1rem;
+  }
+
+  .brand-logo-row {
+    margin-bottom: 1rem;
+  }
+
+  .brand-logo {
+    font-size: 1.2rem;
+  }
+
+  .brand-welcome h2 {
+    font-size: 1.45rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .brand-welcome p {
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+  }
+
+  .brand-security {
+    width: 100%;
+    margin-top: 0;
+    padding: 0.85rem 0.95rem;
+  }
+
+  .security-title {
+    font-size: 0.96rem;
+  }
+
+  .security-desc {
+    font-size: 0.88rem;
+  }
+
+  .login-form-panel {
+    padding: 1.2rem 1rem 1.5rem;
+  }
+
+  .login-form-modern {
+    padding: 1.2rem 1rem;
+  }
+
+  .login-form-modern h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .login-form-desc {
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 0.85rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .field-wrap {
+    padding: 0.55rem 0.8rem;
+  }
+
+  .field-wrap input {
+    font-size: 1rem;
+  }
+
+  .login-form-modern .btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .login-signup-row {
+    margin-top: 1rem;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-brand-panel {
+    padding: 1.1rem 0.8rem;
+  }
+
+  .login-form-panel {
+    padding: 1rem 0.8rem 1.2rem;
+  }
+
+  .login-form-modern h1 {
+    font-size: 1.3rem;
+  }
+
+  .login-form-modern span {
+    font-size: 0.92rem;
+  }
+
+  .field-wrap i {
+    font-size: 1rem;
+  }
+}

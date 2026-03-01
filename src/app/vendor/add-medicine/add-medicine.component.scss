@@ -586,3 +586,138 @@ label > small {
   font-weight: 500;
   margin: 2px 0 0;
 }
+
+@media (max-width: 700px) {
+  .add-medicine-page {
+    padding: 4px 0 18px;
+  }
+
+  .page-shell {
+    padding: 10px;
+    border-radius: 14px;
+  }
+
+  .masthead {
+    padding: 12px;
+    border-radius: 14px;
+  }
+
+  .title-group {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .title-group > div {
+    width: 100%;
+    min-height: 0;
+  }
+
+  .back-link {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+  }
+
+  .title-group h1 {
+    font-size: 26px;
+    line-height: 1.1;
+  }
+
+  .title-group p {
+    font-size: 13px;
+    margin-top: 4px;
+  }
+
+  .bulk-upload-row {
+    width: 100%;
+  }
+
+  .bulk-upload-row .upload-status {
+    width: 100%;
+    word-break: break-word;
+  }
+
+  .bulk-upload-actions {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .bulk-upload-row .btn-primary,
+  .bulk-upload-row .template-btn {
+    flex: 1 1 100%;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .status-pill {
+    width: 100%;
+  }
+
+  .top-stats {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .glass-card {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .section-head {
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+
+  .section-head h2 {
+    font-size: 20px;
+  }
+
+  .section-head p {
+    font-size: 13px;
+  }
+
+  .input-grid {
+    gap: 10px;
+  }
+
+  input,
+  select,
+  textarea {
+    min-height: 42px;
+    font-size: 14px;
+  }
+
+  .insight-rail {
+    padding: 12px;
+    border-radius: 14px;
+  }
+
+  .actions-footer {
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+
+  .btn-cancel,
+  .btn-submit,
+  .actions-footer .btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .title-group h1 {
+    font-size: 22px;
+  }
+
+  .status-pill strong {
+    font-size: 22px;
+  }
+
+  .step-badge {
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
+  }
+}

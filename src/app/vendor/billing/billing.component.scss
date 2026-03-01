@@ -714,39 +714,23 @@
     width: fit-content;
   }
 
-  .invoice-head,
-  .invoice-row {
-    grid-template-columns: 1fr 1fr 0.9fr 0.9fr;
-    gap: 8px;
+  .result-pane {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
-  .invoice-head span:nth-child(3),
-  .invoice-head span:nth-child(4),
-  .invoice-row span:nth-child(3),
-  .invoice-row span:nth-child(4) {
-    display: none;
+  .invoice-table {
+    min-width: 900px;
   }
 
-  .invoice-head span:nth-child(6),
-  .invoice-row .details-btn,
-  .invoice-row .print-btn {
-    justify-self: end;
-  }
-
-  .invoice-row .print-btn {
-    min-width: 84px;
+  .details-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .details-table-head,
   .details-table-row {
-    grid-template-columns: 0.5fr 1.3fr 1fr 0.7fr 0.5fr 0.8fr;
-  }
-
-  .details-table-head span:nth-child(4),
-  .details-table-head span:nth-child(5),
-  .details-table-row span:nth-child(4),
-  .details-table-row span:nth-child(5) {
-    display: none;
+    min-width: 860px;
   }
 }
 
@@ -762,10 +746,57 @@
   .date-range {
     width: 100%;
     justify-content: space-between;
+    flex-wrap: wrap;
+    row-gap: 6px;
+    height: auto;
+    padding: 8px 10px;
+  }
+
+  .date-range label {
+    flex: 1 1 calc(50% - 16px);
+    min-width: 120px;
+  }
+
+  .date-range span {
+    flex: 0 0 auto;
   }
 
   .date-range input {
-    width: 84px;
+    width: 100%;
+    min-height: 32px;
+  }
+
+  .today-snapshot-card .medium-stats-row {
+    gap: 0.8rem !important;
+  }
+
+  .today-snapshot-card .medium-tile {
+    display: grid !important;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    align-items: center;
+    column-gap: 10px;
+    row-gap: 2px;
+    min-height: 88px !important;
+  }
+
+  .today-snapshot-card .medium-tile .stat-label {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .today-snapshot-card .medium-tile .stat-value {
+    grid-column: 1;
+    grid-row: 2;
+    margin-bottom: 0;
+  }
+
+  .today-snapshot-card .medium-tile .icon {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    justify-self: end;
+    align-self: center;
+    margin-top: 0 !important;
   }
 }
 

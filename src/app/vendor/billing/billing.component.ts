@@ -27,6 +27,8 @@ export class VendorBillingComponent {
   };
 
   searchText = '';
+  startDate = '';
+  endDate = '';
   invoices: InvoiceItem[] = [];
   selectedInvoice: InvoiceItem | null = null;
   modalViewportOffset = 0;
@@ -45,16 +47,43 @@ export class VendorBillingComponent {
 
   get filteredInvoices(): InvoiceItem[] {
     const query = this.searchText.trim().toLowerCase();
-    if (!query) {
-      return this.invoices;
+    const startDateValue = this.startDate ? new Date(this.startDate) : null;
+    const endDateValue = this.endDate ? new Date(this.endDate) : null;
+
+    if (startDateValue) {
+      startDateValue.setHours(0, 0, 0, 0);
     }
 
-    return this.invoices.filter((invoice) =>
-      [invoice.id, invoice.customerName, invoice.customerPhone, invoice.amount.toString()]
-        .join(' ')
-        .toLowerCase()
-        .includes(query)
-    );
+    if (endDateValue) {
+      endDateValue.setHours(23, 59, 59, 999);
+    }
+
+    return this.invoices.filter((invoice) => {
+      const matchesSearch = !query ||
+        [invoice.id, invoice.customerName, invoice.customerPhone, invoice.amount.toString()]
+          .join(' ')
+          .toLowerCase()
+          .includes(query);
+
+      if (!matchesSearch) {
+        return false;
+      }
+
+      const invoiceDate = new Date(invoice.date);
+      if (Number.isNaN(invoiceDate.getTime())) {
+        return false;
+      }
+
+      if (startDateValue && invoiceDate < startDateValue) {
+        return false;
+      }
+
+      if (endDateValue && invoiceDate > endDateValue) {
+        return false;
+      }
+
+      return true;
+    });
   }
 
   get totalRevenue(): number {

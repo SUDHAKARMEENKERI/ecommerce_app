@@ -15,6 +15,7 @@ type DashboardVM = {
   totalMedicines: number;
   lowStockItems: Product[];
   recentInvoices: InvoiceItem[];
+  weeklyRevenue: { label: string; amount: number; height: number; isPeak: boolean }[];
 };
 
 @Component({
@@ -26,6 +27,7 @@ type DashboardVM = {
 })
 export class VendorDashboardComponent {
   vm$!: Observable<DashboardVM>;
+  
 
 
   constructor(private dashboard: DashboardService) {
@@ -38,9 +40,10 @@ export class VendorDashboardComponent {
         map(meds => meds.filter(m => m.qty > 0 && m.qty <= 5)),
         startWith([] as Product[])
       ),
-      recentInvoices: this.dashboard.getRecentInvoices$().pipe(startWith([] as InvoiceItem[]))
+      recentInvoices: this.dashboard.getRecentInvoices$().pipe(startWith([] as InvoiceItem[])),
+      allInvoices: this.dashboard.getAllInvoices$().pipe(startWith([] as InvoiceItem[]))
     }).pipe(
-      map(({ totalSales, totalBills, stock, allMedicines, lowStockItems, recentInvoices }) => ({
+      map(({ totalSales, totalBills, stock, allMedicines, lowStockItems, recentInvoices, allInvoices }) => ({
         totalSales,
         totalBills,
         outOfStock: stock.outOfStock,
@@ -48,9 +51,56 @@ export class VendorDashboardComponent {
         expiringSoon: stock.expiringSoon,
         totalMedicines: allMedicines.length,
         lowStockItems,
-        recentInvoices
+        recentInvoices,
+        weeklyRevenue: this.buildWeeklyRevenue(allInvoices)
       }))
     );
+  }
+
+  private buildWeeklyRevenue(invoices: InvoiceItem[]): { label: string; amount: number; height: number; isPeak: boolean }[] {
+    const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const startDate = new Date(today);
+    startDate.setDate(startDate.getDate() - 6);
+
+    const days = Array.from({ length: 7 }, (_, index) => {
+      const date = new Date(startDate);
+      date.setDate(startDate.getDate() + index);
+      date.setHours(0, 0, 0, 0);
+
+      return {
+        date,
+        label: dayLabels[date.getDay()],
+        amount: 0
+      };
+    });
+
+    for (const invoice of invoices) {
+      const invoiceDate = new Date(invoice.date);
+      if (Number.isNaN(invoiceDate.getTime())) {
+        continue;
+      }
+
+      invoiceDate.setHours(0, 0, 0, 0);
+      if (invoiceDate < startDate || invoiceDate > today) {
+        continue;
+      }
+
+      const dayIndex = Math.floor((invoiceDate.getTime() - startDate.getTime()) / (24 * 60 * 60 * 1000));
+      if (dayIndex >= 0 && dayIndex < days.length) {
+        days[dayIndex].amount += Number(invoice.amount) || 0;
+      }
+    }
+
+    const maxAmount = days.reduce((max, day) => Math.max(max, day.amount), 0);
+    return days.map((day) => ({
+      label: day.label,
+      amount: day.amount,
+      height: maxAmount > 0 ? Math.max((day.amount / maxAmount) * 100, day.amount > 0 ? 12 : 0) : 0,
+      isPeak: maxAmount > 0 && day.amount === maxAmount
+    }));
   }
 
   trackByProductId(_index: number, item: Product) {

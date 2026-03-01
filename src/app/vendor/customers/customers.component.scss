@@ -816,3 +816,115 @@
     gap: 10px;
   }
 }
+
+@media (max-width: 700px) {
+  .customers-page {
+    padding: 4px 0 14px;
+  }
+
+  .hero-head {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px;
+  }
+
+  .hero-head h1 {
+    font-size: 26px;
+  }
+
+  .hero-head p {
+    font-size: 12px;
+  }
+
+  .hero-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .hero-actions .btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .summary-card {
+    min-height: 92px;
+  }
+
+  .summary-card h2 {
+    font-size: 21px;
+  }
+
+  .mini-box {
+    width: 38px;
+    height: 38px;
+  }
+
+  .toolbar-panel {
+    padding: 10px;
+  }
+
+  .filters {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .filters button {
+    flex: 1 1 calc(50% - 8px);
+  }
+
+  .list-card {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .list-head,
+  .list-row {
+    min-width: 980px;
+  }
+
+  .list-footer {
+    gap: 8px;
+  }
+
+  .pager {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .customer-drawer {
+    width: 100vw;
+    max-width: 100vw;
+    border-radius: 0;
+    padding: 14px;
+  }
+
+  .customer-modal-backdrop {
+    padding: 10px;
+  }
+
+  .customer-modal.add-contact-modal {
+    margin: 0;
+    max-width: 100%;
+  }
+
+  .customer-modal-head,
+  .customer-form-grid.add-contact-form-grid,
+  .customer-modal-footer.add-contact-footer {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .customer-modal-footer.add-contact-footer {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .customer-modal-footer.add-contact-footer .secondary,
+  .customer-modal-footer.add-contact-footer .btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+}

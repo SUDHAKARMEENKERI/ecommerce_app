@@ -386,6 +386,16 @@
 }
 
 @media (max-width: 720px) {
+  .analytics-page {
+    padding: 6px 0 14px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
   .page-header h1 {
     font-size: 28px;
   }
@@ -394,7 +404,103 @@
     font-size: 14px;
   }
 
+  .export-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .filter-card {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .quick-ranges {
+    width: 100%;
+    gap: 6px;
+  }
+
+  .quick-ranges button {
+    flex: 1 1 calc(50% - 6px);
+  }
+
+  .date-range {
+    width: 100%;
+    gap: 6px;
+  }
+
+  .date-range label {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .date-range span {
+    width: 100%;
+    text-align: left;
+    font-size: 12px;
+  }
+
+  .kpi-card {
+    min-height: 118px;
+    padding: 13px;
+  }
+
   .kpi-card h2 {
     font-size: 28px;
+  }
+
+  .kpi-icon {
+    width: 42px;
+    height: 42px;
+  }
+
+  .panel {
+    padding: 12px;
+  }
+
+  .panel h3 {
+    font-size: 24px;
+  }
+
+  .panel p {
+    font-size: 16px;
+  }
+
+  .panel-head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .panel-head button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .trend-placeholder {
+    min-height: 136px;
+    padding: 8px;
+    gap: 6px;
+  }
+
+  .tx-list {
+    max-height: 240px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header h1 {
+    font-size: 24px;
+  }
+
+  .page-header p {
+    font-size: 13px;
+  }
+
+  .kpi-card h2 {
+    font-size: 24px;
+  }
+
+  .quick-ranges button {
+    flex: 1 1 100%;
   }
 }

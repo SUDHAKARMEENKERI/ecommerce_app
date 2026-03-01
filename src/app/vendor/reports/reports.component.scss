@@ -270,3 +270,125 @@
   color: #e11d48;
   font-weight: 600;
 }
+
+@media (max-width: 1024px) {
+  .reports-header-row {
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 1.4rem;
+  }
+
+  .reports-summary-cards {
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 1.4rem;
+  }
+
+  .reports-ai-analysis {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 1.4rem;
+  }
+
+  .ai-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 700px) {
+  .reports-main {
+    padding: 6px 0 14px;
+  }
+
+  .reports-header-row h1 {
+    font-size: 1.45rem;
+  }
+
+  .reports-header-row p {
+    font-size: 0.92rem;
+  }
+
+  .reports-export-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.6rem 1rem;
+    font-size: 0.92rem;
+  }
+
+  .reports-summary-card {
+    padding: 1rem;
+  }
+
+  .reports-summary-card .label,
+  .reports-summary-card .trend.up,
+  .reports-summary-card .desc {
+    font-size: 0.9rem;
+  }
+
+  .reports-summary-card .value {
+    font-size: 1.45rem;
+  }
+
+  .reports-ai-analysis,
+  .reports-top-selling-panel,
+  .reports-expiry-alert-panel {
+    padding: 1rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .ai-info {
+    gap: 0.7rem;
+  }
+
+  .ai-title {
+    font-size: 0.98rem;
+  }
+
+  .ai-desc {
+    font-size: 0.88rem;
+  }
+
+  .panel-header-row,
+  .expiry-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .reports-top-selling-panel,
+  .reports-expiry-alert-panel {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .reports-top-selling-table,
+  .expiry-table {
+    min-width: 560px;
+  }
+
+  .reports-top-selling-table th,
+  .expiry-table th,
+  .reports-top-selling-table td,
+  .expiry-table td {
+    font-size: 0.88rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .reports-header-row h1 {
+    font-size: 1.28rem;
+  }
+
+  .icon-ai {
+    width: 1.5rem;
+    height: 1.5rem;
+    background-size: 1.5rem;
+  }
+
+  .expiry-badge {
+    font-size: 0.82rem;
+    padding: 0.15rem 0.55rem;
+  }
+}

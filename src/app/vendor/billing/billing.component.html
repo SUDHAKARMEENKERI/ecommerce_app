@@ -61,11 +61,17 @@
 
         <div class="date-range">
           <label>
-            <input type="date" />
+            <input
+              type="date"
+              [(ngModel)]="startDate"
+              [ngModelOptions]="{ standalone: true }" />
           </label>
           <span>to</span>
           <label>
-            <input type="date" />
+            <input
+              type="date"
+              [(ngModel)]="endDate"
+              [ngModelOptions]="{ standalone: true }" />
           </label>
         </div>
       </section>

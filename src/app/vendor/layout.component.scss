@@ -269,3 +269,38 @@
   background: transparent;
   border-top: 0;
 }
+
+@media (max-width: 640px) {
+  .sidebar {
+    width: 70px;
+    padding: 10px 8px;
+  }
+
+  .sidebar .sidebar-header {
+    display: none;
+  }
+
+  .sidebar .sidebar-toggle {
+    display: none;
+    pointer-events: none;
+  }
+
+  .sidebar .label {
+    display: none;
+    opacity: 0;
+  }
+
+  .sidebar a {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .sidebar a .icon {
+    margin-right: 0;
+  }
+
+  .sidebar a.sub-link {
+    padding-left: 0;
+  }
+}

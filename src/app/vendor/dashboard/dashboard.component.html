@@ -37,21 +37,23 @@
     <!-- Revenue Chart Placeholder -->
     <div class="dashboard-chart-panel">
       <div class="dashboard-chart-header">
-        <span>Revenue Overview (This Week)</span>
+        <div>
+          <span class="dashboard-chart-title">Revenue Overview</span>
+          <p class="dashboard-chart-subtitle">Daily sales performance for the current week.</p>
+        </div>
         <div class="dashboard-chart-dropdown">
           <select>
-            <option>Last 7 Days</option>
-            <option>This Month</option>
+            <option>Last Week</option>
           </select>
           <span class="dashboard-chart-dropdown-icon"></span>
         </div>
       </div>
-      <div class="dashboard-chart-placeholder">
-        <!-- Chart goes here -->
-        <div class="dashboard-chart-xlabels">
-          <span *ngFor="let day of ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']">{{day}}</span>
-        </div>
+      <div class="dashboard-chart-placeholder" *ngIf="vm.weeklyRevenue.length; else emptyChart">
+        <div class="dashboard-chart-empty">Chart is currently empty.</div>
       </div>
+      <ng-template #emptyChart>
+        <div class="dashboard-chart-empty">Chart is currently empty.</div>
+      </ng-template>
     </div>
 
     <!-- Stock Alerts -->
