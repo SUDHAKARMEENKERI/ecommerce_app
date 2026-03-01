@@ -64,6 +64,7 @@
 }
 .invoices-page {
   padding: 8px 0 24px;
+  position: relative;
 }
 
 .billing-shell {
@@ -538,12 +539,14 @@
 }
 
 .details-modal-backdrop {
-  position: fixed;
-  inset: 0;
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 100dvh;
   background: rgba(15, 23, 42, 0.48);
   display: grid;
   place-items: center;
-  z-index: 60;
+  z-index: 1200;
   padding: 16px;
 }
 

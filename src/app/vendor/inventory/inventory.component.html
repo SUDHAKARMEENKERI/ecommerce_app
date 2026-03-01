@@ -1,5 +1,14 @@
 
 <section class="inventory-page">
+  <app-common-modal
+    [isOpen]="isImportModalOpen"
+    [variant]="importModalVariant"
+    [title]="importModalTitle"
+    [message]="importModalMessage"
+    [actionLabel]="importModalActionLabel"
+    (closed)="closeImportModal()">
+  </app-common-modal>
+
   <div class="page-shell">
     <header class="inventory-header">
       <div class="title-block">
@@ -21,7 +30,7 @@
           <span>Import</span>
         </button>
         <input #importFileInput type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" style="display:none" (change)="importInventory($event)" />
-        <button type="button" class="btn btn-dark-action" routerLink="/vendor/inventory/add">
+        <button type="button" class="btn-primary" routerLink="/vendor/inventory/add">
           <i class="bi bi-plus-lg"></i>
           <span>Add Medicine</span>
         </button>
@@ -88,8 +97,29 @@
       </table>
       <!-- Pagination Controls -->
       <div class="pagination-bar" *ngIf="totalPages > 1">
-        <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">Prev</button>
-        <span>Page {{ currentPage }} of {{ totalPages }}</span>
-        <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">Next</button>
+        <div class="pagination-info">
+          <span class="pagination-page">Page {{ currentPage }} of {{ totalPages }}</span>
+          <span class="pagination-range">
+            Showing {{ (currentPage - 1) * pageSize + 1 }}-{{ (currentPage - 1) * pageSize + pagedItems.length }} of {{ sortedItems.length }} items
+          </span>
+        </div>
+        <div class="pagination-actions">
+          <button
+            type="button"
+            class="pagination-btn"
+            (click)="goToPage(currentPage - 1)"
+            [disabled]="currentPage === 1">
+            <i class="bi bi-chevron-left"></i>
+            <span>Previous</span>
+          </button>
+          <button
+            type="button"
+            class="pagination-btn"
+            (click)="goToPage(currentPage + 1)"
+            [disabled]="currentPage === totalPages">
+            <span>Next</span>
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
       </div>
     </div>

@@ -1,18 +1,18 @@
-<section class="modal-backdrop" *ngIf="isOpen" (click)="onBackdropClick($event)">
-  <article class="modal-card" role="dialog" aria-modal="true" [attr.aria-label]="title">
-    <header class="modal-head">
-      <h2>{{ title }}</h2>
-      <button type="button" class="close-btn" (click)="onClose()" aria-label="Close dialog">
-        <i class="bi bi-x-lg"></i>
-      </button>
-    </header>
+<section class="simple-modal-backdrop" *ngIf="isOpen" (click)="onBackdropClick($event)">
+	<article class="simple-modal" role="dialog" aria-modal="true" [attr.aria-label]="title">
+		<div class="simple-modal-body">
+			<div class="status-icon-wrap" [class.error]="variant === 'error'" aria-hidden="true">
+				<span class="status-icon" [class.error]="variant === 'error'">
+					<i [class]="variant === 'error' ? 'bi bi-exclamation-lg' : 'bi bi-check-lg'"></i>
+				</span>
+			</div>
 
-    <div class="modal-body">
-      <p>{{ message }}</p>
-    </div>
+			<h2>{{ title }}</h2>
+			<p>{{ message }}</p>
+		</div>
 
-    <footer class="modal-foot">
-      <button type="button" class="ok-btn" (click)="onClose()">OK</button>
-    </footer>
-  </article>
+		<footer class="simple-modal-footer">
+			<button type="button" class="simple-action" [class.error]="variant === 'error'" (click)="onClose()">{{ actionLabel }}</button>
+		</footer>
+	</article>
 </section>

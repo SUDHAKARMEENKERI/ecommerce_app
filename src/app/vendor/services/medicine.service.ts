@@ -32,6 +32,12 @@ export type CreateMedicineInput = {
   email?: string;
 };
 
+export type BulkUploadResponse = {
+  success: boolean;
+  count: number;
+  message?: string;
+};
+
 @Injectable({ providedIn: 'root' })
 export class MedicineService {
     /**
@@ -414,9 +420,41 @@ export class MedicineService {
     return 'In Stock';
   }
 
-  bulkUploadExcel(file: File): Observable<{ success: boolean; count: number }> {
+  bulkUploadExcel(file: File): Observable<BulkUploadResponse> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post<{ success: boolean; count: number }>(`${this.medicineApiBaseUrl}/bulkUploadExcel`, formData);
+    return this.http.post<unknown>(`${this.medicineApiBaseUrl}/bulkUploadExcel`, formData).pipe(
+      map((response) => this.normalizeBulkUploadResponse(response))
+    );
+  }
+
+  private normalizeBulkUploadResponse(response: unknown): BulkUploadResponse {
+    if (!response || typeof response !== 'object') {
+      return { success: false, count: 0, message: 'Invalid bulk upload response.' };
+    }
+
+    const source = response as Record<string, unknown>;
+    const success =
+      source['success'] === true ||
+      source['Result'] === true ||
+      source['ok'] === true ||
+      source['status'] === 'success';
+
+    const rawCount = source['count'] ?? source['insertedCount'] ?? source['records'] ?? source['uploaded'];
+    let count = 0;
+
+    if (typeof rawCount === 'number' && Number.isFinite(rawCount)) {
+      count = rawCount;
+    } else if (typeof rawCount === 'string' && rawCount.trim()) {
+      const parsed = Number.parseInt(rawCount, 10);
+      count = Number.isNaN(parsed) ? 0 : parsed;
+    }
+
+    const message =
+      (typeof source['message'] === 'string' && source['message']) ||
+      (typeof source['Message'] === 'string' && source['Message']) ||
+      undefined;
+
+    return { success, count, message };
   }
 }

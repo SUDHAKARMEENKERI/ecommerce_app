@@ -491,10 +491,24 @@ label > small {
 /* Add attractive style for bulk upload button as a real-time button */
 .bulk-upload-row {
   display: flex;
-  align-items: center;
-  gap: 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
   border-radius: 8px;
-  padding: 12px 20px;
+  padding: 0;
+  margin-top: 8px;
+}
+.bulk-upload-actions {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+.bulk-upload-trigger {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
 }
 .bulk-upload-row .step-badge {
   background: #4f46e5;
@@ -512,22 +526,63 @@ label > small {
   background: #4f46e5;
   color: #fff;
   border: none;
-  border-radius: 6px;
-  padding: 8px 18px;
-  font-size: 1rem;
+  border-radius: 10px;
+  height: 40px;
+  padding: 0 14px;
+  font-size: 0.9rem;
+  line-height: 1;
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(60, 120, 200, 0.12);
-  transition: background 0.2s, transform 0.1s;
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
   outline: none;
+}
+.bulk-upload-row .btn-primary {
+  height: 40px;
+  padding: 0 14px;
+  font-size: 0.9rem;
+  line-height: 1;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+.bulk-upload-row .template-btn {
+  background: #ffffff;
+  color: #4338ca;
+  border: 1px solid #c7d2fe;
+  border-radius: 10px;
+  height: 40px;
+  padding: 0 14px;
+  font-size: 0.95rem;
+  line-height: 1;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(79, 70, 229, 0.1);
+  transition: background 0.2s, border-color 0.2s, transform 0.1s, box-shadow 0.2s;
 }
 .bulk-upload-row .upload-btn:hover, .bulk-upload-row .upload-btn:active {
   background: #6366f1;
-  transform: scale(1.04);
+  transform: translateY(-1px);
+}
+.bulk-upload-row .template-btn:hover,
+.bulk-upload-row .template-btn:active {
+  background: #eef2ff;
+  border-color: #a5b4fc;
+  transform: translateY(-1px);
 }
 .bulk-upload-row .upload-status {
   font-size: 0.95rem;
   color: #2563eb;
   font-weight: 500;
-  margin-left: 12px;
+  margin: 2px 0 0;
 }

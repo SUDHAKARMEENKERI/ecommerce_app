@@ -113,7 +113,7 @@
     <div class="dashboard-table-panel">
       <div class="dashboard-table-header">
         <span>Recent POS Transactions</span>
-        <button class="dashboard-table-menu">...</button>
+        <button class="dashboard-table-menu" aria-label="Table actions">⋯</button>
       </div>
       <div class="dashboard-table-scroll">
         <table class="dashboard-table">
@@ -129,10 +129,10 @@
           <tbody>
             <tr *ngFor="let tx of vm.recentInvoices; trackBy: trackByInvoiceId">
               <td class="dashboard-table-invoice">{{ tx.invoiceNumber || tx.id }}</td>
-              <td>{{ tx.date | date: 'shortTime' }}</td>
-              <td>{{ tx.customerName }}</td>
-              <td>{{ tx.itemCount }}</td>
-              <td>₹{{ tx.amount | number: '1.0-0' }}</td>
+              <td class="dashboard-table-time">{{ tx.date | date: 'shortTime' }}</td>
+              <td class="dashboard-table-customer">{{ tx.customerName }}</td>
+              <td class="dashboard-table-items">{{ tx.itemCount }}</td>
+              <td class="dashboard-table-amount">₹{{ tx.amount | number: '1.0-0' }}</td>
             </tr>
           </tbody>
         </table>

@@ -2,8 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { map } from 'rxjs/operators';
-import { MedicineItem, MedicineService } from '../services/medicine.service';
+import { BulkUploadResponse, MedicineItem, MedicineService } from '../services/medicine.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { CommonModalComponent } from '../../shared/modal/common-modal.component';
 
 type InventoryTab = 'all' | 'low-stock' | 'out-of-stock' | 'expiring' | 'expired';
 
@@ -33,7 +34,7 @@ type InventoryColumn = {
 @Component({
   selector: 'app-vendor-inventory',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, CommonModalComponent],
   templateUrl: './inventory.component.html',
   styleUrls: ['./inventory.component.scss']
 })
@@ -117,6 +118,11 @@ export class VendorInventoryComponent {
   selectedIds = new Set<string>();
   sortColumn: InventoryColumnKey = 'name';
   sortDirection: SortDirection = 'asc';
+  isImportModalOpen = false;
+  importModalVariant: 'success' | 'error' = 'success';
+  importModalTitle = '';
+  importModalMessage = '';
+  importModalActionLabel = 'OK';
 
   columns: InventoryColumn[] = [
     { key: 'name', label: 'Name', width: '1.3fr', sortable: true, visible: true },
@@ -163,20 +169,47 @@ export class VendorInventoryComponent {
       this.medicineService.bulkUploadExcel(file)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
-          next: (result) => {
+          next: (result: BulkUploadResponse) => {
             if (result.success) {
-              window.alert(`Bulk upload successful. ${result.count} items uploaded.`);
+              const uploadedMessage = result.count > 0
+                ? `Uploaded successfully (${result.count} records).`
+                : 'Uploaded successfully.';
+              this.openImportModal('success', 'Import Successful', uploadedMessage, 'Understood');
               this.medicineService.loadMedicinesFromApi().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
-            } else {
-              window.alert('Bulk upload failed.');
+              return;
             }
+
+            const failedMessage = result.message || 'Bulk upload failed. Please check the file and try again.';
+            this.openImportModal('error', 'Import Failed', failedMessage, 'Dismiss Error');
           },
-          error: () => {
-            window.alert('Bulk upload failed.');
+          error: (errorResponse: unknown) => {
+            const responseRecord = errorResponse as { error?: { message?: string }; message?: string };
+            const failedMessage =
+              responseRecord?.error?.message ||
+              responseRecord?.message ||
+              'Bulk upload failed. Please try again.';
+            this.openImportModal('error', 'Import Failed', failedMessage, 'Dismiss Error');
           }
         });
       input.value = '';
     }
+
+  closeImportModal() {
+    this.isImportModalOpen = false;
+  }
+
+  private openImportModal(
+    variant: 'success' | 'error',
+    title: string,
+    message: string,
+    actionLabel: string
+  ) {
+    this.importModalVariant = variant;
+    this.importModalTitle = title;
+    this.importModalMessage = message;
+    this.importModalActionLabel = actionLabel;
+    this.isImportModalOpen = true;
+  }
     getStatusClass(status: string): string {
       return 'status-badge status-' + (status ? status.toLowerCase().split(' ').join('-') : '');
     }

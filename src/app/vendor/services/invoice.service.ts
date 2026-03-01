@@ -61,46 +61,78 @@ export class InvoiceService {
   }
 
   loadInvoicesFromApi(): Observable<InvoiceItem[]> {
-    // Get login data from localStorage (assuming login data is stored as JSON string)
-    let loginDataRaw = localStorage.getItem('vendor_login_response');
-    let storeId = '';
-    let storeMobile = '';
-    let email = '';
-    if (loginDataRaw) {
-      try {
-        const loginData = JSON.parse(loginDataRaw);
-        storeId = loginData.storeId || '';
-        storeMobile = loginData.storeMobile || '';
-        email = loginData.email || '';
-      } catch (e) {
-        console.warn('Failed to parse loginData from localStorage:', e);
-      }
-    }
-    // Fallback to direct keys if loginData is not present
-    if (!storeId) storeId = localStorage.getItem('storeId') || '';
-    if (!storeMobile) storeMobile = localStorage.getItem('storeMobile') || '';
-    if (!email) email = localStorage.getItem('email') || '';
-
-    // Log for debugging
-    console.log('Billing API Params:', { storeId, storeMobile, email });
-
-    // Only send params that are present
-    const params: any = {};
-    if (storeId) params.storeId = storeId;
-    if (storeMobile) params.storeMobile = storeMobile;
-    if (email) params.email = email;
+    const params = this.getBillingApiParams();
 
     return this.http.get<unknown>(`${this.billingApiBaseUrl}`, { params }).pipe(
-      tap((response: any) => {
-        console.log('Billing API raw response:', response);
-      }),
-      map((response: any) => {
-        const mapped = this.mapInvoiceList(response);
-        console.log('Mapped invoices:', mapped);
-        return mapped;
-      }),
+      map((response: any) => this.mapInvoiceList(response)),
       tap((invoices) => this.invoicesSubject.next(invoices))
     );
+  }
+
+  private getBillingApiParams(): Record<string, string> {
+    const params: Record<string, string> = {};
+    const source = this.extractSource(this.authService.loginResponse);
+
+    const storeId = this.pickValue(source, ['storeId', 'medicalStoreId', 'pharmacyCode']) || localStorage.getItem('storeId') || '';
+    const storeMobile =
+      this.pickValue(source, ['storeMobile', 'mobile', 'phone', 'mobileNo']) || localStorage.getItem('storeMobile') || '';
+    const email = this.pickValue(source, ['email', 'mailId', 'storeEmail']) || localStorage.getItem('email') || '';
+
+    if (storeId) {
+      params['storeId'] = storeId;
+    }
+
+    if (storeMobile) {
+      params['storeMobile'] = storeMobile;
+    }
+
+    if (email) {
+      params['email'] = email;
+    }
+
+    return params;
+  }
+
+  private extractSource(payload: unknown): Record<string, unknown> {
+    if (!payload) {
+      return {};
+    }
+
+    if (typeof payload === 'string') {
+      try {
+        return this.extractSource(JSON.parse(payload));
+      } catch {
+        return {};
+      }
+    }
+
+    if (typeof payload !== 'object') {
+      return {};
+    }
+
+    const record = payload as Record<string, unknown>;
+    const nestedData = record['data'];
+
+    if (nestedData && typeof nestedData === 'object' && !Array.isArray(nestedData)) {
+      return nestedData as Record<string, unknown>;
+    }
+
+    return record;
+  }
+
+  private pickValue(source: Record<string, unknown>, keys: string[]): string {
+    for (const key of keys) {
+      const value = source[key];
+      if (typeof value === 'string' && value.trim()) {
+        return value.trim();
+      }
+
+      if (typeof value === 'number' && Number.isFinite(value)) {
+        return String(value);
+      }
+    }
+
+    return '';
   }
 
   private upsertInvoice(invoice: InvoiceItem) {

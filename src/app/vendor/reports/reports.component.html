@@ -1,11 +1,16 @@
 <div class="reports-main">
+  <div class="analytics-warning" *ngIf="warningMessage">
+    <i class="bi bi-exclamation-triangle"></i>
+    <span>{{ warningMessage }}</span>
+  </div>
+
   <!-- Header and Export -->
   <div class="reports-header-row">
     <div>
       <h1>Analytics & Reports</h1>
       <p>Deep dive into your sales, inventory, and expirations.</p>
     </div>
-    <button class="reports-export-btn">
+    <button class="reports-export-btn" (click)="exportCsv()">
       <span class="icon-download"></span> Export CSV
     </button>
   </div>
@@ -14,18 +19,18 @@
   <div class="reports-summary-cards">
     <div class="reports-summary-card profit">
       <div class="label">Estimated Profit (This Month)</div>
-      <div class="value">₹ 84,500</div>
-      <div class="trend up">+8.4% from last month</div>
+      <div class="value">₹{{ estimatedProfitThisMonth | number: '1.0-0' }}</div>
+      <div class="trend up">{{ profitTrendPercent >= 0 ? '+' : '' }}{{ profitTrendPercent | number: '1.1-1' }}% from last month</div>
     </div>
     <div class="reports-summary-card avg-order">
       <div class="label">Average Order Value</div>
-      <div class="value">₹ 345</div>
-      <div class="desc">Based on 1,240 invoices</div>
+      <div class="value">₹{{ averageOrderValue | number: '1.0-0' }}</div>
+      <div class="desc">Based on {{ invoices.length }} invoices</div>
     </div>
     <div class="reports-summary-card new-customers">
       <div class="label">New Customers Added</div>
-      <div class="value">128</div>
-      <div class="trend up">+12% from last month</div>
+      <div class="value">{{ newCustomersThisMonth }}</div>
+      <div class="trend up">{{ newCustomersTrendPercent >= 0 ? '+' : '' }}{{ newCustomersTrendPercent | number: '1.1-1' }}% from last month</div>
     </div>
   </div>
 
@@ -35,10 +40,10 @@
       <span class="icon-ai"></span>
       <div>
         <div class="ai-title">AI Store Analysis</div>
-        <div class="ai-desc">Get automated insights on your sales and inventory risks.</div>
+        <div class="ai-desc">{{ aiInsight || 'Get automated insights on your sales and inventory risks.' }}</div>
       </div>
     </div>
-    <button class="ai-btn">Generate AI Insight</button>
+    <button class="ai-btn" (click)="generateAiInsight()">Generate AI Insight</button>
   </div>
 
   <!-- Top Selling Medicines -->
@@ -56,35 +61,18 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
+        <tr *ngFor="let item of topSellingMedicines">
           <td>
-            Paracetamol 500mg
-            <div class="med-sub">Fever / Pain</div>
+            {{ item.name }}
+            <div class="med-sub">{{ item.subtitle }}</div>
           </td>
           <td>
-            <div class="bar-cell"><span class="bar" style="width: 60%"></span>450</div>
+            <div class="bar-cell"><span class="bar" [style.width.%]="item.barWidth"></span>{{ item.unitsSold }}</div>
           </td>
-          <td>₹6750</td>
+          <td>₹{{ item.revenue | number: '1.0-0' }}</td>
         </tr>
-        <tr>
-          <td>
-            Cough Syrup (Adulsa)
-            <div class="med-sub">Syrup</div>
-          </td>
-          <td>
-            <div class="bar-cell"><span class="bar" style="width: 40%"></span>320</div>
-          </td>
-          <td>₹16000</td>
-        </tr>
-        <tr>
-          <td>
-            Amoxicillin 500mg
-            <div class="med-sub">Antibiotic</div>
-          </td>
-          <td>
-            <div class="bar-cell"><span class="bar" style="width: 30%"></span>210</div>
-          </td>
-          <td>₹10500</td>
+        <tr *ngIf="topSellingMedicines.length === 0">
+          <td colspan="3">No sales data found for this month.</td>
         </tr>
       </tbody>
     </table>
@@ -94,7 +82,7 @@
   <div class="reports-expiry-alert-panel">
     <div class="expiry-header-row">
       <span class="expiry-title"><span class="icon-alert"></span>Expiry Risk Alert</span>
-      <span class="expiry-badge">Next 90 Days</span>
+      <span class="expiry-badge">{{ expiryRiskCount }} items · Next 90 Days</span>
     </div>
     <table class="expiry-table">
       <thead>
@@ -105,29 +93,16 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
+        <tr *ngFor="let item of expiryRiskItems">
           <td>
-            Amoxicillin 500mg
-            <div class="batch">Batch: BX-9021</div>
+            {{ item.name }}
+            <div class="batch">Batch: {{ item.batch }}</div>
           </td>
-          <td>45 units</td>
-          <td class="expiry-date">Oct 2026</td>
+          <td>{{ item.stock }} units</td>
+          <td class="expiry-date">{{ item.daysLeft }} days</td>
         </tr>
-        <tr>
-          <td>
-            Cough Syrup (Children)
-            <div class="batch">Batch: SY-4412</div>
-          </td>
-          <td>12 units</td>
-          <td class="expiry-date">Nov 2026</td>
-        </tr>
-        <tr>
-          <td>
-            Aspirin 75mg
-            <div class="batch">Batch: AS-1002</div>
-          </td>
-          <td>88 units</td>
-          <td class="expiry-date">Dec 2026</td>
+        <tr *ngIf="expiryRiskItems.length === 0">
+          <td colspan="3">No medicines expiring in next 90 days.</td>
         </tr>
       </tbody>
     </table>

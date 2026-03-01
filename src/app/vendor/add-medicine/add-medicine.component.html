@@ -1,4 +1,13 @@
 <section class="add-medicine-page">
+  <app-common-modal
+    [isOpen]="isBulkUploadModalOpen"
+    [variant]="bulkUploadModalVariant"
+    [title]="bulkUploadModalTitle"
+    [message]="bulkUploadModalMessage"
+    [actionLabel]="bulkUploadModalActionLabel"
+    (closed)="closeBulkUploadModal()">
+  </app-common-modal>
+
   <div class="page-shell">
     <header class="masthead">
       <div class="title-group">
@@ -12,10 +21,10 @@
         </div>
 
         <div class="bulk-upload-row">
-         
-          <label style="margin: 0;">
-            <button type="button" class="upload-btn" (click)="bulkFileInput.click()">Upload Excel Sheet</button>
-            <input #bulkFileInput type="file" accept=".xlsx,.xls" (change)="onExcelUpload($event)" style="display: none;" />
+          <label class="bulk-upload-actions">
+            <button type="button" class="btn-primary" (click)="bulkFileInput.click()">Upload Excel Sheet</button>
+            <button type="button" class="template-btn" (click)="downloadCsvTemplate()">Download CSV Template</button>
+            <input #bulkFileInput type="file" accept=".csv,.xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" (change)="onExcelUpload($event)" style="display: none;" />
           </label>
           <div class="upload-status" *ngIf="excelUploadMessage">{{ excelUploadMessage }}</div>
         </div>
@@ -224,7 +233,7 @@
 
     <footer class="actions-footer">
       <button type="button" class="btn-cancel" routerLink="/vendor/inventory">Cancel</button>
-      <button type="button" class="btn-submit" [disabled]="isSubmitting" (click)="submitMedicine()">Add
+      <button type="button" class="btn-primary" [disabled]="isSubmitting" (click)="submitMedicine()">Add
         Medicine</button>
     </footer>
   </div>

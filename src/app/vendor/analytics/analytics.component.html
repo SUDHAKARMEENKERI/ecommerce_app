@@ -11,6 +11,11 @@
     </button>
   </header>
 
+  <section class="analytics-warning" *ngIf="warningMessage">
+    <i class="bi bi-exclamation-triangle"></i>
+    <span>{{ warningMessage }}</span>
+  </section>
+
   <section class="filter-card">
     <div class="filter-title">
       <i class="bi bi-funnel"></i>
@@ -76,10 +81,13 @@
 
   <section class="bottom-grid">
     <article class="panel trend-panel">
-      <h3>Revenue Trend</h3>
-      <p>Daily sales in selected period</p>
+      <h3>Sales by Day (Filtered Range)</h3>
+      <p>Daily revenue based on your selected date filters</p>
       <div class="trend-placeholder">
-        <span *ngFor="let h of trendBars" [style.height.%]="h"></span>
+        <div class="trend-bar" *ngFor="let point of trendSeries">
+          <span [style.height.%]="point.height" [attr.title]="'₹' + (point.amount | number: '1.0-0')"></span>
+          <small>{{ point.label }}</small>
+        </div>
       </div>
     </article>
 
@@ -89,16 +97,16 @@
           <h3>Recent Transactions</h3>
           <p>Latest invoices</p>
         </div>
-        <button type="button">View All</button>
+        <button type="button" (click)="viewAllTransactions()">View All</button>
       </div>
 
-      <div class="empty-state" *ngIf="transactions.length === 0">
+      <div class="empty-state" *ngIf="visibleTransactions.length === 0">
         <i class="bi bi-receipt"></i>
         <span>No transactions found</span>
       </div>
 
-      <ul class="tx-list" *ngIf="transactions.length > 0">
-        <li *ngFor="let tx of transactions">
+      <ul class="tx-list" *ngIf="visibleTransactions.length > 0">
+        <li *ngFor="let tx of visibleTransactions">
           <div>
             <b>{{ tx.title }}</b>
             <small>{{ tx.date | date: 'dd MMM yyyy, hh:mm a' }}</small>

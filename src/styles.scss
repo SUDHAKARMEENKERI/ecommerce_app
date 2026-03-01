@@ -1,4 +1,36 @@
+// Shared primary button style for consistent look across the app
+.btn-primary {
+	background: #14b8a6;
+	color: #fff;
+	border: none;
+	border-radius: 8px;
+	padding: 0.6rem 1.4rem;
+	font-size: 1.08rem;
+	font-weight: 700;
+	cursor: pointer;
+	transition: background 0.2s;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.7rem;
+}
+.btn-primary:hover {
+	background: #0e7490;
+}
+/* Fixed header styles */
+header.app-header {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	z-index: 1000;
+	background: #fff;
+	box-shadow: 0 2px 8px rgba(20,40,80,0.06);
+}
 
+body, .app-root, .customers-page {
+	padding-top: 64px; /* Adjust if your header is taller/shorter */
+}
 /* You can add global styles to this file, and also import other style files */
 @import "bootstrap/dist/css/bootstrap.min.css";
 @import "bootstrap-icons/font/bootstrap-icons.css";

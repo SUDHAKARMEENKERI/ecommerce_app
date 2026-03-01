@@ -3,7 +3,7 @@
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(20, 40, 80, 0.18);
-  max-width: 420px;
+  max-width: 560px;
   margin: 48px auto;
   padding: 0 0 24px 0;
   position: relative;
@@ -64,7 +64,6 @@
 .customer-form-grid.add-contact-form-grid input,
 .customer-form-grid.add-contact-form-grid select {
   margin-top: 6px;
-  padding: 10px 12px;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   font-size: 1rem;
@@ -84,6 +83,7 @@
 }
 .customer-form-message.error {
   color: #e11d48;
+  padding-left: 25px;
 }
 .customer-modal-footer.add-contact-footer {
   display: flex;
@@ -620,6 +620,7 @@
   border-radius: 8px;
   background: #fff;
   color: #475569;
+  padding-top: 0px;
 }
 
 .customer-form-grid {

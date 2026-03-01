@@ -29,6 +29,7 @@ export class VendorBillingComponent {
   searchText = '';
   invoices: InvoiceItem[] = [];
   selectedInvoice: InvoiceItem | null = null;
+  modalViewportOffset = 0;
 
   constructor(private invoiceService: InvoiceService, private router: Router) {
     this.invoiceService
@@ -76,12 +77,14 @@ export class VendorBillingComponent {
     return invoice.id;
   }
 
-  openInvoiceDetails(invoice: InvoiceItem): void {
+  openInvoiceDetails(invoice: InvoiceItem, event?: MouseEvent): void {
+    this.modalViewportOffset = this.getMainContentScrollTop(event);
     this.selectedInvoice = invoice;
   }
 
   closeInvoiceDetails(): void {
     this.selectedInvoice = null;
+    this.modalViewportOffset = 0;
   }
 
   printSelectedInvoice(): void {
@@ -562,5 +565,14 @@ export class VendorBillingComponent {
     (window as any).ng && (window as any).ng.core && (window as any).ng.core.injector ?
       (window as any).ng.core.injector.get('Router').navigate(['/vendor/purchase']) :
       (this.router && this.router.navigate(['/vendor/purchase']));
+  }
+
+  private getMainContentScrollTop(event?: MouseEvent): number {
+    const eventTarget = event?.currentTarget as HTMLElement | null;
+    const fromEvent = eventTarget?.closest('.main-content') as HTMLElement | null;
+    const fallback = document.querySelector('.main-content') as HTMLElement | null;
+    const container = fromEvent || fallback;
+
+    return container?.scrollTop ?? 0;
   }
 }

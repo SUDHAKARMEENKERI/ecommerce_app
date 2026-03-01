@@ -7,12 +7,12 @@
     </div>
 
     <div class="hero-actions">
-      <button type="button" class="add-btn" (click)="openAddCustomerModal()">
+      <button type="button" class="btn-primary" (click)="openAddCustomerModal()">
         <i class="bi bi-plus-lg"></i>
         <span>Add Customer</span>
       </button>
 
-      <button type="button" class="refresh-btn" [disabled]="isRefreshing" (click)="refreshCustomers()">
+      <button type="button" class="btn-primary" [disabled]="isRefreshing" (click)="refreshCustomers()">
         <i class="bi bi-arrow-clockwise" [class.spin]="isRefreshing"></i>
         <span>Refresh Data</span>
       </button>
@@ -184,12 +184,12 @@
   </aside>
 
   <div class="customer-modal-backdrop" *ngIf="isAddModalOpen">
-    <section class="customer-modal add-contact-modal" role="dialog" aria-modal="true" aria-label="Add New Contact">
+    <section class="customer-modal add-contact-modal" role="dialog" aria-modal="true" aria-label="Add New Customer">
       <header class="customer-modal-head">
         <div class="modal-title-row">
           <div class="modal-icon"><i class="bi bi-person-plus"></i></div>
           <div>
-            <h3>Add New Contact</h3>
+            <h3>Add New Customer</h3>
           </div>
         </div>
         <button type="button" class="modal-close-btn" (click)="closeAddCustomerModal()" aria-label="Close">
