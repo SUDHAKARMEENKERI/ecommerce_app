@@ -23,6 +23,7 @@ export class VendorLoginComponent {
   successMessage = '';
   isErrorModalOpen = false;
   modalMessage = '';
+  private readonly pendingBillingMessage = 'Your billing payment is pending. Please clear the due bill to continue logging in.';
 
   constructor(
     private router: Router,
@@ -60,9 +61,17 @@ export class VendorLoginComponent {
     this.isSubmitting = true;
     this.authService.loginMedicalStore(payload).subscribe({
       next: (response) => {
+        const parsedResponse = this.parseResponsePayload(response);
+
+        if (!this.isAccessAllowed(parsedResponse)) {
+          this.isSubmitting = false;
+          this.openErrorModal(this.pendingBillingMessage);
+          return;
+        }
+
         this.isSubmitting = false;
-        this.successMessage = this.getLoginSuccessMessage(response) || 'Login successful. Redirecting...';
-        this.authService.login(response);
+        this.successMessage = this.getLoginSuccessMessage(parsedResponse ?? response) || 'Login successful. Redirecting...';
+        this.authService.login(parsedResponse ?? response);
         this.userProfileService.syncProfileFromLoginResponse();
 
         setTimeout(() => {
@@ -73,8 +82,15 @@ export class VendorLoginComponent {
         this.isSubmitting = false;
 
         if (error.status === 200) {
+          const parsedResponse = this.parseResponsePayload(error.error);
+
+          if (!this.isAccessAllowed(parsedResponse)) {
+            this.openErrorModal(this.pendingBillingMessage);
+            return;
+          }
+
           this.successMessage = 'Login successful. Redirecting...';
-          this.authService.login(error.error);
+          this.authService.login(parsedResponse ?? error.error);
           this.userProfileService.syncProfileFromLoginResponse();
 
           setTimeout(() => {
@@ -114,6 +130,10 @@ export class VendorLoginComponent {
 
     const parsedError = this.tryParseError(error.error);
 
+    if (parsedError?.accessAllowed === false) {
+      return this.pendingBillingMessage;
+    }
+
     if (parsedError?.status === 401) {
       return 'Invalid credentials. Please check mobile/store ID and password.';
     }
@@ -133,18 +153,46 @@ export class VendorLoginComponent {
     return 'Login failed. Please try again in a moment.';
   }
 
-  private tryParseError(errorPayload: unknown): { status?: number; message?: string } | null {
+  private parseResponsePayload(payload: unknown): Record<string, unknown> | null {
+    if (!payload) {
+      return null;
+    }
+
+    if (typeof payload === 'object') {
+      return payload as Record<string, unknown>;
+    }
+
+    if (typeof payload === 'string') {
+      try {
+        return JSON.parse(payload) as Record<string, unknown>;
+      } catch {
+        return null;
+      }
+    }
+
+    return null;
+  }
+
+  private isAccessAllowed(payload: Record<string, unknown> | null): boolean {
+    if (!payload) {
+      return true;
+    }
+
+    return payload['accessAllowed'] !== false;
+  }
+
+  private tryParseError(errorPayload: unknown): { status?: number; message?: string; accessAllowed?: boolean } | null {
     if (!errorPayload) {
       return null;
     }
 
     if (typeof errorPayload === 'object') {
-      return errorPayload as { status?: number; message?: string };
+      return errorPayload as { status?: number; message?: string; accessAllowed?: boolean };
     }
 
     if (typeof errorPayload === 'string') {
       try {
-        return JSON.parse(errorPayload) as { status?: number; message?: string };
+        return JSON.parse(errorPayload) as { status?: number; message?: string; accessAllowed?: boolean };
       } catch {
         return null;
       }
