@@ -134,10 +134,16 @@
             <button type="button" class="pay-btn">UPI / Card</button>
           </div>
 
-          <button type="button" class="print-btn" [disabled]="!canGenerateInvoice" (click)="generateInvoice()">
-            <span>Complete Billing</span>
-            <b>F9</b>
-          </button>
+          <div class="billing-actions">
+            <button type="button" class="print-btn" [disabled]="!canGenerateInvoice" (click)="generateInvoice()">
+              <span>Complete Billing</span>
+              <b>F9</b>
+            </button>
+            <button type="button" class="print-btn print-secondary-btn" [disabled]="!canGenerateInvoice" (click)="printCurrentBill()">
+              <span>Print</span>
+              <i class="bi bi-printer"></i>
+            </button>
+          </div>
 
           <p class="invoice-message" [class.error]="invoiceMessageType === 'error'" *ngIf="invoiceMessage">
             {{ invoiceMessage }}

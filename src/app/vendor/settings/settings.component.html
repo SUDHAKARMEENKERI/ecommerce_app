@@ -20,14 +20,14 @@
         <span>Business</span>
       </button>
 
-      <button
+      <!-- <button
         type="button"
         class="tab-btn"
         [class.active]="activeTab === 'account'"
         (click)="setActiveTab('account')">
         <i class="bi bi-person"></i>
         <span>Account</span>
-      </button>
+      </button> -->
 
       <button
         type="button"
@@ -104,7 +104,7 @@
         </footer>
       </ng-container>
 
-      <ng-container *ngSwitchCase="'account'">
+      <!-- <ng-container *ngSwitchCase="'account'">
         <header class="content-header">
           <span class="content-icon"><i class="bi bi-person"></i></span>
           <div>
@@ -145,8 +145,8 @@
             <i class="bi bi-floppy"></i>
             <span>{{ isSavingAccount ? 'Saving...' : 'Save Account' }}</span>
           </button>
-        </footer>
-      </ng-container>
+        </footer> 
+      </ng-container> -->
 
       <ng-container *ngSwitchCase="'notifications'">
         <section class="card placeholder-card">

@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { InvoiceItem, InvoiceService } from '../services/invoice.service';
+import { AuthService } from '../../shared/services/auth.service';
 
 @Component({
   selector: 'app-vendor-billing',
@@ -33,7 +34,7 @@ export class VendorBillingComponent {
   selectedInvoice: InvoiceItem | null = null;
   modalViewportOffset = 0;
 
-  constructor(private invoiceService: InvoiceService, private router: Router) {
+  constructor(private invoiceService: InvoiceService, private router: Router, private authService: AuthService) {
     this.invoiceService
       .loadInvoicesFromApi()
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -125,6 +126,8 @@ export class VendorBillingComponent {
   }
 
   printInvoice(invoice: InvoiceItem): void {
+      const receiptMeta = this.getReceiptMetaFromLogin();
+
     const printWindow = window.open('', '_blank', 'width=900,height=700');
     if (!printWindow) {
       return;
@@ -153,8 +156,8 @@ export class VendorBillingComponent {
     const amountInWords = this.toTitleCase(`${this.numberToWords(Math.round(invoice.amount))} only`);
     const patientGender = this.escapeHtml(invoice.patientGender || 'Male');
     const patientAge = this.escapeHtml(invoice.patientAge || 'NA');
-    const doctorName = this.escapeHtml(invoice.doctorName || this.receiptMeta.doctorName);
-    const referredBy = this.escapeHtml(invoice.referredBy || this.receiptMeta.referredBy);
+    const doctorName = this.escapeHtml(invoice.doctorName || receiptMeta.doctorName);
+    const referredBy = this.escapeHtml(invoice.referredBy || receiptMeta.referredBy);
 
     const patientName = this.escapeHtml(invoice.customerName || 'Walk-in Customer');
     const patientPhone = this.escapeHtml(invoice.customerPhone || 'NA');
@@ -162,12 +165,12 @@ export class VendorBillingComponent {
     const escapedBillDate = this.escapeHtml(billDate);
     const escapedPrintDate = this.escapeHtml(printDate);
     const escapedAmountWords = this.escapeHtml(amountInWords);
-    const escapedHospitalName = this.escapeHtml(this.receiptMeta.hospitalName);
-    const escapedHospitalAddress = this.escapeHtml(this.receiptMeta.hospitalAddress);
-    const escapedPhone = this.escapeHtml(this.receiptMeta.phoneNo);
-    const escapedUrl = this.escapeHtml(this.receiptMeta.reportUrl);
-    const escapedValidity = this.escapeHtml(this.receiptMeta.validityLabel);
-    const escapedAuthorizedBy = this.escapeHtml(this.receiptMeta.authorizedBy);
+    const escapedHospitalName = this.escapeHtml(receiptMeta.hospitalName);
+    const escapedHospitalAddress = this.escapeHtml(receiptMeta.hospitalAddress);
+    const escapedPhone = this.escapeHtml(receiptMeta.phoneNo);
+    const escapedUrl = this.escapeHtml(receiptMeta.reportUrl);
+    const escapedValidity = this.escapeHtml(receiptMeta.validityLabel);
+    const escapedAuthorizedBy = this.escapeHtml(receiptMeta.authorizedBy);
     const escapedAmount = this.escapeHtml(invoice.amount.toLocaleString('en-IN', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
@@ -584,6 +587,82 @@ export class VendorBillingComponent {
     }
 
     return `Rupees ${parts.join(' ')}`.replace(/\s+/g, ' ').trim();
+  }
+
+  private getReceiptMetaFromLogin() {
+    const source = this.extractSource(this.authService.loginResponse);
+
+    const hospitalName =
+      this.pickValue(source, ['pharmacyName', 'storeName', 'medicalName', 'hospitalName', 'name']) ||
+      this.receiptMeta.hospitalName;
+
+    const hospitalAddress =
+      this.pickValue(source, ['address', 'storeAddress', 'hospitalAddress']) ||
+      this.receiptMeta.hospitalAddress;
+
+    const primaryPhone = this.pickValue(source, ['storeMobile', 'mobile', 'phone', 'mobileNo']);
+    const secondaryPhone = this.pickValue(source, ['alternatePhone', 'altPhone']);
+    const phoneNo = [primaryPhone, secondaryPhone].filter(Boolean).join(', ') || this.receiptMeta.phoneNo;
+
+    const doctorName = this.pickValue(source, ['doctorName']) || this.receiptMeta.doctorName;
+    const referredBy = this.pickValue(source, ['referredBy']) || this.receiptMeta.referredBy;
+    const authorizedBy =
+      this.pickValue(source, ['ownerName', 'userName', 'name']) ||
+      this.receiptMeta.authorizedBy;
+
+    return {
+      hospitalName,
+      hospitalAddress,
+      phoneNo,
+      reportUrl: this.receiptMeta.reportUrl,
+      doctorName,
+      referredBy,
+      validityLabel: this.receiptMeta.validityLabel,
+      authorizedBy
+    };
+  }
+
+  private extractSource(payload: unknown): Record<string, unknown> {
+    if (!payload) {
+      return {};
+    }
+
+    if (typeof payload === 'string') {
+      try {
+        return this.extractSource(JSON.parse(payload));
+      } catch {
+        return {};
+      }
+    }
+
+    if (typeof payload !== 'object') {
+      return {};
+    }
+
+    const record = payload as Record<string, unknown>;
+    const nestedData = record['data'];
+
+    if (nestedData && typeof nestedData === 'object') {
+      return nestedData as Record<string, unknown>;
+    }
+
+    return record;
+  }
+
+  private pickValue(source: Record<string, unknown>, keys: string[]): string {
+    for (const key of keys) {
+      const value = source[key];
+
+      if (typeof value === 'string' && value.trim()) {
+        return value.trim();
+      }
+
+      if (typeof value === 'number' && Number.isFinite(value)) {
+        return String(value);
+      }
+    }
+
+    return '';
   }
 
   onCreateInvoice() {

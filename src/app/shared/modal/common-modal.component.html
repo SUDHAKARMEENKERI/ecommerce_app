@@ -1,5 +1,5 @@
 <section class="simple-modal-backdrop" *ngIf="isOpen" (click)="onBackdropClick($event)">
-	<article class="simple-modal" role="dialog" aria-modal="true" [attr.aria-label]="title">
+	<article class="simple-modal" role="dialog" aria-modal="true" [attr.aria-label]="title" >
 		<div class="simple-modal-body">
 			<div class="status-icon-wrap" [class.error]="variant === 'error'" aria-hidden="true">
 				<span class="status-icon" [class.error]="variant === 'error'">

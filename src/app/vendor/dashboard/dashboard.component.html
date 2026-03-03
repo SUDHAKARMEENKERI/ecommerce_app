@@ -39,17 +39,60 @@
       <div class="dashboard-chart-header">
         <div>
           <span class="dashboard-chart-title">Revenue Overview</span>
-          <p class="dashboard-chart-subtitle">Daily sales performance for the current week.</p>
+          <p class="dashboard-chart-subtitle">{{ revenueSubtitle }}</p>
         </div>
         <div class="dashboard-chart-dropdown">
-          <select>
-            <option>Last Week</option>
+          <select [value]="selectedRevenueRange" (change)="onRevenueRangeChange($any($event.target).value)">
+            <option value="today">Today</option>
+            <option value="lastWeek">Last Week</option>
+            <option value="month">Month</option>
           </select>
           <span class="dashboard-chart-dropdown-icon"></span>
         </div>
       </div>
       <div class="dashboard-chart-placeholder" *ngIf="vm.weeklyRevenue.length; else emptyChart">
-        <div class="dashboard-chart-empty">Chart is currently empty.</div>
+        <div class="dashboard-revenue-chart" aria-label="Revenue overview chart">
+          <div class="dashboard-revenue-yaxis">
+            <span *ngFor="let tick of getRevenueAxisTicks(vm.weeklyRevenue)">{{ formatRevenueTick(tick) }}</span>
+          </div>
+
+          <div class="dashboard-revenue-plot">
+            <svg class="dashboard-revenue-svg" viewBox="0 0 600 220" preserveAspectRatio="none" role="img" aria-label="Weekly revenue trend">
+              <defs>
+                <linearGradient id="revenueAreaGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#6366f1" stop-opacity="0.28"></stop>
+                  <stop offset="100%" stop-color="#6366f1" stop-opacity="0.06"></stop>
+                </linearGradient>
+              </defs>
+
+              <g class="dashboard-revenue-grid">
+                <line *ngFor="let _ of revenueGridRows; let index = index"
+                      x1="0"
+                      x2="600"
+                      [attr.y1]="getRevenueGridY(index)"
+                      [attr.y2]="getRevenueGridY(index)"></line>
+              </g>
+
+              <path class="dashboard-revenue-area" [attr.d]="buildRevenueAreaPath(vm.weeklyRevenue)"></path>
+              <polyline class="dashboard-revenue-line" [attr.points]="buildRevenueLinePoints(vm.weeklyRevenue)"></polyline>
+
+              <g *ngFor="let point of vm.weeklyRevenue; let index = index">
+                <circle class="dashboard-revenue-point-ring"
+                        [attr.cx]="getRevenuePointX(index, vm.weeklyRevenue.length)"
+                        [attr.cy]="getRevenuePointY(point.amount, vm.weeklyRevenue)"
+                        r="5"></circle>
+                <circle class="dashboard-revenue-point"
+                        [attr.cx]="getRevenuePointX(index, vm.weeklyRevenue.length)"
+                        [attr.cy]="getRevenuePointY(point.amount, vm.weeklyRevenue)"
+                        r="2.3"></circle>
+              </g>
+            </svg>
+
+            <div class="dashboard-revenue-xaxis">
+              <span *ngFor="let point of vm.weeklyRevenue">{{ point.label }}</span>
+            </div>
+          </div>
+        </div>
       </div>
       <ng-template #emptyChart>
         <div class="dashboard-chart-empty">Chart is currently empty.</div>
@@ -108,7 +151,7 @@
           </div>
         </ng-template>
       </div>
-      <button class="dashboard-btn-outline">Create Purchase Order</button>
+      <button class="dashboard-btn-outline" (click)="goToPurchaseOrder()">Create Purchase Order</button>
     </div>
 
     <!-- Recent Transactions Table -->

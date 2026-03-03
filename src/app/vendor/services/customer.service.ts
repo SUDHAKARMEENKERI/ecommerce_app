@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { BehaviorSubject, Observable, map, of, tap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, map, of, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { NotificationService } from '../../shared/services/notification.service';
 
 export type CustomerItem = {
   id: string;
@@ -26,7 +27,7 @@ export class CustomerService {
 
   customers$: Observable<CustomerItem[]> = this.customersSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private notificationService: NotificationService) {}
 
   loadCustomers(input: { email: string; storeMobile: string; storeId: string | number }): Observable<CustomerItem[]> {
     const email = input.email.trim();
@@ -42,7 +43,16 @@ export class CustomerService {
 
     return this.http.get<unknown>(`${this.customerApiBaseUrl}/all`, { params }).pipe(
       map((response) => this.mapCustomerListResponse(response)),
-      tap((customers) => this.customersSubject.next(customers))
+      tap((customers) => this.customersSubject.next(customers)),
+      catchError(() => {
+        this.notificationService.errorOnce(
+          'customer-sync-error',
+          'API Sync Error',
+          'Failed to sync customers from server.'
+        );
+        this.customersSubject.next([]);
+        return of([]);
+      })
     );
   }
 

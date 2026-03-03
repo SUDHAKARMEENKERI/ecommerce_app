@@ -17,22 +17,22 @@
 
     <!-- Vertical stacking: each card full width, one after another -->
     <!-- 2. Today Snapshot Card -->
-    <section class="card today-snapshot-card modern-card medium-snapshot">
+    <section class="card today-snapshot-card modern-card">
       <div class="card-header">
         <h3>Today Snapshot</h3>
       </div>
-      <div class="snapshot-stats-row modern-stats-row medium-stats-row">
-        <div class="stat-tile revenue medium-tile">
+      <div class="snapshot-stats-row modern-stats-row">
+        <div class="stat-tile revenue">
           <div class="stat-label">Revenue</div>
           <div class="stat-value">₹{{ totalRevenue | number: '1.0-0' }}</div>
           <div class="icon blue"><i class="bi bi-graph-up-arrow"></i></div>
         </div>
-        <div class="stat-tile invoices medium-tile">
+        <div class="stat-tile invoices">
           <div class="stat-label">Invoices</div>
           <div class="stat-value">{{ invoiceCount }}</div>
           <div class="icon violet"><i class="bi bi-receipt"></i></div>
         </div>
-        <div class="stat-tile avg-value medium-tile">
+        <div class="stat-tile avg-value">
           <div class="stat-label">Avg. Value</div>
           <div class="stat-value">₹{{ averageInvoiceValue | number: '1.2-2' }}</div>
           <div class="icon green"><i class="bi bi-check-circle"></i></div>

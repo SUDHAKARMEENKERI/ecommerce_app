@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { NotificationService } from './notification.service';
 
 export interface MedicalStoreSignupPayload {
   ownerName: string;
@@ -49,7 +50,7 @@ export class AuthService {
     return this.readLoginResponse();
   }
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private notificationService: NotificationService) {}
 
   resetPassword(payload: { email?: string; storeMobile?: string; password: string; confirmPassword: string }): Observable<any> {
     // Adjust the endpoint as per your backend API
@@ -77,12 +78,14 @@ export class AuthService {
     }
 
     this.isLoggedInSubject.next(true);
+    this.notificationService.success('Login Activity', 'You are logged in successfully.');
   }
 
   logout(): void {
     localStorage.setItem(this.storageKey, 'false');
     localStorage.removeItem(this.loginResponseKey);
     this.isLoggedInSubject.next(false);
+    this.notificationService.info('Logout Activity', 'You have logged out successfully.');
   }
 
   private readInitialState(): boolean {

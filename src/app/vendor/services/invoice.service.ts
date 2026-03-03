@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, map, tap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, map, tap, throwError } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../shared/services/auth.service';
+import { NotificationService } from '../../shared/services/notification.service';
 
 export type InvoiceLineItem = {
   medicineName: string;
@@ -35,7 +36,7 @@ export class InvoiceService {
   invoices$: Observable<InvoiceItem[]> = this.invoicesSubject.asObservable();
   private readonly billingApiBaseUrl = `${environment.apiBaseUrl}/api/billing`;
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(private http: HttpClient, private authService: AuthService, private notificationService: NotificationService) {}
 
   getInvoices(): InvoiceItem[] {
     return this.invoicesSubject.getValue().map((item) => ({ ...item }));
@@ -65,7 +66,15 @@ export class InvoiceService {
 
     return this.http.get<unknown>(`${this.billingApiBaseUrl}`, { params }).pipe(
       map((response: any) => this.mapInvoiceList(response)),
-      tap((invoices) => this.invoicesSubject.next(invoices))
+      tap((invoices) => this.invoicesSubject.next(invoices)),
+      catchError((error) => {
+        this.notificationService.errorOnce(
+          'invoice-sync-error',
+          'API Sync Error',
+          'Failed to sync invoices from server.'
+        );
+        return throwError(() => error);
+      })
     );
   }
 

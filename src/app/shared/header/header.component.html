@@ -1,11 +1,32 @@
 <header class="app-header">
   <div class="app-header-left">
-    <span class="app-logo">MediCare POS</span>
+    <span class="app-logo" role="button" tabindex="0" (click)="goToDashboard()" (keydown.enter)="goToDashboard()">{{ headerMedicalName }}</span>
   </div>
   <div class="app-header-right">
-    <button class="app-header-bell" aria-label="Notifications">
+    <button class="app-header-bell" aria-label="Notifications" (click)="toggleNotifications($event)">
       <span class="app-header-bell-icon"></span>
+      <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount > 99 ? '99+' : unreadCount }}</span>
     </button>
+
+    <section class="notification-panel" *ngIf="isNotificationPanelOpen" (click)="$event.stopPropagation()">
+      <header class="notification-panel-head">
+        <h4>Notifications</h4>
+        <button type="button" *ngIf="notifications.length > 0" (click)="clearNotifications($event)">Clear all</button>
+      </header>
+
+      <div class="notification-list" *ngIf="notifications.length > 0; else noNotifications">
+        <article class="notification-item" *ngFor="let item of notifications">
+          <div class="notification-item-title">{{ item.title }}</div>
+          <p>{{ item.message }}</p>
+          <small>{{ formatNotificationTime(item.createdAt) }}</small>
+        </article>
+      </div>
+
+      <ng-template #noNotifications>
+        <p class="notification-empty">No notifications yet.</p>
+      </ng-template>
+    </section>
+
     <div class="app-header-avatar" [title]="profile.fullName">
       {{ initials }}
     </div>

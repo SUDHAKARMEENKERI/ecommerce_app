@@ -1,5 +1,26 @@
 
 <section class="inventory-page">
+  <section class="inventory-delete-modal-backdrop" *ngIf="isDeleteConfirmOpen" (click)="onDeleteModalClosed()">
+    <article class="inventory-delete-modal" role="dialog" aria-modal="true" aria-label="Delete Medicine" (click)="$event.stopPropagation()">
+      <header class="inventory-delete-modal-header">
+        <h3>Delete Medicine?</h3>
+        <button type="button" class="inventory-delete-modal-close" aria-label="Close" [disabled]="isDeleting" (click)="onDeleteModalClosed()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </header>
+
+      <div class="inventory-delete-modal-body">
+        <p>{{ deleteConfirmMessage }}</p>
+      </div>
+
+      <footer class="inventory-delete-modal-footer">
+        <button type="button" class="inventory-delete-confirm-btn" [disabled]="isDeleting" (click)="confirmDeleteMedicine()">
+          {{ isDeleting ? 'Deleting...' : 'Delete' }}
+        </button>
+      </footer>
+    </article>
+  </section>
+
   <app-common-modal
     [isOpen]="isImportModalOpen"
     [variant]="importModalVariant"
@@ -74,6 +95,7 @@
                 <ng-template [ngIf]="!col.sortable">{{ col.label }}</ng-template>
               </th>
             </ng-container>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -84,6 +106,29 @@
                   <ng-container [ngSwitch]="col.key">
                     <ng-template [ngSwitchCase]="'expiry'">{{ item.expiry | date: 'dd MMM yyyy' }}</ng-template>
                     <ng-template [ngSwitchCase]="'price'">₹{{ item.price }}</ng-template>
+                    <ng-template [ngSwitchCase]="'quantity'">
+                      <div class="quantity-edit-wrap">
+                        <span class="quantity-current">{{ item.quantity }}</span>
+                        <input
+                          type="number"
+                          min="0"
+                          class="quantity-input"
+                          placeholder="New"
+                          [value]="getQuantityDraft(item)"
+                          [disabled]="isQuantityUpdating(item.id)"
+                          (input)="onQuantityDraftChange(item.id, ($any($event.target).value || '').toString())"
+                          (keydown.enter)="updateQuantity(item)" />
+                        <button
+                          type="button"
+                          class="quantity-update-btn"
+                          title="Update quantity"
+                          aria-label="Update quantity"
+                          [disabled]="isQuantityUpdating(item.id)"
+                          (click)="updateQuantity(item)">
+                          <i [class]="isQuantityUpdating(item.id) ? 'bi bi-arrow-repeat spin' : 'bi bi-check-lg'"></i>
+                        </button>
+                      </div>
+                    </ng-template>
                     <ng-template [ngSwitchCase]="'status'">
                       <span class="status-badge" [ngClass]="getStatusClass(item.status)">{{ item.status }}</span>
                     </ng-template>
@@ -91,6 +136,25 @@
                   </ng-container>
                 </td>
               </ng-container>
+              <td class="action-cell">
+                <div class="action-buttons">
+                  <button
+                    type="button"
+                    class="inventory-edit-btn"
+                    [routerLink]="['/vendor/inventory/add']"
+                    [queryParams]="{ mode: 'edit', medicineName: item.name, batch: item.batch }">
+                    <i class="bi bi-pencil-square"></i>
+                    
+                  </button>
+                  <button
+                    type="button"
+                    class="inventory-delete-btn"
+                    (click)="openDeleteConfirm(item); $event.stopPropagation()">
+                    <i class="bi bi-trash"></i>
+                    
+                  </button>
+                </div>
+              </td>
             </tr>
           </ng-container>
         </tbody>

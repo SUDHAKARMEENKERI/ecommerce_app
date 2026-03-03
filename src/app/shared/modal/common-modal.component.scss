@@ -5,113 +5,96 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	padding: 16px;
-	background: rgba(15, 23, 42, 0.55);
+	padding: 12px;
+	background: rgba(15, 23, 42, 0.35);
 }
 
 .simple-modal {
-	width: min(320px, calc(100vw - 24px));
+	width: min(360px, calc(100vw - 24px));
 	max-height: calc(100dvh - 24px);
 	overflow: hidden;
-	background: #fff;
 	border-radius: 12px;
-	box-shadow: 0 18px 36px rgba(2, 6, 23, 0.24);
+	background: #fff;
+	box-shadow: 0 18px 36px rgba(15, 23, 42, 0.28);
 }
 
 .simple-modal-body {
-	padding: 22px 20px 18px;
+	padding: 18px;
 	text-align: center;
-	background: #eceef1;
+	background: #f8fafc;
 }
 
 .status-icon-wrap {
-	width: 62px;
-	height: 62px;
+	width: 56px;
+	height: 56px;
 	border-radius: 999px;
-	background: #b7e7cf;
-	margin: 0 auto 14px;
+	margin: 0 auto 12px;
 	display: grid;
 	place-items: center;
+	background: #d1fae5;
 }
 
-
 .status-icon-wrap.error {
-	background: #f3d4dc;
+	background: #fee2e2;
 }
 
 .status-icon {
-	width: 28px;
-	height: 28px;
-	border-radius: 999px;
-	border: 3px solid #0d9b6d;
-	color: #0d9b6d;
-	display: grid;
-	place-items: center;
-	font-size: 13px;
-	font-weight: 800;
+	color: #059669;
+	font-size: 20px;
+	line-height: 1;
 }
 
 .status-icon.error {
-	border-color: #ef1f4f;
-	color: #ef1f4f;
+	color: #dc2626;
 }
 
 .simple-modal h2 {
 	margin: 0;
-	font-size: 32px;
-	font-weight: 800;
-	line-height: 1.12;
+	font-size: 26px;
+	font-weight: 700;
 	color: #1e293b;
 }
 
 .simple-modal p {
 	margin: 10px 0 0;
 	font-size: 14px;
-	font-weight: 600;
 	line-height: 1.5;
-	color: #64748b;
-	overflow-wrap: anywhere;
+	color: #475569;
 }
 
 .simple-modal-footer {
-	background: #fff;
 	padding: 12px;
+	background: #fff;
+	display: flex;
+	justify-content: flex-end;
 }
 
 .simple-action {
-	width: 100%;
-	min-height: 40px;
-	border: none;
-	border-radius: 10px;
-	background: #0d9b6d;
+	min-width: 110px;
+	border: 0;
+	border-radius: 8px;
+	padding: 9px 14px;
+	background: #0ea5a4;
 	color: #fff;
-	font-size: 16px;
-	font-weight: 800;
+	font-size: 15px;
+	font-weight: 600;
 	cursor: pointer;
 }
 
-.simple-action:hover {
-	background: #0b8b61;
-}
-
 .simple-action.error {
-	background: #ef1f4f;
-}
-
-.simple-action.error:hover {
-	background: #dd1a47;
+	background: #e11d48;
 }
 
 @media (max-width: 480px) {
 	.simple-modal {
-		width: min(320px, calc(100vw - 24px));
+		width: calc(100vw - 20px);
 	}
 
-	.simple-modal h2 {
-		font-size: 26px;
+	.simple-modal-footer {
+		justify-content: stretch;
 	}
 
 	.simple-action {
-		font-size: 15px;
+		width: 100%;
 	}
 }

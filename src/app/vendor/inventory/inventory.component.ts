@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { BulkUploadResponse, MedicineItem, MedicineService } from '../services/medicine.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModalComponent } from '../../shared/modal/common-modal.component';
+import { NotificationService } from '../../shared/services/notification.service';
 
 type InventoryTab = 'all' | 'low-stock' | 'out-of-stock' | 'expiring' | 'expired';
 
@@ -88,6 +89,7 @@ export class VendorInventoryComponent {
   private route = inject(ActivatedRoute);
   private medicineService = inject(MedicineService);
   private destroyRef = inject(DestroyRef);
+  private notificationService = inject(NotificationService);
 
   constructor() {
     this.medicineService.medicines$
@@ -123,6 +125,11 @@ export class VendorInventoryComponent {
   importModalTitle = '';
   importModalMessage = '';
   importModalActionLabel = 'OK';
+  isDeleteConfirmOpen = false;
+  isDeleting = false;
+  medicineToDelete: InventoryItem | null = null;
+  quantityDrafts: Record<string, string> = {};
+  quantityUpdatingIds = new Set<string>();
 
   columns: InventoryColumn[] = [
     { key: 'name', label: 'Name', width: '1.3fr', sortable: true, visible: true },
@@ -174,12 +181,14 @@ export class VendorInventoryComponent {
               const uploadedMessage = result.count > 0
                 ? `Uploaded successfully (${result.count} records).`
                 : 'Uploaded successfully.';
+              this.notificationService.success('Import Successful', uploadedMessage);
               this.openImportModal('success', 'Import Successful', uploadedMessage, 'Understood');
               this.medicineService.loadMedicinesFromApi().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
               return;
             }
 
             const failedMessage = result.message || 'Bulk upload failed. Please check the file and try again.';
+            this.notificationService.error('Import Failed', failedMessage);
             this.openImportModal('error', 'Import Failed', failedMessage, 'Dismiss Error');
           },
           error: (errorResponse: unknown) => {
@@ -188,6 +197,7 @@ export class VendorInventoryComponent {
               responseRecord?.error?.message ||
               responseRecord?.message ||
               'Bulk upload failed. Please try again.';
+            this.notificationService.error('Import Failed', failedMessage);
             this.openImportModal('error', 'Import Failed', failedMessage, 'Dismiss Error');
           }
         });
@@ -209,6 +219,7 @@ export class VendorInventoryComponent {
     this.importModalMessage = message;
     this.importModalActionLabel = actionLabel;
     this.isImportModalOpen = true;
+    this.scrollResponseModalIntoView();
   }
     getStatusClass(status: string): string {
       return 'status-badge status-' + (status ? status.toLowerCase().split(' ').join('-') : '');
@@ -230,6 +241,70 @@ export class VendorInventoryComponent {
     });
 
     return [...filteredItems].sort((left, right) => this.compareItems(left, right));
+  }
+
+  getQuantityDraft(item: InventoryItem): string {
+    return this.quantityDrafts[item.id] ?? '';
+  }
+
+  onQuantityDraftChange(itemId: string, value: string) {
+    this.quantityDrafts[itemId] = value;
+  }
+
+  isQuantityUpdating(itemId: string): boolean {
+    return this.quantityUpdatingIds.has(itemId);
+  }
+
+  updateQuantity(item: InventoryItem) {
+    const draftRaw = (this.quantityDrafts[item.id] ?? '').trim();
+
+    if (!draftRaw) {
+      this.openImportModal('error', 'Quantity Required', 'Please enter quantity to update.', 'OK');
+      return;
+    }
+
+    const enteredQuantity = Number.parseInt(draftRaw, 10);
+
+    if (Number.isNaN(enteredQuantity) || enteredQuantity < 0) {
+      this.openImportModal('error', 'Invalid Quantity', 'Please enter a valid quantity to add (0 or more).', 'OK');
+      return;
+    }
+
+    if (enteredQuantity === 0) {
+      this.openImportModal('error', 'Invalid Quantity', 'Please enter quantity greater than 0.', 'OK');
+      return;
+    }
+
+    const finalQuantity = item.quantity + enteredQuantity;
+
+    this.quantityUpdatingIds.add(item.id);
+
+    this.medicineService
+      .updateMedicineViaApi(item.id, {
+        name: item.name,
+        brand: item.brand,
+        composition: item.composition,
+        category: item.category,
+        batch: item.batch,
+        mfgDate: item.mfgDate,
+        expiry: item.expiry,
+        quantity: finalQuantity,
+        price: item.price
+      })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (updated) => {
+          this.quantityDrafts[item.id] = '';
+          this.quantityUpdatingIds.delete(item.id);
+          this.notificationService.success('Quantity Updated', `${item.name} quantity updated to ${updated.quantity}.`);
+          this.openImportModal('success', 'Quantity Updated', `${item.name} quantity updated successfully.`, 'OK');
+        },
+        error: () => {
+          this.quantityUpdatingIds.delete(item.id);
+          this.notificationService.error('Quantity Update Failed', `Unable to update quantity for ${item.name}.`);
+          this.openImportModal('error', 'Update Failed', 'Unable to update quantity. Please try again.', 'Dismiss');
+        }
+      });
   }
 
   get visibleColumns(): InventoryColumn[] {
@@ -334,6 +409,83 @@ export class VendorInventoryComponent {
 
   trackByColumnKey(_index: number, column: InventoryColumn) {
     return column.key;
+  }
+
+  get deleteConfirmMessage(): string {
+    if (!this.medicineToDelete) {
+      return 'Are you sure you want to delete this medicine?';
+    }
+
+    return `Are you sure you want to delete ${this.medicineToDelete.name} (Batch: ${this.medicineToDelete.batch})?`;
+  }
+
+  openDeleteConfirm(item: InventoryItem) {
+    this.medicineToDelete = item;
+    this.isDeleteConfirmOpen = true;
+    this.scrollDeleteModalIntoView();
+  }
+
+  onDeleteModalClosed() {
+    if (this.isDeleting) {
+      return;
+    }
+
+    this.isDeleteConfirmOpen = false;
+    this.medicineToDelete = null;
+  }
+
+  confirmDeleteMedicine() {
+    if (!this.medicineToDelete || this.isDeleting) {
+      return;
+    }
+
+    this.isDeleting = true;
+    const medicineName = this.medicineToDelete.name;
+
+    this.medicineService
+      .deleteMedicineViaApi(this.medicineToDelete.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.isDeleting = false;
+          this.isDeleteConfirmOpen = false;
+          this.medicineToDelete = null;
+          this.notificationService.success('Medicine Deleted', `${medicineName} deleted successfully.`);
+
+          if (this.currentPage > this.totalPages) {
+            this.currentPage = this.totalPages;
+          }
+
+          this.openImportModal('success', 'Delete Successful', `${medicineName} deleted successfully.`, 'OK');
+        },
+        error: () => {
+          this.isDeleting = false;
+          this.notificationService.error('Delete Failed', `Failed to delete ${medicineName}.`);
+          this.openImportModal('error', 'Delete Failed', 'Failed to delete medicine. Please try again.', 'Dismiss');
+        }
+      });
+  }
+
+  private scrollDeleteModalIntoView() {
+    setTimeout(() => {
+      const modalElement = document.querySelector('.inventory-delete-modal') as HTMLElement | null;
+      modalElement?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'nearest'
+      });
+    });
+  }
+
+  private scrollResponseModalIntoView() {
+    setTimeout(() => {
+      const modalElement = document.querySelector('app-common-modal .simple-modal') as HTMLElement | null;
+      modalElement?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'nearest'
+      });
+    });
   }
 
   getColumnValue(item: InventoryItem, columnKey: InventoryColumnKey): string | number {

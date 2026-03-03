@@ -1,12 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
 import { BulkUploadResponse, MedicineService } from '../services/medicine.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DestroyRef, inject } from '@angular/core';
 import { AuthService } from '../../shared/services/auth.service';
 import { CommonModalComponent } from '../../shared/modal/common-modal.component';
+import { NotificationService } from '../../shared/services/notification.service';
 
 @Component({
   selector: 'app-vendor-add-medicine',
@@ -26,6 +28,8 @@ export class VendorAddMedicineComponent {
   bulkUploadModalTitle = '';
   bulkUploadModalMessage = '';
   bulkUploadModalActionLabel = 'OK';
+  isEditMode = false;
+  editingMedicineId = '';
 
   form = {
     medicineName: '',
@@ -54,8 +58,14 @@ export class VendorAddMedicineComponent {
   constructor(
     private medicineService: MedicineService,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private route: ActivatedRoute,
+    private notificationService: NotificationService
   ) {}
+
+  ngOnInit() {
+    this.initializeEditMode();
+  }
 
   get totalQuantity(): number {
     return Math.max(0, this.form.packSize) * Math.max(0, this.form.boxQuantity);
@@ -157,34 +167,72 @@ export class VendorAddMedicineComponent {
     const expiry = this.form.expiryDate || new Date(Date.now() + 1000 * 60 * 60 * 24 * 365).toISOString().slice(0, 10);
     const storeDetails = this.getMedicalStoreDetails();
 
-    this.medicineService
-      .addMedicineViaApi({
-        name: this.form.medicineName,
-        brand: this.form.brandName,
-        composition: this.form.composition,
-        category: this.form.category,
-        batch: this.form.batchNo,
-        expiry,
-        quantity: this.totalQuantity,
-        price: this.form.sellPrice > 0 ? this.form.sellPrice : this.form.boxSellPrice,
-        ...storeDetails
-      })
-      .pipe(takeUntilDestroyed(this.destroyRef))
+    const payload = {
+      name: this.form.medicineName,
+      brand: this.form.brandName,
+      composition: this.form.composition,
+      category: this.form.category,
+      batch: this.form.batchNo,
+      mfgDate: this.form.mfgDate,
+      expiry,
+      quantity: this.totalQuantity,
+      price: this.form.sellPrice > 0 ? this.form.sellPrice : this.form.boxSellPrice,
+      ...storeDetails
+    };
+
+    const request$ = this.isEditMode && this.editingMedicineId
+      ? this.medicineService.updateMedicineViaApi(this.editingMedicineId, payload)
+      : this.medicineService.addMedicineViaApi(payload);
+
+    request$
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.isSubmitting = false;
+        })
+      )
       .subscribe({
         next: () => {
-          this.successMessage = 'Medicine added successfully. Redirecting to Inventory...';
-          this.resetForm();
-          this.isSubmitting = false;
+          this.notificationService.success(
+            this.isEditMode ? 'Medicine Updated' : 'Medicine Added',
+            this.isEditMode ? 'Medicine updated successfully.' : 'Medicine added successfully.'
+          );
+          this.successMessage = this.isEditMode
+            ? 'Medicine updated successfully. Redirecting to Inventory...'
+            : 'Medicine added successfully. Redirecting to Inventory...';
+
+          if (!this.isEditMode) {
+            this.resetForm();
+          }
 
           setTimeout(() => {
             this.router.navigate(['/vendor/inventory']);
           }, 900);
         },
         error: () => {
-          this.isSubmitting = false;
-          this.successMessage = 'Failed to add medicine. Please try again.';
+          this.notificationService.error(
+            this.isEditMode ? 'Medicine Update Failed' : 'Medicine Add Failed',
+            this.isEditMode ? 'Failed to update medicine. Please try again.' : 'Failed to add medicine. Please try again.'
+          );
+          this.successMessage = this.isEditMode
+            ? 'Failed to update medicine. Please try again.'
+            : 'Failed to add medicine. Please try again.';
         }
       });
+  }
+
+  get pageTitle(): string {
+    return this.isEditMode ? 'Edit Medicine' : 'Add New Medicine';
+  }
+
+  get pageSubtitle(): string {
+    return this.isEditMode
+      ? 'Modify medicine details and update stock information'
+      : 'Beautifully organized stock entry for faster pharmacy operations';
+  }
+
+  get submitButtonLabel(): string {
+    return this.isEditMode ? 'Update Medicine' : 'Add Medicine';
   }
 
   private resetForm() {
@@ -302,6 +350,7 @@ export class VendorAddMedicineComponent {
           if (!result.success) {
             const failedMessage = result.message || 'Upload failed. Please check the file and try again.';
             this.excelUploadMessage = failedMessage;
+            this.notificationService.error('Import Failed', failedMessage);
             this.openBulkUploadModal('error', 'Upload Failed', failedMessage, 'Dismiss Error');
             return;
           }
@@ -310,6 +359,7 @@ export class VendorAddMedicineComponent {
             ? `Uploaded successfully (${result.count} records).`
             : 'Uploaded successfully.';
           this.excelUploadMessage = uploadedMessage;
+          this.notificationService.success('Import Successful', uploadedMessage);
           this.openBulkUploadModal('success', 'Upload Successful', uploadedMessage, 'Understood');
 
           this.medicineService
@@ -324,7 +374,60 @@ export class VendorAddMedicineComponent {
             responseRecord?.message ||
             'Upload failed. Please try again.';
           this.excelUploadMessage = failedMessage;
+          this.notificationService.error('Import Failed', failedMessage);
           this.openBulkUploadModal('error', 'Upload Failed', failedMessage, 'Dismiss Error');
+        }
+      });
+  }
+
+  private initializeEditMode() {
+    const mode = (this.route.snapshot.queryParamMap.get('mode') || '').toLowerCase();
+    const medicineName = this.route.snapshot.queryParamMap.get('medicineName') || '';
+    const batch = this.route.snapshot.queryParamMap.get('batch') || '';
+
+    if (mode !== 'edit' || (!medicineName.trim() && !batch.trim())) {
+      return;
+    }
+
+    this.isEditMode = true;
+
+    this.medicineService
+      .loadMedicinesFromApi()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (items) => {
+          const normalizedName = medicineName.trim().toLowerCase();
+          const normalizedBatch = batch.trim().toLowerCase();
+
+          const medicine = items.find((item) => {
+            const isNameMatch = normalizedName ? item.name.trim().toLowerCase() === normalizedName : true;
+            const isBatchMatch = normalizedBatch ? item.batch.trim().toLowerCase() === normalizedBatch : true;
+            return isNameMatch && isBatchMatch;
+          });
+
+          if (!medicine) {
+            this.successMessage = 'Medicine not found for editing.';
+            return;
+          }
+
+          this.editingMedicineId = medicine.id;
+          this.form = {
+            ...this.form,
+            medicineName: medicine.name,
+            composition: medicine.composition,
+            brandName: medicine.brand,
+            category: medicine.category || 'Allopathic',
+            batchNo: medicine.batch,
+            mfgDate: medicine.mfgDate || '',
+            expiryDate: medicine.expiry,
+            packSize: 1,
+            boxQuantity: medicine.quantity,
+            sellPrice: medicine.price,
+            boxSellPrice: medicine.price
+          };
+        },
+        error: () => {
+          this.successMessage = 'Unable to load medicine details for editing.';
         }
       });
   }

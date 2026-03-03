@@ -16,11 +16,11 @@
         </a>
 
         <div>
-          <h1>Add New Medicine</h1>
-          <p>Beautifully organized stock entry for faster pharmacy operations</p>
+          <h1>{{ pageTitle }}</h1>
+          <p>{{ pageSubtitle }}</p>
         </div>
 
-        <div class="bulk-upload-row">
+        <div class="bulk-upload-row" *ngIf="!isEditMode">
           <label class="bulk-upload-actions">
             <button type="button" class="btn-primary" (click)="bulkFileInput.click()">Upload Excel Sheet</button>
             <button type="button" class="template-btn" (click)="downloadCsvTemplate()">Download CSV Template</button>
@@ -232,8 +232,10 @@
 
     <footer class="actions-footer">
       <button type="button" class="btn-cancel" routerLink="/vendor/inventory">Cancel</button>
-      <button type="button" class="btn-primary" [disabled]="isSubmitting" (click)="submitMedicine()">Add
-        Medicine</button>
+      <button type="button" class="btn-primary submit-btn" [disabled]="isSubmitting" (click)="submitMedicine()">
+        <span class="btn-spinner" *ngIf="isSubmitting" aria-hidden="true"></span>
+        <span>{{ isSubmitting ? (isEditMode ? 'Updating...' : 'Submitting...') : submitButtonLabel }}</span>
+      </button>
     </footer>
   </div>
 </section>

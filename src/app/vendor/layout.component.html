@@ -4,67 +4,68 @@
   <div class="content">
     <aside class="sidebar" [class.collapsed]="sidebarCollapsed">
       <div class="sidebar-header">
-        <button class="sidebar-toggle attractive-toggle" (click)="toggleSidebar()" [attr.aria-expanded]="!sidebarCollapsed" title="Toggle menu">
+        <button class="sidebar-toggle attractive-toggle" (click)="toggleSidebar()"
+          [attr.aria-expanded]="!sidebarCollapsed" title="Toggle menu">
           <span class="toggle-bar"></span>
           <span class="toggle-bar"></span>
           <span class="toggle-bar"></span>
         </button>
       </div>
       <nav>
-      <a routerLink="/vendor/dashboard" routerLinkActive="active">
-        <i class="bi bi-speedometer2 icon" aria-hidden="true"></i>
-        <span class="label">Dashboard</span>
-      </a>
-      <a routerLink="/vendor/billing" routerLinkActive="active">
-        <i class="bi bi-receipt icon" aria-hidden="true"></i>
-        <span class="label">Billing / POS</span>
-      </a>
-      <a routerLink="/vendor/inventory" routerLinkActive="active">
-        <i class="bi bi-box-seam icon" aria-hidden="true"></i>
-        <span class="label">Inventory</span>
-      </a>
-      <a routerLink="/vendor/inventory/add" routerLinkActive="active" class="sub-link">
-        <i class="bi bi-plus-square icon" aria-hidden="true"></i>
-        <span class="label sub-label">Add Medicine</span>
-      </a>
-      <!-- <a routerLink="/vendor/prescription" routerLinkActive="active">
+        <a routerLink="/vendor/dashboard" routerLinkActive="active">
+          <i class="bi bi-speedometer2 icon" aria-hidden="true"></i>
+          <span class="label">Dashboard</span>
+        </a>
+        <a routerLink="/vendor/billing" routerLinkActive="active">
+          <i class="bi bi-receipt icon" aria-hidden="true"></i>
+          <span class="label">Billing / POS</span>
+        </a>
+        <a routerLink="/vendor/inventory" routerLinkActive="active">
+          <i class="bi bi-box-seam icon" aria-hidden="true"></i>
+          <span class="label">Inventory</span>
+        </a>
+        <a routerLink="/vendor/inventory/add" routerLinkActive="active" class="sub-link">
+          <i class="bi bi-plus-square icon" aria-hidden="true"></i>
+          <span class="label sub-label">Add Medicine</span>
+        </a>
+        <!-- <a routerLink="/vendor/prescription" routerLinkActive="active">
         <i class="bi bi-file-medical icon" aria-hidden="true"></i>
         <span class="label">Prescriptions</span>
       </a> -->
-      <a routerLink="/vendor/customer" routerLinkActive="active">
-        <i class="bi bi-people icon" aria-hidden="true"></i>
-        <span class="label">Customers</span>
-      </a>
-      <a routerLink="/vendor/purchase" routerLinkActive="active">
-        <i class="bi bi-cart icon" aria-hidden="true"></i>
-        <span class="label">Purchases</span>
-      </a>
-      <a routerLink="/vendor/analytics" routerLinkActive="active">
-        <i class="bi bi-bar-chart-line icon" aria-hidden="true"></i>
-        <span class="label">Analytics</span>
-      </a>
-      <!-- <a routerLink="/vendor/staff" routerLinkActive="active">
-        <i class="bi bi-person-badge icon" aria-hidden="true"></i>
-        <span class="label">Staff</span>
-      </a> -->
-      <a routerLink="/vendor/account" routerLinkActive="active">
-        <i class="bi bi-person-circle icon" aria-hidden="true"></i>
-        <span class="label">Account</span>
-      </a>
-      <a routerLink="/vendor/settings" routerLinkActive="active">
-        <i class="bi bi-gear icon" aria-hidden="true"></i>
-        <span class="label">Settings</span>
-      </a>
-      <!-- <a routerLink="/vendor/license" routerLinkActive="active">
-        <i class="bi bi-credit-card icon" aria-hidden="true"></i>
-        <span class="label">License</span>
-      </a> -->
+        <a routerLink="/vendor/customer" routerLinkActive="active">
+          <i class="bi bi-people icon" aria-hidden="true"></i>
+          <span class="label">Customers</span>
+        </a>
+        <a routerLink="/vendor/purchase" routerLinkActive="active">
+          <i class="bi bi-cart icon" aria-hidden="true"></i>
+          <span class="label">Purchases</span>
+        </a>
+        <a routerLink="/vendor/analytics" routerLinkActive="active">
+          <i class="bi bi-bar-chart-line icon" aria-hidden="true"></i>
+          <span class="label">Analytics</span>
+        </a>
         <a routerLink="/vendor/reports" routerLinkActive="active">
           <i class="bi bi-file-earmark-text icon" aria-hidden="true"></i>
           <span class="label">Reports</span>
         </a>
-    </nav>
-      </aside>
+        <!-- <a routerLink="/vendor/staff" routerLinkActive="active">
+        <i class="bi bi-person-badge icon" aria-hidden="true"></i>
+        <span class="label">Staff</span>
+      </a> -->
+        <a routerLink="/vendor/account" routerLinkActive="active">
+          <i class="bi bi-person-circle icon" aria-hidden="true"></i>
+          <span class="label">Account</span>
+        </a>
+        <a routerLink="/vendor/settings" routerLinkActive="active">
+          <i class="bi bi-gear icon" aria-hidden="true"></i>
+          <span class="label">Settings</span>
+        </a>
+        <!-- <a routerLink="/vendor/license" routerLinkActive="active">
+        <i class="bi bi-credit-card icon" aria-hidden="true"></i>
+        <span class="label">License</span>
+      </a> -->
+      </nav>
+    </aside>
     <main class="main-content layout-scrollable" [class.collapsed-main]="sidebarCollapsed">
       <router-outlet></router-outlet>
     </main>

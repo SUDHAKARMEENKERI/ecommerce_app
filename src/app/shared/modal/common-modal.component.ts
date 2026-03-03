@@ -11,6 +11,9 @@ import { CommonModule, DOCUMENT } from '@angular/common';
 export class CommonModalComponent implements OnChanges, OnDestroy {
   private static openModalCount = 0;
   private static lockedScrollY = 0;
+  private readonly viewportPadding = 12;
+  private readonly modalHalfWidth = 180;
+  private readonly modalHalfHeight = 130;
 
   @Input() isOpen = false;
   @Input() title = 'Message';
@@ -18,7 +21,9 @@ export class CommonModalComponent implements OnChanges, OnDestroy {
   @Input() variant: 'default' | 'success' | 'error' = 'default';
   @Input() actionLabel = 'OK';
   @Input() allowBackdropClose = true;
+  @Input() anchorPoint: { x: number; y: number } | null = null;
 
+  @Output() action = new EventEmitter<void>();
   @Output() closed = new EventEmitter<void>();
 
   private lockApplied = false;
@@ -49,8 +54,34 @@ export class CommonModalComponent implements OnChanges, OnDestroy {
   }
 
   onClose() {
+    this.action.emit();
     this.closed.emit();
   }
+
+  get modalStyle(): Record<string, string> | null {
+    if (!this.anchorPoint) {
+      return null;
+    }
+
+    const view = this.documentRef.defaultView;
+    const viewportWidth = view?.innerWidth ?? 1280;
+    const viewportHeight = view?.innerHeight ?? 720;
+
+    const minX = this.viewportPadding + this.modalHalfWidth;
+    const maxX = viewportWidth - this.viewportPadding - this.modalHalfWidth;
+    const minY = this.viewportPadding + this.modalHalfHeight;
+    const maxY = viewportHeight - this.viewportPadding - this.modalHalfHeight;
+
+    const safeLeft = maxX < minX ? viewportWidth / 2 : this.clamp(this.anchorPoint.x, minX, maxX);
+    const safeTop = maxY < minY ? viewportHeight / 2 : this.clamp(this.anchorPoint.y, minY, maxY);
+
+    return {
+      left: `${safeLeft}px`,
+      top: `${safeTop}px`,
+      transform: 'translate(-50%, -50%)'
+    };
+  }
+
 
   private lockBodyScroll() {
     if (this.lockApplied) {
@@ -100,5 +131,9 @@ export class CommonModalComponent implements OnChanges, OnDestroy {
         behavior: 'auto'
       });
     }
+  }
+
+  private clamp(value: number, min: number, max: number): number {
+    return Math.min(Math.max(value, min), max);
   }
 }

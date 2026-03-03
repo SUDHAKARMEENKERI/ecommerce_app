@@ -192,6 +192,78 @@
 	padding: 0.2rem 0;
 }
 
+.dashboard-revenue-chart {
+	width: 100%;
+	display: flex;
+	align-items: stretch;
+	gap: 0.65rem;
+	padding-top: 0.1rem;
+}
+
+.dashboard-revenue-yaxis {
+	width: 40px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: flex-start;
+	padding: 0.35rem 0 2rem;
+	color: #94a3b8;
+	font-size: 0.78rem;
+	font-weight: 600;
+	line-height: 1;
+}
+
+.dashboard-revenue-plot {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+.dashboard-revenue-svg {
+	width: 100%;
+	height: 220px;
+	display: block;
+	overflow: visible;
+}
+
+.dashboard-revenue-grid line {
+	stroke: #e5e7eb;
+	stroke-width: 1;
+}
+
+.dashboard-revenue-area {
+	fill: url(#revenueAreaGradient);
+}
+
+.dashboard-revenue-line {
+	fill: none;
+	stroke: #5b66e8;
+	stroke-width: 3;
+	stroke-linejoin: round;
+	stroke-linecap: round;
+}
+
+.dashboard-revenue-point-ring {
+	fill: #ffffff;
+	stroke: #5b66e8;
+	stroke-width: 2;
+}
+
+.dashboard-revenue-point {
+	fill: #5b66e8;
+}
+
+.dashboard-revenue-xaxis {
+	display: flex;
+	justify-content: space-between;
+	padding: 0 0.25rem;
+	margin-top: -0.15rem;
+	color: #94a3b8;
+	font-size: 0.82rem;
+	font-weight: 500;
+}
+
 .dashboard-chart-yaxis {
 	width: 38px;
 	display: flex;
@@ -498,6 +570,20 @@
 	.dashboard-chart-yaxis {
 		font-size: 0.66rem;
 		width: 32px;
+	}
+
+	.dashboard-revenue-yaxis {
+		width: 34px;
+		font-size: 0.68rem;
+		padding-bottom: 1.85rem;
+	}
+
+	.dashboard-revenue-svg {
+		height: 190px;
+	}
+
+	.dashboard-revenue-xaxis {
+		font-size: 0.74rem;
 	}
 }
 // Dashboard Shell
