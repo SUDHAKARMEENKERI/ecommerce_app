@@ -1,7 +1,7 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { BehaviorSubject, Observable, map, shareReplay, switchMap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export type Product = {
@@ -25,26 +25,62 @@ export type InvoiceItem = {
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
   private readonly apiBase = environment.apiBaseUrl;
+  private readonly refreshTrigger$ = new BehaviorSubject<void>(undefined);
+
+  private readonly allMedicines$ = this.refreshTrigger$.pipe(
+    switchMap(() => this.http.get<any>(`${this.apiBase}/api/medicine/all`, {
+      params: this.getBillingApiParams()
+    })),
+    map((response: any) => {
+      let arr: any[] = [];
+      if (Array.isArray(response)) arr = response;
+      else if (response && Array.isArray(response.data)) arr = response.data;
+      else if (response && Array.isArray(response.medicines)) arr = response.medicines;
+      else for (const key in response) if (Array.isArray(response[key])) { arr = response[key]; break; }
+      return arr.map((item: any) => ({
+        id: item.id || item._id || '',
+        name: item.name || '',
+        qty: item.quantity ?? item.qty ?? 0,
+        exp: item.expiry || item.exp || ''
+      }));
+    }),
+    shareReplay({ bufferSize: 1, refCount: false })
+  );
+
+  private readonly allInvoices$ = this.refreshTrigger$.pipe(
+    switchMap(() => this.http.get<any>(`${this.apiBase}/api/billing`, {
+      params: this.getBillingApiParams()
+    })),
+    map((response: any) => {
+      let arr: any[] = [];
+      if (Array.isArray(response)) arr = response;
+      else if (response && Array.isArray(response.data)) arr = response.data;
+      else if (response && Array.isArray(response.invoices)) arr = response.invoices;
+      else for (const key in response) if (Array.isArray(response[key])) { arr = response[key]; break; }
+      const mapped = arr.map((item: any) => ({
+        id: item.id || item._id || '',
+        customerName: item.customerName || '',
+        customerPhone: item.customerPhone || '',
+        amount: item.amount || 0,
+        itemCount: item.itemCount || 0,
+        lineItems: item.lineItems || [],
+        date: item.date || '',
+        invoiceNumber: item.invoiceNumber || ''
+      }));
+      return mapped;
+    }),
+    shareReplay({ bufferSize: 1, refCount: false })
+  );
+
   constructor(private http: HttpClient) {}
+
+  refreshDashboardData(): void {
+    this.refreshTrigger$.next(undefined);
+  }
 
   // Fetch all medicines from backend with params
   getAllMedicines$(): Observable<Product[]> {
-    const params = this.getBillingApiParams();
-    return this.http.get<any>(`${this.apiBase}/api/medicine/all`, { params }).pipe(
-      map((response: any) => {
-        let arr: any[] = [];
-        if (Array.isArray(response)) arr = response;
-        else if (response && Array.isArray(response.data)) arr = response.data;
-        else if (response && Array.isArray(response.medicines)) arr = response.medicines;
-        else for (const key in response) if (Array.isArray(response[key])) { arr = response[key]; break; }
-        return arr.map((item: any) => ({
-          id: item.id || item._id || '',
-          name: item.name || '',
-          qty: item.quantity ?? item.qty ?? 0,
-          exp: item.expiry || item.exp || ''
-        }));
-      })
-    );
+    return this.allMedicines$;
   }
 
   // Stock metrics: out of stock, low stock, expiring soon
@@ -92,27 +128,7 @@ export class DashboardService {
 
   // Fetch all invoices (sales) from billing API with params
   getAllInvoices$(): Observable<InvoiceItem[]> {
-    const params = this.getBillingApiParams();
-    return this.http.get<any>(`${this.apiBase}/api/billing`, { params }).pipe(
-      map((response: any) => {
-        let arr: any[] = [];
-        if (Array.isArray(response)) arr = response;
-        else if (response && Array.isArray(response.data)) arr = response.data;
-        else if (response && Array.isArray(response.invoices)) arr = response.invoices;
-        else for (const key in response) if (Array.isArray(response[key])) { arr = response[key]; break; }
-        const mapped = arr.map((item: any) => ({
-          id: item.id || item._id || '',
-          customerName: item.customerName || '',
-          customerPhone: item.customerPhone || '',
-          amount: item.amount || 0,
-          itemCount: item.itemCount || 0,
-          lineItems: item.lineItems || [],
-          date: item.date || '',
-          invoiceNumber: item.invoiceNumber || ''
-        }));
-        return mapped;
-      })
-    );
+    return this.allInvoices$;
   }
 
   // Recent sales (latest N invoices)

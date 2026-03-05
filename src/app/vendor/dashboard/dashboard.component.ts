@@ -4,7 +4,6 @@ import { Component } from '@angular/core';
 import { CommonModule, AsyncPipe } from '@angular/common';
 import { BehaviorSubject, Observable, combineLatest, map, startWith } from 'rxjs';
 import { DashboardService, Product, InvoiceItem } from '../services/dashboard.service';
-import { HeaderComponent } from '../../shared/header/header.component';
 import { Router } from '@angular/router';
 
 type DashboardVM = {
@@ -35,7 +34,6 @@ export class VendorDashboardComponent {
 
   private readonly revenueRangeSubject = new BehaviorSubject<RevenueRange>('lastWeek');
 
-  private readonly chartWidth = 600;
   private readonly chartLeft = 20;
   private readonly chartRight = 580;
   private readonly chartTop = 16;
@@ -47,31 +45,53 @@ export class VendorDashboardComponent {
     private dashboard: DashboardService,
     private router: Router
   ) {
+    const allMedicines$ = this.dashboard.getAllMedicines$().pipe(startWith([] as Product[]));
+    const allInvoices$ = this.dashboard.getAllInvoices$().pipe(startWith([] as InvoiceItem[]));
+
     this.vm$ = combineLatest({
-      totalSales: this.dashboard.getTotalSales$().pipe(startWith(0)),
-      totalBills: this.dashboard.getTotalBills$().pipe(startWith(0)),
-      stock: this.dashboard.getStockMetrics$().pipe(startWith({ outOfStock: 0, lowStock: 0, expiringSoon: 0 })),
-      allMedicines: this.dashboard.getAllMedicines$().pipe(startWith([] as Product[])),
-      lowStockItems: this.dashboard.getAllMedicines$().pipe(
-        map(meds => meds.filter(m => m.qty > 0 && m.qty <= 5)),
-        startWith([] as Product[])
-      ),
-      recentInvoices: this.dashboard.getRecentInvoices$().pipe(startWith([] as InvoiceItem[])),
-      allInvoices: this.dashboard.getAllInvoices$().pipe(startWith([] as InvoiceItem[])),
+      allMedicines: allMedicines$,
+      allInvoices: allInvoices$,
       revenueRange: this.revenueRangeSubject.asObservable()
     }).pipe(
-      map(({ totalSales, totalBills, stock, allMedicines, lowStockItems, recentInvoices, allInvoices, revenueRange }) => ({
-        totalSales,
-        totalBills,
-        outOfStock: stock.outOfStock,
-        lowStock: stock.lowStock,
-        expiringSoon: stock.expiringSoon,
-        totalMedicines: allMedicines.length,
-        lowStockItems,
-        recentInvoices,
-        weeklyRevenue: this.buildRevenueSeries(allInvoices, revenueRange)
-      }))
+      map(({ allMedicines, allInvoices, revenueRange }) => {
+        const now = new Date();
+        const in30Days = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+        const stock = allMedicines.reduce(
+          (metrics, medicine) => {
+            if (medicine.qty === 0) {
+              metrics.outOfStock += 1;
+            } else if (medicine.qty > 0 && medicine.qty <= 5) {
+              metrics.lowStock += 1;
+            }
+
+            if (medicine.exp && new Date(medicine.exp) <= in30Days) {
+              metrics.expiringSoon += 1;
+            }
+
+            return metrics;
+          },
+          { outOfStock: 0, lowStock: 0, expiringSoon: 0 }
+        );
+
+        const lowStockItems = allMedicines.filter((medicine) => medicine.qty > 0 && medicine.qty <= 5);
+
+        return {
+          totalSales: allInvoices.reduce((sum, invoice) => sum + (invoice.amount || 0), 0),
+          totalBills: allInvoices.length,
+          outOfStock: stock.outOfStock,
+          lowStock: stock.lowStock,
+          expiringSoon: stock.expiringSoon,
+          totalMedicines: allMedicines.length,
+          lowStockItems,
+          recentInvoices: allInvoices.slice(0, 4),
+          weeklyRevenue: this.buildRevenueSeries(allInvoices, revenueRange)
+        };
+      })
     );
+  }
+
+  refreshDashboard() {
+    this.dashboard.refreshDashboardData();
   }
 
   private buildWeeklyRevenue(invoices: InvoiceItem[]): { label: string; amount: number; height: number; isPeak: boolean }[] {
