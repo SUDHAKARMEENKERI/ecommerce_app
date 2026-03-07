@@ -109,14 +109,14 @@ export class DashboardService {
     if (loginDataRaw) {
       try {
         const loginData = JSON.parse(loginDataRaw);
-        storeId = loginData.storeId || '';
+        storeId = loginData.id || loginData.storeId || '';
         storeMobile = loginData.storeMobile || '';
         email = loginData.email || '';
       } catch (e) {
         console.warn('Failed to parse loginData from localStorage:', e);
       }
     }
-    if (!storeId) storeId = localStorage.getItem('storeId') || '';
+    if (!storeId) storeId = localStorage.getItem('id') || localStorage.getItem('storeId') || '';
     if (!storeMobile) storeMobile = localStorage.getItem('storeMobile') || '';
     if (!email) email = localStorage.getItem('email') || '';
     const params: any = {};

@@ -696,7 +696,7 @@ export class VendorPurchaseComponent {
     return {
       storeMobile: this.pickValue(source, ['storeMobile', 'mobile', 'phone', 'mobileNo']),
       email: this.pickValue(source, ['email', 'mailId', 'storeEmail']),
-      storeId: this.pickValue(source, ['storeId'])
+      storeId: this.pickValue(source, ['id', 'storeId'])
     };
   }
 

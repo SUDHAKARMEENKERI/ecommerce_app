@@ -468,7 +468,7 @@ export class CustomerService {
       lastVisit,
       storeMobile: this.pickString(source, ['storeMobile', 'mobile', 'mobileNo']),
       medicalStoreEmail: this.pickString(source, ['email', 'mailId', 'storeEmail']),
-      medicalStoreId: this.pickString(source, ['storeId', 'medicalStoreId', 'pharmacyCode'])
+      medicalStoreId: this.pickString(source, ['id', 'storeId', 'medicalStoreId', 'pharmacyCode'])
     };
   }
 

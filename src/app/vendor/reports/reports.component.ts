@@ -314,7 +314,7 @@ export class VendorReportsComponent {
     return {
       email: this.pickValue(source, ['email', 'mailId', 'storeEmail']),
       storeMobile: this.pickValue(source, ['storeMobile', 'mobile', 'phone', 'mobileNo']),
-      storeId: this.pickValue(source, ['storeId', 'medicalStoreId', 'pharmacyCode'])
+      storeId: this.pickValue(source, ['id', 'storeId', 'medicalStoreId', 'pharmacyCode'])
     };
   }
 

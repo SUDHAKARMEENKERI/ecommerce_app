@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthLoginResponse, AuthService, MedicalStoreLoginPayload } from '../../shared/services/auth.service';
 import { CommonModalComponent } from '../../shared/modal/common-modal.component';
+import { MedicalStoreService } from '../services/medical-store.service';
 import { UserProfileService } from '../services/user-profile.service';
 
 @Component({
@@ -17,7 +18,7 @@ import { UserProfileService } from '../services/user-profile.service';
 export class VendorLoginComponent {
   storeId = '';
   password = '';
-  role = 'owner';
+  role: MedicalStoreLoginPayload['loginAs'] = 'owner';
   isSubmitting = false;
   errorMessage = '';
   successMessage = '';
@@ -29,6 +30,7 @@ export class VendorLoginComponent {
     private router: Router,
     private authService: AuthService,
     private route: ActivatedRoute,
+    private medicalStoreService: MedicalStoreService,
     private userProfileService: UserProfileService
   ) {
     this.route.queryParamMap.subscribe((params) => {
@@ -62,6 +64,7 @@ export class VendorLoginComponent {
     this.authService.loginMedicalStore(payload).subscribe({
       next: (response) => {
         const parsedResponse = this.parseResponsePayload(response);
+        const authPayload = parsedResponse ?? this.parseResponsePayload(this.authService.loginResponse);
 
         if (!this.isAccessAllowed(parsedResponse)) {
           this.isSubmitting = false;
@@ -69,35 +72,12 @@ export class VendorLoginComponent {
           return;
         }
 
-        this.isSubmitting = false;
         this.successMessage = this.getLoginSuccessMessage(parsedResponse ?? response) || 'Login successful. Redirecting...';
         this.authService.login(parsedResponse ?? response);
-        this.userProfileService.syncProfileFromLoginResponse();
-
-        setTimeout(() => {
-          this.router.navigate(['/vendor/dashboard']);
-        }, 500);
+        this.loadMedicalStoreDetails(authPayload);
       },
       error: (error: HttpErrorResponse) => {
         this.isSubmitting = false;
-
-        if (error.status === 200) {
-          const parsedResponse = this.parseResponsePayload(error.error);
-
-          if (!this.isAccessAllowed(parsedResponse)) {
-            this.openErrorModal(this.pendingBillingMessage);
-            return;
-          }
-
-          this.successMessage = 'Login successful. Redirecting...';
-          this.authService.login(parsedResponse ?? error.error);
-          this.userProfileService.syncProfileFromLoginResponse();
-
-          setTimeout(() => {
-            this.router.navigate(['/vendor/dashboard']);
-          }, 500);
-          return;
-        }
 
         this.openErrorModal(this.getLoginErrorMessage(error));
       }
@@ -173,12 +153,95 @@ export class VendorLoginComponent {
     return null;
   }
 
+  private loadMedicalStoreDetails(loginPayload: Record<string, unknown> | null): void {
+    const token = this.readString(loginPayload, ['token']) || this.authService.getToken() || '';
+    const decodedToken = this.decodeJwtPayload(token);
+    const email = this.readString(decodedToken, ['email', 'mailId', 'sub']) || this.readString(loginPayload, ['email', 'mailId']);
+    const mobile =
+      this.readString(decodedToken, ['mobile', 'storeMobile', 'phone', 'mobileNo']) ||
+      this.readString(loginPayload, ['mobile', 'storeMobile', 'phone', 'mobileNo']);
+
+    if (!email || !mobile) {
+      this.finishLogin();
+      return;
+    }
+
+    this.medicalStoreService.getStoreDetails(email, mobile).subscribe({
+      next: (detailsResponse) => {
+        const detailsPayload = this.parseResponsePayload(detailsResponse) ?? { email, storeMobile: mobile };
+
+        this.authService.mergeLoginResponse({
+          ...detailsPayload,
+          email,
+          storeMobile: this.readString(detailsPayload, ['storeMobile', 'mobile', 'phone', 'mobileNo']) || mobile
+        });
+
+        this.finishLogin();
+      },
+      error: () => {
+        this.finishLogin();
+      }
+    });
+  }
+
+  private finishLogin(): void {
+    this.isSubmitting = false;
+    this.userProfileService.syncProfileFromLoginResponse();
+
+    setTimeout(() => {
+      this.router.navigate(['/vendor/dashboard']);
+    }, 500);
+  }
+
   private isAccessAllowed(payload: Record<string, unknown> | null): boolean {
     if (!payload) {
       return true;
     }
 
     return payload['accessAllowed'] !== false;
+  }
+
+  private decodeJwtPayload(token: string): Record<string, unknown> | null {
+    if (!token) {
+      return null;
+    }
+
+    const parts = token.split('.');
+
+    if (parts.length < 2) {
+      return null;
+    }
+
+    try {
+      const normalizedPayload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+      const paddedPayload = normalizedPayload.padEnd(Math.ceil(normalizedPayload.length / 4) * 4, '=');
+      const decodedPayload = atob(paddedPayload);
+      const jsonPayload = decodeURIComponent(
+        Array.from(decodedPayload)
+          .map((character) => `%${character.charCodeAt(0).toString(16).padStart(2, '0')}`)
+          .join('')
+      );
+
+      return JSON.parse(jsonPayload) as Record<string, unknown>;
+    } catch {
+      return null;
+    }
+  }
+
+  private readString(source: Record<string, unknown> | null, keys: string[]): string {
+    if (!source) {
+      return '';
+    }
+
+    for (const key of keys) {
+      const value = source[key];
+
+      if (typeof value === 'string' && value.trim()) {
+        return value.trim();
+      }
+    }
+
+    return '';
   }
 
   private tryParseError(errorPayload: unknown): { status?: number; message?: string; accessAllowed?: boolean } | null {

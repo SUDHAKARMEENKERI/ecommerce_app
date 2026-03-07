@@ -45,7 +45,7 @@ export class InvoiceService {
   createInvoiceViaApi(input: Omit<InvoiceItem, 'id'>): Observable<InvoiceItem> {
     // Get login data from AuthService
     const loginResponse: any = this.authService.loginResponse;
-    const storeId = loginResponse?.storeId || '';
+    const storeId = loginResponse?.id || loginResponse?.storeId || '';
     const storeMobile = loginResponse?.storeMobile || '';
     const email = loginResponse?.email || '';
     // Merge billing fields
@@ -82,7 +82,7 @@ export class InvoiceService {
     const params: Record<string, string> = {};
     const source = this.extractSource(this.authService.loginResponse);
 
-    const storeId = this.pickValue(source, ['storeId', 'medicalStoreId', 'pharmacyCode']) || localStorage.getItem('storeId') || '';
+    const storeId = this.pickValue(source, ['id', 'storeId', 'medicalStoreId', 'pharmacyCode']) || localStorage.getItem('id') || localStorage.getItem('storeId') || '';
     const storeMobile =
       this.pickValue(source, ['storeMobile', 'mobile', 'phone', 'mobileNo']) || localStorage.getItem('storeMobile') || '';
     const email = this.pickValue(source, ['email', 'mailId', 'storeEmail']) || localStorage.getItem('email') || '';

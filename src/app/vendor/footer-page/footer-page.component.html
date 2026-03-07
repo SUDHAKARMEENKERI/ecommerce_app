@@ -1,0 +1,12 @@
+<section class="footer-info-page">
+  <div class="footer-info-card">
+    <h1>{{ pageData.title }}</h1>
+    <p>{{ pageData.description }}</p>
+
+    <ul *ngIf="pageData.points.length">
+      <li *ngFor="let point of pageData.points">{{ point }}</li>
+    </ul>
+
+    <a routerLink="/vendor/dashboard" class="back-link">← Back to dashboard</a>
+  </div>
+</section>

@@ -6,9 +6,11 @@ export const publicOnlyGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  if (authService.isLoggedIn) {
+  if (authService.isLoggedIn && authService.isTokenValid()) {
     return router.createUrlTree(['/vendor/dashboard']);
   }
+
+  authService.clearAuthSession();
 
   return true;
 };

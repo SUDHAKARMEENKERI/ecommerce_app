@@ -101,7 +101,7 @@ export class VendorAddMedicineComponent {
       'batchSize',
       'email',
       'storeMobile',
-      'storeId'
+      'id'
     ];
 
     const sampleRow = [
@@ -272,7 +272,7 @@ export class VendorAddMedicineComponent {
     return {
       storeMobile: this.pickValue(source, ['storeMobile', 'mobile', 'phone', 'mobileNo']),
       email: this.pickValue(source, ['email', 'mailId', 'storeEmail']),
-      storeId: this.pickValue(source, ['storeId'])
+      storeId: this.pickValue(source, ['id', 'storeId'])
     };
   }
 

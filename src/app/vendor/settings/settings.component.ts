@@ -90,7 +90,7 @@ export class VendorSettingsComponent {
     let storeId = '';
     const loginResponse = this.authService.loginResponse as any;
     if (loginResponse) {
-      storeId = loginResponse.storeId || loginResponse.medicalStoreId || '';
+      storeId = loginResponse.id || loginResponse.storeId || loginResponse.medicalStoreId || '';
     }
     if (!storeId) {
       this.isSavingBusiness = false;
@@ -159,7 +159,7 @@ export class VendorSettingsComponent {
     let storeId = '';
     const loginResponse = this.authService.loginResponse as any;
     if (loginResponse) {
-      storeId = loginResponse.storeId || loginResponse.medicalStoreId || '';
+      storeId = loginResponse.id || loginResponse.storeId || loginResponse.medicalStoreId || '';
     }
     if (!storeId) {
       this.isSavingAccount = false;

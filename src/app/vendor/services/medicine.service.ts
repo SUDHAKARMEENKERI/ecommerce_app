@@ -64,7 +64,7 @@ export class MedicineService {
     let storeMobile = '';
     const loginResponse = this.authService.loginResponse as any;
     if (loginResponse) {
-      storeId = loginResponse.storeId || loginResponse.medicalStoreId || '';
+      storeId = loginResponse.id || loginResponse.storeId || loginResponse.medicalStoreId || '';
       email = loginResponse.email || '';
       storeMobile = loginResponse.storeMobile || '';
     }
@@ -225,7 +225,7 @@ export class MedicineService {
     const source = this.extractSource(this.authService.loginResponse);
     const storeMobile = this.pickString(source, ['storeMobile', 'mobile', 'phone', 'mobileNo']);
     const email = this.pickString(source, ['email', 'mailId', 'storeEmail']);
-    const storeId = this.normalizeStoreId(this.pickString(source, ['storeId', 'medicalStoreId']));
+    const storeId = this.normalizeStoreId(this.pickString(source, ['id', 'storeId', 'medicalStoreId']));
 
     const params: Record<string, string> = {};
     if (storeMobile) {
